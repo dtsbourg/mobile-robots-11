@@ -85,13 +85,31 @@ void controller_loop(CtrlStruct *cvs)
 
 	// tower control
 	outputs->tower_command = 15.0;
-	
+	if (t > -15 && t < -14)
+	{
+		speed_regulation(cvs, 50.0, 50.0);
+	}
+	if (t > -14)// && t < -13)
+	{
+		speed_regulation(cvs, 0.0, 0.0);
+	}
+	/*
+	if (t > -13 && t < -12.5)
+	{
+		speed_regulation(cvs, -50.0, -50.0);
+	}
+	if (t > -12.5)
+	{
+		speed_regulation(cvs, 0, 0);
+	}
+	*/
+
+	return;
 	switch (cvs->main_state)
 	{
 		// calibration
 		case CALIB_STATE:
-			speed_regulation(cvs, 50.0, 50.0);
-			//calibration(cvs);
+			calibration(cvs);
 			break;
 
 		// wait before match beginning
