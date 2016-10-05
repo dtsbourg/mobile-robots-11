@@ -1,0 +1,9 @@
+# Folder view configuration files
+.DS_Store
+Desktop.ini
+
+# build folder unique to each contributor
+workR/build/
+
+# resultsR folder unique to each contributor
+resultsR/
