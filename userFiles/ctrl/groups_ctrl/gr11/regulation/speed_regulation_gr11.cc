@@ -14,7 +14,7 @@ void speed_regulation(CtrlStruct *cvs, double r_sp_ref, double l_sp_ref)
 	double r_sp, l_sp;
 	double dt;
 	double Kp = 10.0;
-	double Ki = 2.0;
+	double Ki = 1.0;
 
 	// variables declaration
 	CtrlIn *inputs;
@@ -36,15 +36,14 @@ void speed_regulation(CtrlStruct *cvs, double r_sp_ref, double l_sp_ref)
 	// ----- Wheels regulation computation start ----- //
 
 	double r_err = r_sp_ref-r_sp;
-	sp_reg->int_error_r += r_err;
+	sp_reg->int_error_r += limit_range(r_err * dt, -5.0, 5.0);
 
-	set_plot(sp_reg->int_error_r, "err");
 	double l_err = l_sp_ref-l_sp;
-	sp_reg->int_error_l += l_err;
+	sp_reg->int_error_l += limit_range(l_err * dt, -5.0, 5.0);
 
 	// wheel commands
-	outputs->wheel_commands[R_ID] = limit_range(Kp * r_err + Ki * sp_reg->int_error_r * dt, -100.0, 100.0);
-	outputs->wheel_commands[L_ID] = limit_range(Kp * l_err + Ki * sp_reg->int_error_l * dt, -100.0, 100.0);
+	outputs->wheel_commands[R_ID] = limit_range(Kp * r_err + Ki * sp_reg->int_error_r, -100.0, 100.0);
+	outputs->wheel_commands[L_ID] = limit_range(Kp * l_err + Ki * sp_reg->int_error_l, -100.0, 100.0);
 
 	// ----- Wheels regulation computation end ----- //
 
