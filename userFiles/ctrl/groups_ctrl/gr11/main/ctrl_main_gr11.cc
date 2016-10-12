@@ -1,4 +1,4 @@
-/*! 
+/*!
  * \author Group 11
  * \file controller_main_gr11.cc
  * \brief Initialization, loop and finilization of the controller written in C (but compiled as C++)
@@ -17,7 +17,7 @@
 NAMESPACE_INIT(ctrlGr11);
 
 /*! \brief initialize controller operations (called once)
- * 
+ *
  * \param[in] cvs controller main structure
  */
 void controller_init(CtrlStruct *cvs)
@@ -39,7 +39,7 @@ void controller_init(CtrlStruct *cvs)
 		case ROBOT_R: cvs->team_id = TEAM_A; break;
 		case ROBOT_Y: cvs->team_id = TEAM_B; break;
 		case ROBOT_W: cvs->team_id = TEAM_B; break;
-	
+
 		default:
 			printf("Error: unknown robot ID: %d !\n", inputs->robot_id);
 			exit(EXIT_FAILURE);
@@ -57,7 +57,7 @@ void controller_init(CtrlStruct *cvs)
 }
 
 /*! \brief controller loop (called every time-step)
- * 
+ *
  * \param[in] cvs controller main structure
  */
 void controller_loop(CtrlStruct *cvs)
@@ -85,26 +85,7 @@ void controller_loop(CtrlStruct *cvs)
 
 	// tower control
 	outputs->tower_command = 15.0;
-	if (t > -15 && t < -14)
-	{
-		speed_regulation(cvs, 50.0, 50.0);
-	}
-	if (t > -14)// && t < -13)
-	{
-		speed_regulation(cvs, 0.0, 0.0);
-	}
-	/*
-	if (t > -13 && t < -12.5)
-	{
-		speed_regulation(cvs, -50.0, -50.0);
-	}
-	if (t > -12.5)
-	{
-		speed_regulation(cvs, 0, 0);
-	}
-	*/
 
-	return;
 	switch (cvs->main_state)
 	{
 		// calibration
@@ -144,7 +125,7 @@ void controller_loop(CtrlStruct *cvs)
 			printf("Error: state NB_MAIN_STATES should not be reached !\n");
 			exit(EXIT_FAILURE);
 			break;
-	
+
 		default:
 			printf("Error:unknown state : %d !\n", cvs->main_state);
 			exit(EXIT_FAILURE);
@@ -152,7 +133,7 @@ void controller_loop(CtrlStruct *cvs)
 }
 
 /*! \brief last controller operations (called once)
- * 
+ *
  * \param[in] cvs controller main structure
  */
 void controller_finish(CtrlStruct *cvs)
