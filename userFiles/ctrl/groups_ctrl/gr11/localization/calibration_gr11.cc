@@ -50,8 +50,6 @@ void calibration(CtrlStruct *cvs)
 		case CALIB_STATE_A: // state A
 			speed_regulation(cvs, -10.0, -10.0);
 
-			printf("t=%d SW0 : %d ; SW1 : %d\n", t, inputs->u_switch[0], inputs->u_switch[1]);
-
 			// go to state B after 2 seconds
 			if (t - calib->t_flag > 2.0)
 			{

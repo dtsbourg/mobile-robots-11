@@ -45,7 +45,7 @@ void update_odometry(CtrlStruct *cvs)
 	*  Wheel dist  -- b
 	*/
 	// TODO : Find real constant !!
-	const double wheel_rad = 30.0; // [mm]
+	const double wheel_rad = 0.030; // [m]
 	double delta_s_r = r_sp * dt * wheel_rad;
 	double delta_s_l = l_sp * dt * wheel_rad;
 
@@ -53,7 +53,7 @@ void update_odometry(CtrlStruct *cvs)
     *  Compute delta state
 	*/
 	// TODO : Find real constant !!
-	const double b = 225.0; // [mm]
+	const double b = 0.225; // [m]
 	double delta_s = (delta_s_r + delta_s_l) / 2.0;
 
    /*
@@ -72,9 +72,9 @@ void update_odometry(CtrlStruct *cvs)
 	rob_pos->theta = rob_pos->theta + delta_theta;
 
 	// Plot value
-	//set_plot(rob_pos->x, "Blue sensor x [mm]");
-	//set_plot(rob_pos->y/1000, "Blue sensor y [mm]");
-	set_plot(rob_pos->theta, "Blue sensor theta [rad]");
+	set_plot(rob_pos->x, "Blue sensor x [m]");
+	set_plot(rob_pos->y, "Blue sensor y [m]");
+	//set_plot(rob_pos->theta, "Blue sensor theta [rad]");
 
 	// last update time
 	rob_pos->last_t = inputs->t;
