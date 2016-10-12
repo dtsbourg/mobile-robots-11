@@ -48,8 +48,9 @@ void user_dirdyn_init(MbsData *mbs_data, MbsDirdyn *mbs_dd)
  */
 void user_dirdyn_loop(MbsData *mbs_data, MbsDirdyn *mbs_dd)
 {
-	set_plot(mbs_data->qd[Right_wheel_joint_B_id], "R wheel [ rad / s ] ");
-	set_plot(mbs_data->qd[Left_wheel_joint_B_id], "L wheel [ rad / s ] ");
+	// set_plot(mbs_data->q[FJ_T1_robot_B_id] * 1000, "Blue x [mm] ");
+	// set_plot(mbs_data->q[FJ_T2_robot_B_id], "Blue y [m] ");
+	set_plot(mbs_data->q[FJ_R3_robot_B_id], "Blue theta [rad] ");
 	simu_loop(mbs_data);
 }
 

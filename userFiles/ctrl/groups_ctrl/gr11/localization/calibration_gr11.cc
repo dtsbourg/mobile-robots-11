@@ -62,7 +62,7 @@ void calibration(CtrlStruct *cvs)
 			break;
 
 		case CALIB_STATE_B: // state B
-			speed_regulation(cvs, 0.0, 0.0);
+			speed_regulation(cvs, 10.0, 10.0);
 
 			// go to state C after 2 seconds
 			if (t - calib->t_flag > 2.0)
@@ -74,7 +74,7 @@ void calibration(CtrlStruct *cvs)
 			break;
 
 		case CALIB_STATE_C: // state C
-			speed_regulation(cvs, 0.0, 0.0);
+			speed_regulation(cvs, -10.0, 10.0);
 
 			// go to final state after 2 seconds
 			if (t - calib->t_flag > 2.0)
