@@ -6,7 +6,7 @@
 NAMESPACE_INIT(ctrlGr11);
 
 /*! \brief set the fixed beacons positions, depending on the team
- * 
+ *
  * \param[in] team_id ID of the team ('TEAM_A' or 'TEAM_B')
  * \param[out] x_beac_1 first beacon x position [m]
  * \param[out] y_beac_1 first beacon y position [m]
@@ -23,27 +23,27 @@ void fixed_beacon_positions(int team_id, double *x_beac_1, double *y_beac_1,
 	switch (team_id)
 	{
 		case TEAM_A:
-			*x_beac_1 = 0.0;
-			*y_beac_1 = 0.0;
+			*x_beac_1 = 1.062;
+			*y_beac_1 = 1.562;
 
-			*x_beac_2 = 0.0;
-			*y_beac_2 = 0.0;
+			*x_beac_2 = -1.062;
+			*y_beac_2 = 1.562;
 
 			*x_beac_3 = 0.0;
-			*y_beac_3 = 0.0;
+			*y_beac_3 = -1.562;
 			break;
 
 		case TEAM_B:
-			*x_beac_1 = 0.0;
-			*y_beac_1 = 0.0;
+			*x_beac_1 = 1.062;
+			*y_beac_1 = -1.562;
 
-			*x_beac_2 = 0.0;
-			*y_beac_2 = 0.0;
+			*x_beac_2 = -1.062;
+			*y_beac_2 = -1.562;
 
 			*x_beac_3 = 0.0;
-			*y_beac_3 = 0.0;
+			*y_beac_3 = 1.562;
 			break;
-	
+
 		default:
 			printf("Error unknown team ID (%d) !\n", team_id);
 			exit(EXIT_FAILURE);
@@ -51,7 +51,7 @@ void fixed_beacon_positions(int team_id, double *x_beac_1, double *y_beac_1,
 }
 
 /*! \brief get the index of the best angle prediction
- * 
+ *
  * \param[in] alpha_predicted angle to reach [rad]
  * \param[in] alpha_a angle computed for A [rad]
  * \param[in] alpha_b angle computed for B [rad]
@@ -70,7 +70,7 @@ int index_predicted(double alpha_predicted, double alpha_a, double alpha_b, doub
 }
 
 /*! \brief triangulation main algorithm
- * 
+ *
  * \param[in] cvs controller main structure
  *
  * computation found here: http://www.telecom.ulg.ac.be/triangulation/
@@ -102,7 +102,7 @@ void triangulation(CtrlStruct *cvs)
 	}
 
 	// known positions of the beacons
-	fixed_beacon_positions(cvs->team_id, &x_beac_1, &y_beac_1, &x_beac_2, &y_beac_2, &x_beac_3, &y_beac_3);	
+	fixed_beacon_positions(cvs->team_id, &x_beac_1, &y_beac_1, &x_beac_2, &y_beac_2, &x_beac_3, &y_beac_3);
 
 	// indexes fot the angles detection
 	rise_index_1 = inputs->rising_index_fixed;
@@ -140,7 +140,7 @@ void triangulation(CtrlStruct *cvs)
 		case 0: alpha_1 = alpha_a; break;
 		case 1: alpha_1 = alpha_b; break;
 		case 2: alpha_1 = alpha_c; break;
-	
+
 		default:
 			printf("Error: unknown index %d !\n", alpha_1_index);
 			exit(EXIT_FAILURE);
@@ -152,7 +152,7 @@ void triangulation(CtrlStruct *cvs)
 		case 0: alpha_2 = alpha_a; break;
 		case 1: alpha_2 = alpha_b; break;
 		case 2: alpha_2 = alpha_c; break;
-	
+
 		default:
 			printf("Error: unknown index %d !\n", alpha_2_index);
 			exit(EXIT_FAILURE);
@@ -164,12 +164,12 @@ void triangulation(CtrlStruct *cvs)
 		case 0: alpha_3 = alpha_a; break;
 		case 1: alpha_3 = alpha_b; break;
 		case 2: alpha_3 = alpha_c; break;
-	
+
 		default:
 			printf("Error: unknown index %d !\n", alpha_3_index);
 			exit(EXIT_FAILURE);
 	}
-	
+
 
 	// ----- triangulation computation start ----- //
 
