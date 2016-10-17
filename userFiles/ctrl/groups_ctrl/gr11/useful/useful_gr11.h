@@ -7,6 +7,9 @@
 #ifndef _USEFUL_GR11_H_
 #define _USEFUL_GR11_H_
 
+#define COT_MAX     1e8
+#define cot(x)      ( 1 / tan(x) )
+
 #include "namespace_ctrl.h"
 
 NAMESPACE_INIT(ctrlGr11);
@@ -14,7 +17,7 @@ NAMESPACE_INIT(ctrlGr11);
 #define DEG_TO_RAD (M_PI/180.0) ///< convertion from degrees to radians
 #define RAD_TO_DEG (180.0/M_PI) ///< convertion from radians to degrees
 
-
+double avg(double a, double b);
 double rnd();
 double norm_dist(double dx, double dy);
 double limit_range(double x, double min, double max);

@@ -4,8 +4,17 @@
 
 NAMESPACE_INIT(ctrlGr11);
 
+/*! \brief Compute the average of 2 doubles
+ *
+ * \return The average of a and b
+ */
+double avg(double a, double b)
+{
+	return (a+b)/2.0;
+}
+
 /*! \brief generate random number in [0,1]
- * 
+ *
  * \return random number in the [0,1] range
  */
 double rnd()
@@ -14,7 +23,7 @@ double rnd()
 }
 
 /*! \brief get the normal distance, given two vector components
- * 
+ *
  * \param[in] dx x vector component
  * \param[in] dy y vector component
  * \return normal distance
@@ -25,7 +34,7 @@ double norm_dist(double dx, double dy)
 }
 
 /*! \brief limit a function in a given range
- * 
+ *
  * \param[in] x value to limit
  * \param[in] min minimal bound of the range
  * \param[in] max maximal bound of the range
@@ -37,7 +46,7 @@ double limit_range(double x, double min, double max)
 }
 
 /*! \brief set an angle in the in ]-pi;pi] range
- * 
+ *
  * \param[in] x angle to limit
  * \return angle limited in ]-pi;pi]
  */
@@ -56,7 +65,7 @@ double limit_angle(double x)
 }
 
 /*! \brief first-order low-pass filter
- * 
+ *
  * \param[in] last_val last value
  * \param[in] new_val new value
  * \param[in] tau time constant [s]
