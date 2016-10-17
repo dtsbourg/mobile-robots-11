@@ -95,6 +95,8 @@ void triangulation(CtrlStruct *cvs)
 	rob_pos = cvs->rob_pos;
 	inputs  = cvs->inputs;
 
+	set_plot(pos_tri->y, "y pos triang");
+
 	// safety
 	if ((inputs->rising_index_fixed < 0) || (inputs->falling_index_fixed < 0))
 	{
@@ -114,14 +116,14 @@ void triangulation(CtrlStruct *cvs)
 	fall_index_3 = (fall_index_2 - 1 < 0) ? NB_STORE_EDGE-1 : fall_index_2 - 1;
 
 	// beacons angles measured with the laser (to compute)
-	alpha_a = 0.0;
-	alpha_b = 0.0;
-	alpha_c = 0.0;
+	alpha_a = avg(inputs->last_rising_fixed[rise_index_1], inputs->last_falling_fixed[fall_index_1]);
+	alpha_b = avg(inputs->last_rising_fixed[rise_index_2], inputs->last_falling_fixed[fall_index_2]);
+	alpha_c = avg(inputs->last_rising_fixed[rise_index_3], inputs->last_falling_fixed[fall_index_3]);
 
 	// beacons angles predicted thanks to odometry measurements (to compute)
-	alpha_1_predicted = 0.0;
-	alpha_2_predicted = 0.0;
-	alpha_3_predicted = 0.0;
+	alpha_1_predicted = rob_pos->theta + atan((y_beac_1 - rob_pos->y)/(x_beac_1 - rob_pos->x));
+	alpha_2_predicted = rob_pos->theta + atan((y_beac_2 - rob_pos->y)/(x_beac_2 - rob_pos->x));
+	alpha_3_predicted = rob_pos->theta + atan((y_beac_3 - rob_pos->y)/(x_beac_3 - rob_pos->x));
 
 	// indexes of each beacon
 	alpha_1_index = index_predicted(alpha_1_predicted, alpha_a, alpha_b, alpha_c);
@@ -173,12 +175,56 @@ void triangulation(CtrlStruct *cvs)
 
 	// ----- triangulation computation start ----- //
 
-	// robot position
-	pos_tri->x = 0.0;
-	pos_tri->y = 0.0;
+	/*
+	 *	We will use the ToTal algorithm proposed by
+	 *  Vincent Pierlot and Marc Van Droogenbroeck,
+	 *	(INTELSIG, University of Liège, Belgium)
+	 *	http://www.telecom.ulg.ac.be/triangulation/
+	*/
+
+	// 1. Compute the modified beacon coordinates
+	double dx_1 = x_beac_1 - x_beac_2;
+	double dy_1 = y_beac_1 - y_beac_2;
+
+	double dx_3 = x_beac_3 - x_beac_2;
+	double dy_3 = y_beac_3 - y_beac_2;
+
+	// 2. Compute the three cotangents
+	double T_12 = limit_range(cot(alpha_2 - alpha_1), -COT_MAX, COT_MAX);
+	double T_23 = limit_range(cot(alpha_3 - alpha_2), -COT_MAX, COT_MAX);
+	double T_31 = limit_range((1 - (T_12 * T_23)) / (T_12 + T_23), -COT_MAX, COT_MAX);
+
+	// 3. compute the modified circle center coordinates
+	double x_12 = dx_1 + T_12 * dy_1;
+	double y_12 = dy_1 - T_12 * dx_1;
+
+	double x_23 = dx_3 - T_23 * dy_3;
+	double y_23 = dy_3 + T_23 * dx_3;
+
+	double x_31 = (dx_3 + dx_1) + T_31 * (dy_3 - dy_1);
+	double y_31 = (dy_3 + dy_1) - T_31 * (dx_3 - dx_1);
+
+	// 4. Compute k_31
+	double k_31 = dx_1 * dx_3 + dy_1 * dy_3 + T_31 * (dx_1 * dy_3 - dx_3 * dy_1);
+
+	// 5. Compute D
+	double D = (x_12 - x_23) * (y_23 - y_31) - (y_12 - y_23) * (x_23 - x_31);
+
+	if (fabs(D) < 1e-16) {
+		printf("[ERR] D = 0 in triangulation_gr11.c \n");
+		return;
+	}
+
+	// 6. Compute the robot position
+	double invD = 1. / D;
+	double K = k_31 * invD;
+	double tower_shift = -0.083; // 83 mm
+
+	pos_tri->x = x_beac_2 + tower_shift * cos(rob_pos->theta) + K * (y_12 - y_23);
+	pos_tri->y = y_beac_2 + tower_shift * sin(rob_pos->theta) + K * (x_23 - x_12);
 
 	// robot orientation
-	pos_tri->theta = 0.0;
+	pos_tri->theta = rob_pos->theta + atan((pos_tri->y - rob_pos->y) / (pos_tri->x - rob_pos->x));
 
 	// ----- triangulation computation end ----- //
 }
