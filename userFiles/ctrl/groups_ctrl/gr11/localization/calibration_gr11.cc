@@ -37,6 +37,8 @@ void calibration(CtrlStruct *cvs)
 	t = inputs->t;
 	team_id = cvs->team_id;
 
+	set_plot(rob_pos->y, "Y Odometry value [rad]");
+
 	// finite state machine (FSM)
 	switch (calib->flag)
 	{
@@ -47,32 +49,43 @@ void calibration(CtrlStruct *cvs)
 			calib->t_flag = t;
 			break;
 
-		case CALIB_STATE_A: // state A
+		// ----- Calibration State A ----- //
+		/* - move backward to the top wall of the map
+		 * - detect wall with micro switch and enter state B
+		*/
+		case CALIB_STATE_A: // state A: 
 			speed_regulation(cvs, -10.0, -10.0);
 
-			// go to state B after 2 seconds
-			if (t - calib->t_flag > 2.0)
+			if (inputs->u_switch[R_ID] && inputs->u_switch[L_ID])
 			{
 				calib->flag = CALIB_STATE_B;
-
 				calib->t_flag = t;
 			}
 			break;
 
+		// ----- Calibration State B ----- //
+		/* - wait 1 seconds to make sure there is contact
+		 * - set angle to -90(deg)=-1.5707(rad) / set Y position to 1.44[m] (top of the map minus wall)
+		*/
 		case CALIB_STATE_B: // state B
-			speed_regulation(cvs, 10.0, 10.0);
+			speed_regulation(cvs, -10.0, -10.0);
 
-			// go to state C after 2 seconds
-			if (t - calib->t_flag > 2.0)
+			// go to state C after 1 seconds
+			if (t - calib->t_flag > 1.0)
 			{
-				calib->flag = CALIB_STATE_C;
+				rob_pos->y = 1.44;
+				rob_pos->theta = -1.5707;
 
+				calib->flag = CALIB_STATE_C;
 				calib->t_flag = t;
 			}
 			break;
 
+		// ----- Calibration State C ----- //
+		/* - move forward 2 seconds to center the robot
+		*/
 		case CALIB_STATE_C: // state C
-			speed_regulation(cvs, -10.0, 10.0);
+			speed_regulation(cvs, 10.0, 10.0);
 
 			// go to final state after 2 seconds
 			if (t - calib->t_flag > 2.0)

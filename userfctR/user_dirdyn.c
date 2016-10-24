@@ -48,9 +48,9 @@ void user_dirdyn_init(MbsData *mbs_data, MbsDirdyn *mbs_dd)
  */
 void user_dirdyn_loop(MbsData *mbs_data, MbsDirdyn *mbs_dd)
 {
-	set_plot(mbs_data->q[FJ_T1_robot_B_id], "Blue x [m] ");
-	set_plot(mbs_data->q[FJ_T2_robot_B_id], "Blue y [m] ");
-	//set_plot(mbs_data->q[FJ_R3_robot_B_id], "Blue theta [rad] ");
+	// set_plot(mbs_data->q[FJ_T1_robot_B_id], "Real x [m] ");
+	set_plot(mbs_data->q[FJ_T2_robot_B_id], "Real y pos[m] ");
+	// set_plot(mbs_data->q[FJ_R3_robot_B_id], "Real theta [rad] ");
 	simu_loop(mbs_data);
 }
 
