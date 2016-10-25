@@ -121,9 +121,11 @@ void triangulation(CtrlStruct *cvs)
 	alpha_c = avg(inputs->last_rising_fixed[rise_index_3], inputs->last_falling_fixed[fall_index_3]);
 
 	// beacons angles predicted thanks to odometry measurements (to compute)
-	alpha_1_predicted = rob_pos->theta + atan((y_beac_1 - rob_pos->y)/(x_beac_1 - rob_pos->x));
-	alpha_2_predicted = rob_pos->theta + atan((y_beac_2 - rob_pos->y)/(x_beac_2 - rob_pos->x));
-	alpha_3_predicted = rob_pos->theta + atan((y_beac_3 - rob_pos->y)/(x_beac_3 - rob_pos->x));
+	alpha_1_predicted = 2*M_PI - rob_pos->theta - limit_angle(atan((y_beac_1 - rob_pos->y)/(x_beac_1 - rob_pos->x)));
+	alpha_2_predicted = 2*M_PI - rob_pos->theta - limit_angle(atan((y_beac_2 - rob_pos->y)/(x_beac_2 - rob_pos->x)));
+	alpha_3_predicted = 2*M_PI - rob_pos->theta - limit_angle(atan((y_beac_3 - rob_pos->y)/(x_beac_3 - rob_pos->x)));
+
+	printf("%f %f %f\n", alpha_1_predicted, alpha_2_predicted, alpha_3_predicted);
 
 	// indexes of each beacon
 	alpha_1_index = index_predicted(alpha_1_predicted, alpha_a, alpha_b, alpha_c);
