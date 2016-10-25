@@ -66,22 +66,46 @@ void opponents_tower(CtrlStruct *cvs)
 
 	// ----- opponents position computation start ----- //
 
-	double beacon_diam = 0.040; // [m]
+	double beacon_radius = 0.020; // [m]
+	double beacon_offset = 0.083; // [m]
 
-	// Compute the angle from rising and falling edges
-	double mid_angle_1 = (rise_1 - fall_1) * 0.5;
-	double mid_angle_2 = (rise_2 - fall_2) * 0.5;
+	// Compute the beacon's arc from rising and falling edges
+	double arc_1 = (fall_1 - rise_1) * 0.5;
+	double arc_2 = (fall_2 - rise_2) * 0.5;
 
-	// Pre-compute trigonometry values for efficiency
-	double c_1 = cos(mid_angle_1); double s_1 = sin(mid_angle_1);
-	double c_2 = cos(mid_angle_2); double s_2 = sin(mid_angle_2);
+	// Compute the beacon's angle relative to the robot from rising and falling edges
+	double beacon_angle_1 = 0.5 * (fall_1 + rise_1);
+	double beacon_angle_2 = 0.5 * (fall_2 + rise_2);
+
+	// Compute relative distance between robot and beacons
+	// TODO : Fix tan range
+	double dist_1 = beacon_radius / limit_range(tan(arc_1), -10, 10);
+	double dist_2 = beacon_radius / limit_range(tan(arc_2), -10, 10);
+
+	// Compute relative positions from sensors
+	int beacon_offset_sign_1 = 1; // is -1 if the beacon is behind the robot
+	if (fabs(rise_1) <= M_PI * 0.5 && fabs(fall_1) <= M_PI * 0.5) {
+		beacon_offset_sign_1 = -1;
+	}
+	double x_1 = dist_1 * cos(beacon_angle_1) + beacon_offset_sign_1 * beacon_offset;
+	double y_1 = dist_1 * sin(beacon_angle_1);
+
+	int beacon_offset_sign_2 = 1; // is -1 if the beacon is behind the robot
+	if (fabs(rise_2) <= M_PI * 0.5 && fabs(fall_2) <= M_PI * 0.5) {
+		beacon_offset_sign_2 = -1;
+	}
+	double x_2 = dist_2 * cos(beacon_angle_2) + beacon_offset_sign_2 * beacon_offset;
+	double y_2 = dist_2 * sin(beacon_angle_2);
 
 	// Compute opponent positions
-	opp_pos->x[0] = (0.5 * beacon_diam * c_1 * c_1) / s_1;
-	opp_pos->y[0] = 0.5 * beacon_diam * c_1;
+	opp_pos->x[0] = first_order_filter(opp_pos->x[0], x_1+rob_pos->x, 0.25, delta_t);
+	opp_pos->y[0] = first_order_filter(opp_pos->y[0], y_1+rob_pos->y, 0.25, delta_t) ;
 
-	opp_pos->x[1] = (0.5 * beacon_diam * c_2 * c_2) / s_2;
-	opp_pos->y[1] = 0.5 * beacon_diam * c_2;
+	opp_pos->x[1] = first_order_filter(opp_pos->x[1], x_2+rob_pos->x, 0.25, delta_t);
+	opp_pos->y[1] = first_order_filter(opp_pos->y[1], y_2+rob_pos->y, 0.25, delta_t);
+
+	set_plot(opp_pos->x[0], "Expected Yellow x [m] ");
+	set_plot(opp_pos->y[0], "Expected Yellow y [m] ");
 
 	// ----- opponents position computation end ----- //
 }
