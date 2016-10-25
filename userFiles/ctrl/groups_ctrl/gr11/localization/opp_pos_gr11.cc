@@ -6,7 +6,7 @@
 NAMESPACE_INIT(ctrlGr11);
 
 /*! \brief compute the opponents position using the tower
- * 
+ *
  * \param[in,out] cvs controller main structure
  */
 void opponents_tower(CtrlStruct *cvs)
@@ -66,17 +66,28 @@ void opponents_tower(CtrlStruct *cvs)
 
 	// ----- opponents position computation start ----- //
 
-	opp_pos->x[0] = 0.0;
-	opp_pos->y[0] = 0.0;
+	double beacon_diam = 0.040; // [m]
 
-	opp_pos->x[1] = 0.0;
-	opp_pos->y[1] = 0.0;
+	// Compute the angle from rising and falling edges
+	double mid_angle_1 = (rise_1 - fall_1) * 0.5;
+	double mid_angle_2 = (rise_2 - fall_2) * 0.5;
+
+	// Pre-compute trigonometry values for efficiency
+	double c_1 = cos(mid_angle_1); double s_1 = sin(mid_angle_1);
+	double c_2 = cos(mid_angle_2); double s_2 = sin(mid_angle_2);
+
+	// Compute opponent positions
+	opp_pos->x[0] = (0.5 * beacon_diam * c_1 * c_1) / s_1;
+	opp_pos->y[0] = 0.5 * beacon_diam * c_1;
+
+	opp_pos->x[1] = (0.5 * beacon_diam * c_2 * c_2) / s_2;
+	opp_pos->y[1] = 0.5 * beacon_diam * c_2;
 
 	// ----- opponents position computation end ----- //
 }
 
 /*! \brief compute a single opponent position
- * 
+ *
  * \param[in] last_rise last rise relative angle [rad]
  * \param[in] last_fall last fall relative angle [rad]
  * \param[in] rob_x robot x position [m]
@@ -95,7 +106,7 @@ int single_opp_tower(double last_rise, double last_fall, double rob_x, double ro
 }
 
 /*! \brief check if there is an opponent in front of the robot
- * 
+ *
  * \param[in] cvs controller main structure
  * \return 1 if opponent robot in front of the current robot
  */
