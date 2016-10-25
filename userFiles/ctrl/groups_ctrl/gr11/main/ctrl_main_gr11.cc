@@ -95,6 +95,7 @@ void controller_loop(CtrlStruct *cvs)
 
 		// wait before match beginning
 		case WAIT_INIT_STATE:
+			printf("WAIT_INIT_STATE");
 			speed_regulation(cvs, 0.0, 0.0);
 
 			if (t > 0.0)
