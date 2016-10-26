@@ -72,9 +72,9 @@ void update_odometry(CtrlStruct *cvs)
 	rob_pos->theta = rob_pos->theta + delta_theta;
 
 	// Plot value
-	set_plot(rob_pos->x, "Blue sensor x [m]");
-	set_plot(rob_pos->y, "Blue sensor y [m]");
-	//set_plot(rob_pos->theta, "Blue sensor theta [rad]");
+	//set_plot(rob_pos->x, "Blue sensor x [m]");
+	//set_plot(rob_pos->y, "Odometry Y pos [m]");
+	//set_plot(rob_pos->theta, "Odometry theta [rad]");
 
 	// last update time
 	rob_pos->last_t = inputs->t;
