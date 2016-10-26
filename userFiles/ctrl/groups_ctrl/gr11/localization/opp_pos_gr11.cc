@@ -70,17 +70,17 @@ void opponents_tower(CtrlStruct *cvs)
 	opp_pos_new = (OpponentsPosition*) malloc(sizeof(OpponentsPosition));
 
 	single_opp_tower(rise_1, fall_1, rob_pos->x, rob_pos->y, rob_pos->theta, &opp_pos_new->x[0], &opp_pos_new->y[0]);
-	single_opp_tower(rise_2, fall_2, rob_pos->x, rob_pos->y, rob_pos->theta, &opp_pos_new->x[1], &opp_pos_new->y[1]);
+	//single_opp_tower(rise_2, fall_2, rob_pos->x, rob_pos->y, rob_pos->theta, &opp_pos_new->x[1], &opp_pos_new->y[1]);
 
 	// Compute opponent positions
-	opp_pos->x[0] = first_order_filter(opp_pos->x[0], opp_pos_new->x[0], 0.25, delta_t);
-	opp_pos->y[0] = first_order_filter(opp_pos->y[0], opp_pos_new->y[0], 0.25, delta_t) ;
+	opp_pos->x[0] = first_order_filter(opp_pos->x[0], opp_pos_new->x[0], 0.1, delta_t);
+	opp_pos->y[0] = first_order_filter(opp_pos->y[0], opp_pos_new->y[0], 0.1, delta_t) ;
 
-	opp_pos->x[1] = first_order_filter(opp_pos->x[1], opp_pos_new->x[1], 0.25, delta_t);
-	opp_pos->y[1] = first_order_filter(opp_pos->y[1], opp_pos_new->y[1], 0.25, delta_t);
+	//opp_pos->x[1] = first_order_filter(opp_pos->x[1], opp_pos_new->x[1], 0.1, delta_t);
+	//opp_pos->y[1] = first_order_filter(opp_pos->y[1], opp_pos_new->y[1], 0.1, delta_t);
 
-	set_plot(opp_pos->x[0], "Expected Yellow x [m] ");
-	set_plot(opp_pos->y[0], "Expected Yellow y [m] ");
+	//set_plot(opp_pos->x[0], "pred X");
+	//set_plot(opp_pos->y[0], "pred Y");
 
 	// ----- opponents position computation end ----- //
 }
@@ -105,11 +105,13 @@ int single_opp_tower(double last_rise, double last_fall, double rob_x, double ro
 	double arc = (last_fall - last_rise) * 0.5;
 
 	// Compute the beacon's angle relative to the robot from rising and falling edges
-	double beacon_angle = rob_theta - 0.5 * (last_fall + last_rise);
+	double beacon_angle = rob_theta + 0.5 * (last_fall + last_rise);
 
 	// Compute relative distance between robot and beacons
 	// TODO : Fix tan range
-	double dist = beacon_radius / limit_range(tan(arc), -10, 10);
+	double dist = beacon_radius / tan(arc);
+	set_plot(arc, "arc");
+	set_plot(dist, "distance calc");
 
 	double x = dist * cos(beacon_angle) + cos(rob_theta) * beacon_offset;
 	double y = dist * sin(beacon_angle) + sin(rob_theta) * beacon_offset;
