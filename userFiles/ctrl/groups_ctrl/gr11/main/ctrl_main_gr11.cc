@@ -107,12 +107,13 @@ void controller_loop(CtrlStruct *cvs)
 
 		// during game
 		case RUN_STATE:
+			speed_regulation(cvs, 10.0, 11.0);
+
 			main_strategy(cvs);
 			if (t > 89.0) // 1 second safety
 			{
 				cvs->main_state = STOP_END_STATE;
 			}
-			outputs->wheel_commands[R_ID] = 50.0;
 			break;
 
 		// stop at the end of the game

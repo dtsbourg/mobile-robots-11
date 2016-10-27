@@ -50,6 +50,11 @@ void fixed_beacon_positions(int team_id, double *x_beac_1, double *y_beac_1,
 	}
 }
 
+double zero_two_pi_range(double alpha)
+{
+	return (alpha < 0) ? alpha + M_PI : alpha;
+}
+
 /*! \brief get the index of the best angle prediction
  *
  * \param[in] alpha_predicted angle to reach [rad]
@@ -95,8 +100,6 @@ void triangulation(CtrlStruct *cvs)
 	rob_pos = cvs->rob_pos;
 	inputs  = cvs->inputs;
 
-	set_plot(pos_tri->y, "y pos triang");
-
 	// safety
 	if ((inputs->rising_index_fixed < 0) || (inputs->falling_index_fixed < 0))
 	{
@@ -120,12 +123,15 @@ void triangulation(CtrlStruct *cvs)
 	alpha_b = avg(inputs->last_rising_fixed[rise_index_2], inputs->last_falling_fixed[fall_index_2]);
 	alpha_c = avg(inputs->last_rising_fixed[rise_index_3], inputs->last_falling_fixed[fall_index_3]);
 
-	// beacons angles predicted thanks to odometry measurements (to compute)
-	alpha_1_predicted = 2*M_PI - rob_pos->theta - limit_angle(atan((y_beac_1 - rob_pos->y)/(x_beac_1 - rob_pos->x)));
-	alpha_2_predicted = 2*M_PI - rob_pos->theta - limit_angle(atan((y_beac_2 - rob_pos->y)/(x_beac_2 - rob_pos->x)));
-	alpha_3_predicted = 2*M_PI - rob_pos->theta - limit_angle(atan((y_beac_3 - rob_pos->y)/(x_beac_3 - rob_pos->x)));
+	// Beacon angles are given in [-pi;pi] where ToTal uses [0;2*pi]
+	alpha_a = zero_two_pi_range(alpha_a);
+	alpha_b = zero_two_pi_range(alpha_b);
+	alpha_c = zero_two_pi_range(alpha_c);
 
-	printf("%f %f %f\n", alpha_1_predicted, alpha_2_predicted, alpha_3_predicted);
+	// beacons angles predicted thanks to odometry measurements (to compute)
+	alpha_1_predicted = zero_two_pi_range(atan(fabs((y_beac_1 - rob_pos->y)/(x_beac_1 - rob_pos->x))) - rob_pos->theta);
+	alpha_2_predicted = zero_two_pi_range(atan(fabs((y_beac_2 - rob_pos->y)/(x_beac_2 - rob_pos->x))) - rob_pos->theta);
+	alpha_3_predicted = zero_two_pi_range(atan(fabs((y_beac_3 - rob_pos->y)/(x_beac_3 - rob_pos->x))) - rob_pos->theta);
 
 	// indexes of each beacon
 	alpha_1_index = index_predicted(alpha_1_predicted, alpha_a, alpha_b, alpha_c);
@@ -135,6 +141,7 @@ void triangulation(CtrlStruct *cvs)
 	// safety
 	if ((alpha_1_index == alpha_2_index) || (alpha_1_index == alpha_3_index) || (alpha_2_index == alpha_3_index))
 	{
+		printf("Safety check failed !\n");
 		return;
 	}
 
@@ -224,9 +231,9 @@ void triangulation(CtrlStruct *cvs)
 
 	pos_tri->x = x_beac_2 + tower_shift * cos(rob_pos->theta) + K * (y_12 - y_23);
 	pos_tri->y = y_beac_2 + tower_shift * sin(rob_pos->theta) + K * (x_23 - x_12);
-
 	// robot orientation
-	pos_tri->theta = rob_pos->theta + atan((pos_tri->y - rob_pos->y) / (pos_tri->x - rob_pos->x));
+	pos_tri->theta = rob_pos->theta;
+	set_plot(pos_tri->x, "X tri [m]");
 
 	// ----- triangulation computation end ----- //
 }
