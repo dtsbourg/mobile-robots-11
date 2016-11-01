@@ -21,10 +21,6 @@
 #include "set_output.h"
 #include <math.h>
 
-#define DEG_TO_RAD (M_PI/180.0)
-#define RAD_TO_DEG (180.0/M_PI)
-
-
 /*! \brief user own initialization functions
  *
  * \param[in,out] mbs_data data structure of the model
@@ -51,8 +47,11 @@ void user_dirdyn_loop(MbsData *mbs_data, MbsDirdyn *mbs_dd)
 
 	// set_plot(mbs_data->q[FJ_T1_robot_B_id], "Real x [m] ");
 	// set_plot(mbs_data->q[FJ_T2_robot_B_id], "Real y pos[m] ");
-	set_plot(mbs_data->q[FJ_T1_robot_B_id], "Blue x [m] ");
+	// set_plot(mbs_data->q[FJ_T1_robot_B_id], "Blue x [m] ");
 	// set_plot(mbs_data->q[FJ_R3_robot_B_id], "Blue theta [rad] ");
+
+	double x_err_tri = mbs_data->q[FJ_T1_robot_B_id];
+	printf("[TRI]xerr=%f, yerr=%f, terr=%f\n", );
 	simu_loop(mbs_data);
 }
 

@@ -13,6 +13,7 @@
 #include "calibration_gr11.h"
 #include "triangulation_gr11.h"
 #include "strategy_gr11.h"
+#include <time.h>
 
 NAMESPACE_INIT(ctrlGr11);
 
