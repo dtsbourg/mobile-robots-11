@@ -84,7 +84,7 @@ void controller_loop(CtrlStruct *cvs)
 	opponents_tower(cvs);
 
 	// tower control
-	outputs->tower_command = 15.0;
+	outputs->tower_command = 50.0;
 
 	switch (cvs->main_state)
 	{
@@ -95,7 +95,6 @@ void controller_loop(CtrlStruct *cvs)
 
 		// wait before match beginning
 		case WAIT_INIT_STATE:
-			printf("WAIT_INIT_STATE");
 			speed_regulation(cvs, 0.0, 0.0);
 
 			if (t > 0.0)
