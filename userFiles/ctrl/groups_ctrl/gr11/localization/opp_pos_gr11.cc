@@ -73,14 +73,14 @@ void opponents_tower(CtrlStruct *cvs)
 	//single_opp_tower(rise_2, fall_2, rob_pos->x, rob_pos->y, rob_pos->theta, &opp_pos_new->x[1], &opp_pos_new->y[1]);
 
 	// Compute opponent positions
-	opp_pos->x[0] = first_order_filter(opp_pos->x[0], opp_pos_new->x[0], 0.1, delta_t);
-	opp_pos->y[0] = first_order_filter(opp_pos->y[0], opp_pos_new->y[0], 0.1, delta_t) ;
+	opp_pos->x[0] = first_order_filter(opp_pos->x[0], opp_pos_new->x[0], 1, delta_t);
+	opp_pos->y[0] = first_order_filter(opp_pos->y[0], opp_pos_new->y[0], 1, delta_t) ;
 
 	//opp_pos->x[1] = first_order_filter(opp_pos->x[1], opp_pos_new->x[1], 0.1, delta_t);
 	//opp_pos->y[1] = first_order_filter(opp_pos->y[1], opp_pos_new->y[1], 0.1, delta_t);
 
-	//set_plot(opp_pos->x[0], "pred X");
-	//set_plot(opp_pos->y[0], "pred Y");
+	set_plot(opp_pos->x[0], "Predicted X [m]");
+	set_plot(opp_pos->y[0], "Predicted Y [m]");
 
 	// ----- opponents position computation end ----- //
 }
@@ -110,8 +110,6 @@ int single_opp_tower(double last_rise, double last_fall, double rob_x, double ro
 	// Compute relative distance between robot and beacons
 	// TODO : Fix tan range
 	double dist = beacon_radius / tan(arc);
-	set_plot(arc, "arc");
-	set_plot(dist, "distance calc");
 
 	double x = dist * cos(beacon_angle) + cos(rob_theta) * beacon_offset;
 	double y = dist * sin(beacon_angle) + sin(rob_theta) * beacon_offset;
