@@ -39,8 +39,10 @@ MbsData* mbs_load(const char* mbs_filename, const char* build_name){
     free_MDS_gen_strct(mds);
 
     mbs_data->mbs_filename = (char*) malloc (1+strlen(mbs_filename));
+    mbs_data->build_name   = (char*) malloc (1+strlen(build_name));
 
     strcpy(mbs_data->mbs_filename, mbs_filename);
+    strcpy(mbs_data->build_name  , build_name);
 
     return mbs_data;
 }
@@ -653,6 +655,11 @@ void mbs_delete_data(MbsData *s)
     if (s->mbs_filename)
     {
         free(s->mbs_filename);
+    }
+
+    if (s->build_name)
+    {
+        free(s->build_name);
     }
 
     #ifdef PRJ_FCT_PTR

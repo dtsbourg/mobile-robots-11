@@ -43,8 +43,8 @@ typedef struct Realtime_sdl
 
 /*! \brief external Java visualization variables and stuctures
  */
-#ifdef JAVA
-typedef struct Realtime_java
+#ifdef VISU_3D
+typedef struct Realtime_visu
 {
     int nb_models;   ///< number of models to load
     int buffer_size; ///< size of the buffer to save past visualization
@@ -52,7 +52,9 @@ typedef struct Realtime_java
     int cur_viewpoint;     ///< current viewpoint in simulation
     int nb_viewpoint;      ///< number of viewpoints
     int visu_past_flag;    ///< 1 to view what happened before, 0 otherwise
-    double t_visu_past;    ///< requested time for past visualization
+    int flag_t_last_past;  ///< 1 if 't_last_past' initialized, 0 otherwise
+    double t_visu_past;    ///< requested time for past visualization [s]
+    double t_last_past;    ///< last time the 'update_visu_past' was called [s]
     int flag_buffer_round; ///< 1 if buffer already filled, 0 otherwise
     int last_past_q_flag;  ///< 1 if last visu was with past_q, 0 otherwise
 
@@ -71,9 +73,9 @@ typedef struct Realtime_java
     double **past_q;  ///< requested past joints positions vector (for each model)
     double **anim_q;  ///< joints position for .anim file (for each model)
 
-    void* jni_struct; ///< JNI (Java Native Interface) visualization main data structure
+    void *visu_class; ///< main class or structure for visualization
 
-} Realtime_java;
+} Realtime_visu;
 #endif
 
 // -- Functions prototypes -- //
@@ -83,9 +85,9 @@ Realtime_sdl* init_realtime_sdl(void *screen_sdl);
 void free_realtime_sdl(Realtime_sdl *sdl);
 #endif
 
-#ifdef JAVA
-Realtime_java* init_realtime_java(void *realtime_options, MbsData* mbs_data);
-void free_realtime_java(Realtime_java *java);
+#ifdef VISU_3D
+Realtime_visu* init_realtime_visu(void *realtime_options, MbsData* mbs_data);
+void free_realtime_visu(Realtime_visu *visu);
 #endif
 
 #endif

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mbsDescR7>
   <mbsname>m454_project_anim</mbsname>
-  <mbsyspad_version>1.9.3</mbsyspad_version>
+  <mbsyspad_version>1.9.4</mbsyspad_version>
   <base>
     <!--this is the base body-->
     <gravity>

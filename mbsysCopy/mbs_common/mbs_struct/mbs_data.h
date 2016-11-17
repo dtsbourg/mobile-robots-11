@@ -91,7 +91,7 @@ typedef struct{
                 user_joystick_buttons_ptr user_joystick_buttons;
             #endif
 
-            #ifdef JAVA
+            #ifdef VISU_3D
                 user_realtime_visu_ptr user_realtime_visu;
             #endif
         #endif
@@ -184,7 +184,7 @@ struct MbsData
     int Ncons;      ///< Number of algebraic constraints.
     int Nuserc;     ///< Number of user constraints.
     double NRerr;   ///< Maximal error on constraint allowed in Newton-Raphson algorithm.
-    double *lambda; ///< Array with the values of Lagrange Multiplied related to the constraints.
+    double *lambda; ///< Array with the values of the Lagrange Multipliers related to the constraints.
 	// Driven variables (and joint forces)
 	double *Qc;     ///< Array with the value of joint force introduced in driven joint to respect the user function.
                     ///< The driven forces/torques are saved in the entries given by index vector, MbsData::qc 
@@ -234,7 +234,7 @@ struct MbsData
     int Nux;     ///< Number of user variable.
 
     // OTHER FIELDS //
-    double *udd; // axelle red
+    double *udd;   ///< For axelle red: array with the values of the acceleration of independent coordinate
 
     int DonePart;  ///< Flag that indicates if the coordinate partitioning module has been executed (default: 0=not done; 1=done).
     int DoneEquil; ///< Flag that indicates if the equilibrium module has been executed (default: 0=not done; 1=done).
@@ -245,6 +245,7 @@ struct MbsData
     int flag_stop; ///< DO NOT USE: stop the simulation (for the user, not used by MBsysC).
     
     char *mbs_filename; ///< Path to mbs file including the file with the extension (.mbs)
+    char *build_name; ///< Path to the build folder
 
     #ifdef REAL_TIME
     void *realtime;  ///< Pointer to Simu_realtime structure.

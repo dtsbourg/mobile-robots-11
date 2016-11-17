@@ -46,12 +46,6 @@ void mbs_print_trace (void){
 
 // -- Exponents related functions -- //
 
-/*! \brief compute efficiently pow with an integer exponent
- *
- * \param[in] a basis (double)
- * \param[in] b integer exponant
- * \return a^b (same result as pow(a,b), except that b is a integer -> more efficient)
- */
 double pow_int(double a, int b)
 {
     int i;
@@ -81,11 +75,6 @@ double pow_int(double a, int b)
     }
 }
 
-/*! \brief get log with base 10
- *
- * \param[in] nb number to compute the log
- * \return the exponent (base 10) -> log_10 (this is the inferior exponent)
- */
 int expo_ten_inf(double nb)
 {
     int iter;
@@ -122,12 +111,6 @@ int expo_ten_inf(double nb)
 
 
 // -- Sign function -- //
-
-/*! \brief sign function
- *
- * \param[in] a input
- * \return 1 if positive (or 0), -1 if negative
- */
 double sign(double a)
 {
     return (a<0 ? -1 : 1);
@@ -135,11 +118,6 @@ double sign(double a)
 
 
 // -- Time function -- //
-
-/*! \brief returns the current time as a String
- *
- * source: http://en.wikipedia.org/wiki/C_date_and_time_functions
- */
 char* get_time_machine()
 {
     time_t cur_t;
@@ -168,12 +146,6 @@ char* get_time_machine()
 
 
 // -- Char related functions -- //
-
-/*! \brief create (with memory allocation) a vector (length x) of char
- *
- * \param[in] x size of the vector
- * \return requested vector of char
- */
 char* get_char_vec(int x)
 {
     char *vec;
@@ -185,12 +157,6 @@ char* get_char_vec(int x)
     return vec;
 }
 
-/*! \brief create (with memory allocation) a [x times y] matrix of chars
- *
- * \param[in] x nb of rows
- * \param[in] y nb of columns
- * \return requested matrix of chars
- */
 char** get_char_tab(int x, int y)
 {
     int i;
@@ -207,19 +173,11 @@ char** get_char_tab(int x, int y)
     return mat;
 }
 
-/*! \brief release memory for a vector of char
- *
- * \param[out] vec vector of chars
- */
 void free_char_vec(char *vec)
 {
     free(vec);
 }
 
-/*! \brief release memory for a matrix of chars
- *
- * \param[out] mat matrix of chars
- */
 void free_char_tab(char** mat)
 {
     int i;
@@ -234,22 +192,11 @@ void free_char_tab(char** mat)
 
 
 // -- Integer related functions -- //
-
-/*! \brief create (with memory allocation) a vector (length x) of integers, starting at index 0
- *
- * \param[in] x size of the vector
- * \return requested vector
- */
 int* get_ivec_0(int x)
 {
     return (int*) calloc(x,sizeof(int));
 }
 
-/*! \brief create (with memory allocation) a vector (length x) of integers, starting at index 1
- *
- * \param[in] x size of the vector (0 element not taken into account)
- * \return requested vector (element 0 receives x: the size without this element)
- */
 int* get_ivec_1(int x)
 {
     int *vec;
@@ -261,12 +208,6 @@ int* get_ivec_1(int x)
     return vec;
 }
 
-/*! \brief create (with memory allocation) a [x times y] matrix of integers, starting at index 0
- *
- * \param[in] x nb of rows
- * \param[in] y nb of columns
- * \return requested matrix of integers
- */
 int** get_imat_0(int x, int y)
 {
     int i;
@@ -284,12 +225,6 @@ int** get_imat_0(int x, int y)
     return mat;
 }
 
-/*! \brief create (with memory allocation) a [x times y] matrix of integers, starting at index 1
- *
- * \param[in] x nb of rows (0 element not taken into account)
- * \param[in] y nb of columns (0 element not taken into account)
- * \return requested matrix of integers
- */
 int** get_imat_1(int x, int y)
 {
     int i;
@@ -311,47 +246,29 @@ int** get_imat_1(int x, int y)
     return mat;
 }
 
-/*! \brief release memory for a vector of integers, starting with index 0
- *
- * \param[out] vec a vector of integers
- */
 void free_ivec_0(int *vec)
 {
     free(vec);
 }
 
-/*! \brief release memory for a vector of integers, starting with index 1
- *
- * \param[out] vec a vector of integers
- */
+
 void free_ivec_1(int *vec)
 {
     free(vec);
 }
 
-/*! \brief release memory for a matrix of integers, starting with index 0
- *
- * \param[out] mat matrix of integers
- */
 void free_imat_0(int **mat)
 {
     free(mat[0]);
     free(mat);
 }
 
-/*! \brief release memory for a matrix of integers, starting with index 1
- *
- * \param[out] mat matrix of integers
- */
 void free_imat_1(int **mat)
 {
     free(mat[0]);
     free(mat);
 }
 
-/*
- * Copy vec1 into vec2, the 2 vec are [x] sized vec of ints, starting with index 0
- */
 void copy_ivec_0(int *vec1, int *vec2, int x)
 {
     int i;
@@ -362,9 +279,6 @@ void copy_ivec_0(int *vec1, int *vec2, int x)
     }
 }
 
-/*
- * Copy vec1 into vec2, the 2 vec are [x] sized vec of ints, starting with index 1
- */
 void copy_ivec_1(int *vec1, int *vec2, int x)
 {
     int i;
@@ -375,9 +289,6 @@ void copy_ivec_1(int *vec1, int *vec2, int x)
     }
 }
 
-/*
- * Copy tab1 into tab2, the 2 vec are [x times y] sized vec of ints
- */
 void copy_imat_0(int **tab1, int **tab2, int x , int y)
 {
     int i,j;
@@ -391,9 +302,6 @@ void copy_imat_0(int **tab1, int **tab2, int x , int y)
     }
 }
 
-/*
- * Print vec in console; vec is a vector (length x) of ints, starting with index 0
- */
 void print_ivec_0(int *vec, int x)
 {
     int i;
@@ -408,9 +316,6 @@ void print_ivec_0(int *vec, int x)
     printf("]\n");
 }
 
-/*
- * Print vec in console; vec is a vector (length x) of ints, starting with index 1
- */
 void print_ivec_1(int *vec)
 {
     int i;
@@ -425,9 +330,6 @@ void print_ivec_1(int *vec)
     printf("]\n");
 }
 
-/*
- * Print mat in console; vec is [x times y] sized vec of ints
- */
 void print_imat_0(int **mat, int x , int y)
 {
     int i,j;
@@ -445,10 +347,6 @@ void print_imat_0(int **mat, int x , int y)
     }
 }
 
-/*
- * Sort vec1 into vec2, the 2 vec are [x] sized vec of ints
- * Start sorting at index 0 !
- */
 void sort_ivec_0(int *vec1, int *vec2, int x)
 {
     int i, j;
@@ -485,10 +383,6 @@ void sort_ivec_0(int *vec1, int *vec2, int x)
     }
 }
 
-/*
- * Sort vec1 into vec2, the 2 vec are [x] sized vec of ints
- * Start sorting at index 1 !
- */
 void sort_ivec_1(int *vec1, int *vec2, int x)
 {
     int i, j;
@@ -543,9 +437,6 @@ void sort_inplace_ivec_1(int *vec, int x)
     }
 }
 
-/*
- * Fill vec as [0 1 2 3 ... x] , with vec [x] sized vec of ints
- */
 void f0123_ivec_0(int* vec, int x)
 {
     int i;
@@ -556,9 +447,6 @@ void f0123_ivec_0(int* vec, int x)
     }
 }
 
-/*
- * Concat vec1 and vec 2 into vec3, the vec1 and vec2 are [x1] and [x2] sized vec of ints
- */
 void conc_ivec_0(int* vec1, int x1, int* vec2, int x2, int* vec3)
 {
     int i;
@@ -574,9 +462,6 @@ void conc_ivec_0(int* vec1, int x1, int* vec2, int x2, int* vec3)
     }
 }
 
-/*
- * Concat vec1 and vec 2 into vec3, the vec1 and vec2 are [x1] and [x2] sized vec of ints
- */
 void conc_ivec_1(int* vec1, int x1, int* vec2, int x2, int* vec3)
 {
     int i;
@@ -635,23 +520,11 @@ int find_ivec_1(int* vec, int x, int f)
 
 
 // -- Double related functions -- //
-
-
-/*! \brief create (with memory allocation) a vector (length x) of doubles, starting at index 0
- *
- * \param[in] x size of the vector
- * \return requested vector
- */
 double* get_dvec_0(int x)
 {
     return (double*) calloc(x,sizeof(double));
 }
 
-/*! \brief create (with memory allocation) a vector (length x) of doubles, starting at index 1
- *
- * \param[in] x size of the vector (0 element not taken into account)
- * \return requested vector (element 0 receives x: the size without this element)
- */
 double* get_dvec_1(int x)
 {
     double *vec;
@@ -663,12 +536,6 @@ double* get_dvec_1(int x)
     return vec;
 }
 
-/*! \brief create (with memory allocation) a [x times y] matrix of doubles, starting at index 0
- *
- * \param[in] x nb of rows
- * \param[in] y nb of columns
- * \return requested matrix of doubles
- */
 double** get_dmat_0(int x, int y)
 {
     int i;
@@ -686,12 +553,6 @@ double** get_dmat_0(int x, int y)
     return mat;
 }
 
-/*! \brief create (with memory allocation) a [x times y] matrix of doubles, starting at index 1
- *
- * \param[in] x nb of rows (0 element not taken into account)
- * \param[in] y nb of columns (0 element not taken into account)
- * \return requested matrix of doubles
- */
 double** get_dmat_1(int x, int y)
 {
     int i;
@@ -712,49 +573,30 @@ double** get_dmat_1(int x, int y)
     return mat;
 }
 
-/*! \brief release memory for a vector of doubles, starting at index 0
- *
- * \param[out] vec a vector of doubles
- */
+
 void free_dvec_0(double *vec)
 {
     free(vec);
 }
 
-/*! \brief release memory for a vector of doubles, starting at index 1
- *
- * \param[out] vec a vector of doubles
- */
 void free_dvec_1(double *vec)
 {
     free(vec);
 }
 
-/*! \brief release memory for a matrix of doubles, starting at index 0
- *
- * \param[out] mat matrix of doubles
- * \param[in] x nb of rows
- */
 void free_dmat_0(double **mat)
 {
     free(mat[0]);
     free(mat);
 }
 
-/*! \brief release memory for a matrix of doubles, starting at index 1
- *
- * \param[out] mat matrix of doubles
- * \param[in] x nb of rows
- */
 void free_dmat_1(double **mat)
 {
     free(mat[0]);
     free(mat);
 }
 
-/*
- * Copy vec1 into vec2, the 2 vec are [x] sized vec of doubles
- */
+
 void copy_dvec_0(double *vec1, double *vec2, int x)
 {
     int i;
@@ -783,9 +625,6 @@ void copy_dvec_1(double *vec1, double *vec2)
     }
 }
 
-/*
- * Copy tab1 into tab2, the 2 vec are [x times y] sized vec of doubles
- */
 void copy_dmat_0(double **tab1, double **tab2, int x , int y)
 {
     int i,j;
@@ -799,9 +638,7 @@ void copy_dmat_0(double **tab1, double **tab2, int x , int y)
     }
 }
 
-/*
- * Print vec in console; vec is a vector (length x) of doubles
- */
+
 void print_dvec_0(double *vec, int x)
 {
     int i;
@@ -839,9 +676,6 @@ void print_dvec_1(double *vec)
     printf("]\n");
 }
 
-/*
- * Print mat in console; vec is [x times y] sized vec of doubles
- */
 void print_dmat_0(double **mat, int x , int y)
 {
     int i,j;
@@ -947,7 +781,7 @@ void slctr_dmat_0(double **tab1, int x1, int y1, double **tab2, int x2, int* vec
     }
 }
 
-// return 1 if any elment is non zero , 0 otherwise
+
 int any_dvec_0(double *vec, int x)
 {
     int i;

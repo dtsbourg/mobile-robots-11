@@ -194,6 +194,7 @@ void mbs_copy_data(MbsData* s, MbsData* s_copy)
 	s_copy->simu_end= s->simu_end;
 
     // ?? char *mbs_filename;
+    // ?? char *build_name;
 
 	// ??
     //#ifdef REAL_TIME

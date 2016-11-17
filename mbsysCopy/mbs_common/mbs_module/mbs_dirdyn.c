@@ -139,9 +139,9 @@ void mbs_run_dirdyn(MbsDirdyn* dd, MbsData* mbs_data)
 void mbs_dirdyn_save(MbsDirdyn* dd, MbsData *mbs_data, double t){
 
     int i;
-    #ifdef JAVA
+    #ifdef VISU_3D
     Simu_realtime *realtime;
-    Realtime_java *java;
+    Realtime_visu *visu;
     #endif
 
     for (i=0 ; i < dd->bufferNb ; i++){
@@ -152,15 +152,15 @@ void mbs_dirdyn_save(MbsDirdyn* dd, MbsData *mbs_data, double t){
 
     if (dd->options->save_visu)
     {
-        #ifdef JAVA
+        #ifdef VISU_3D
         realtime = (Simu_realtime*) mbs_data->realtime;
-        java = realtime->ext->java;
+        visu = realtime->ext->visu;
 
-        user_realtime_visu(mbs_data, java->nb_models, java->nb_q, java->anim_q);
+        user_realtime_visu(mbs_data, visu->nb_models, visu->nb_q, visu->anim_q);
 
         for(i=0; i<realtime->options->nb_models; i++)
         {
-            mbs_buffer_save(dd->buffer_visu[i], t, java->anim_q[i]);
+            mbs_buffer_save(dd->buffer_visu[i], t, visu->anim_q[i]);
         }
         #endif
     }
@@ -170,9 +170,9 @@ void mbs_dirdyn_init(MbsDirdyn* dd, MbsData* mbs_data)
 {
     int i;
 
-    #ifdef JAVA
+    #ifdef VISU_3D
     Simu_realtime *realtime;
-    Realtime_java *java;
+    Realtime_visu *visu;
     #endif
 
     // INITIALIZATION
@@ -362,7 +362,7 @@ void mbs_dirdyn_init(MbsDirdyn* dd, MbsData* mbs_data)
 
         if (dd->options->save_visu)
         {
-            #ifdef JAVA
+            #ifdef VISU_3D
             if (!dd->options->realtime)
             {
                 printf("Error: real-time features must be activated to set 'save_visu' to 1 ! \n");
@@ -376,7 +376,7 @@ void mbs_dirdyn_init(MbsDirdyn* dd, MbsData* mbs_data)
                 printf("Error: flag_visu must be set to 1 to set 'save_value' to 1 ! \n");
             }
 
-            java = realtime->ext->java;
+            visu = realtime->ext->visu;
             dd->buffer_visu = (MbsBuffer**) malloc(realtime->options->nb_models*sizeof(MbsBuffer*));
 
             for(i=0; i<realtime->options->nb_models; i++)
@@ -384,7 +384,7 @@ void mbs_dirdyn_init(MbsDirdyn* dd, MbsData* mbs_data)
                 sprintf(f,      "%s/visu_%d_q.res",  respath, i);
                 sprintf(f_anim, "%s/visu_%d_q.anim", animpath, i);
 
-                dd->buffer_visu[i] = mbs_new_buffer(f, f_anim, java->nb_q[i], dd->options->buffersize, BUFFER_VISU, dd->options->save_anim, dd->options->save_visu, 1./(double)dd->options->framerate);
+                dd->buffer_visu[i] = mbs_new_buffer(f, f_anim, visu->nb_q[i], dd->options->buffersize, BUFFER_VISU, dd->options->save_anim, dd->options->save_visu, 1./(double)dd->options->framerate);
             }
 
             #else

@@ -6,8 +6,6 @@
 #include "user_realtime.h"
 
 #include <locale.h>
-
-
 #include <stdlib.h>
 
 #ifdef APPLE_VISU
@@ -29,8 +27,6 @@
 #define JNI_VERSION JNI_VERSION_1_6
 
 #define START_VIEWPOINT 0 ///< default initial viewpoint
-
-
 
 /*! \brief instantiate a java virtual machine so as to access to the 3D animation facilities of MBSysPad
  * 
@@ -220,13 +216,14 @@ void start_jni(JNI_in_out *jni_in_out)
 
 /*! \brief initialize the JNI structure
  *
- * \param[out] java realtime Java structure
+ * \param[out] visu realtime 3D structure
  * \param[in] nb_models number of models
  * \param[in] nb_q number of joints in the .mbs file
  * \param[in] q_vec vector of size nb_q with the initial values for q
  * \param[in] mbs_file path and name of the .mbs file used for visualization
+ * \param[in] start_viewpoint initial viewpoint
  */
-void init_jni(Realtime_java *java, int nb_models, int *nb_q, double **q_vec, char **mbs_file, int start_viewpoint)
+void init_jni(Realtime_visu *visu, int nb_models, int *nb_q, double **q_vec, char **mbs_file, int start_viewpoint)
 {
     JNI_in_out jni_in_out;
 
@@ -281,7 +278,7 @@ void init_jni(Realtime_java *java, int nb_models, int *nb_q, double **q_vec, cha
         close(pipe_viewpoint[1]);
 
         // save JNI adress
-        java->jni_struct = jni_in_out.jni_struct;
+        visu->visu_class = jni_in_out.jni_struct;
 
         // JNI run
         if (pthread_create(&thr, NULL, start_jni, &jni_in_out))
@@ -304,26 +301,28 @@ void init_jni(Realtime_java *java, int nb_models, int *nb_q, double **q_vec, cha
         read(pipe_ready[0], &flag_ready, sizeof(int));
 
         read(pipe_nb_viewpoint[0], &nb_viewpoint, sizeof(int));
-        java->nb_viewpoint = nb_viewpoint;
+        visu->nb_viewpoint = nb_viewpoint;
     }
 
     #else
     // JNI initialization
     start_jni(&jni_in_out);
 
-    java->nb_viewpoint = jni_in_out.nb_viewpoint;
+    visu->nb_viewpoint = jni_in_out.nb_viewpoint;
 
     // save JNI adress
-    java->jni_struct = jni_in_out.jni_struct;
+    visu->visu_class = jni_in_out.jni_struct;
     #endif
 }
 
 /*! \brief Release memory
  *
- * \param[out] jni_struct JNI structure to release
+ * \param[out] visu_class JNI structure to release
  */
-void free_jni(JNI_struct *jni_struct)
+void free_jni(void *visu_class)
 {
+    JNI_struct *jni_struct;
+
     #ifdef APPLE_VISU
     int flag_finish, flag_close;
 
@@ -334,6 +333,8 @@ void free_jni(JNI_struct *jni_struct)
         read(pipe_close[0], &flag_close, sizeof(int));
     }
     #else
+        jni_struct = (JNI_struct*) visu_class;
+
         free(jni_struct->doubleArrayArgs);
         free(jni_struct);
     #endif
@@ -345,15 +346,18 @@ void free_jni(JNI_struct *jni_struct)
  */
 void update_java(Simu_realtime *realtime)
 {
-    Realtime_java *java;
+    Realtime_visu *visu;
     MbsData* mbs_data;
+    JNI_struct *jni_struct;
 
     #ifdef APPLE_VISU
     int flag_finish;
     #endif
 
-    java     = realtime->ext->java;
+    visu     = realtime->ext->visu;
     mbs_data = realtime->ext->mbs_data;
+
+    jni_struct = (JNI_struct*) visu->visu_class;
 
     #ifdef APPLE_VISU
     if(pid_fork) // father, in charge of all simulation, except visualization
@@ -367,43 +371,43 @@ void update_java(Simu_realtime *realtime)
     }
     #endif
 
-    user_realtime_visu(mbs_data, java->nb_models, java->nb_q, java->cur_q);
+    user_realtime_visu(mbs_data, visu->nb_models, visu->nb_q, visu->cur_q);
 
-    if (java->visu_past_flag)
+    if (visu->visu_past_flag)
     {
-        java->visu_past_flag   = 0;
-        java->last_past_q_flag = 1;
+        visu->visu_past_flag   = 0;
+        visu->last_past_q_flag = 1;
 
-        update_jni(java->jni_struct, java, java->nb_models, java->nb_q, java->past_q);
+        update_jni(jni_struct, visu, visu->nb_models, visu->nb_q, visu->past_q);
     }
-    else if (java->change_viewpoint)
+    else if (visu->change_viewpoint)
     {
-        if (java->last_past_q_flag)
+        if (visu->last_past_q_flag)
         {
-            update_jni(java->jni_struct, java, java->nb_models, java->nb_q, java->past_q);
+            update_jni(jni_struct, visu, visu->nb_models, visu->nb_q, visu->past_q);
         }
         else
         {
-            update_jni(java->jni_struct, java, java->nb_models, java->nb_q, java->cur_q);
+            update_jni(jni_struct, visu, visu->nb_models, visu->nb_q, visu->cur_q);
         }
     }
     else
     {
-        java->last_past_q_flag = 0;
+        visu->last_past_q_flag = 0;
 
-        update_jni(java->jni_struct, java, java->nb_models, java->nb_q, java->cur_q);
+        update_jni(jni_struct, visu, visu->nb_models, visu->nb_q, visu->cur_q);
     }
 }
 
 /*! \brief update the 3D view with JNI
  *
  * \param[in] jni_struct JNI structure
- * \param[in] java Java real-time structure
+ * \param[in] visu 3D real-time structure
  * \param[in] nb_models number of models
  * \param[in] nb_q number of joints to update for the visualization
  * \param[in] q_vec vector of size nb_q with the current values to plot
  */
-void update_jni(JNI_struct *jni_struct, Realtime_java *java, int nb_models, int *nb_q, double **q_vec)
+void update_jni(JNI_struct *jni_struct, Realtime_visu *visu, int nb_models, int *nb_q, double **q_vec)
 {
     int i;
 
@@ -425,21 +429,21 @@ void update_jni(JNI_struct *jni_struct, Realtime_java *java, int nb_models, int 
     #endif
 
     // adapt the viewpoint
-    if (java->change_viewpoint)
+    if (visu->change_viewpoint)
     {
-        java->change_viewpoint = 0;
+        visu->change_viewpoint = 0;
 
-        java->cur_viewpoint++;
+        visu->cur_viewpoint++;
 
-        if (java->cur_viewpoint >= java->nb_viewpoint)
+        if (visu->cur_viewpoint >= visu->nb_viewpoint)
         {
-            java->cur_viewpoint = START_VIEWPOINT;
+            visu->cur_viewpoint = START_VIEWPOINT;
         }
 
         #ifdef APPLE_VISU
-            flag_viewpoint = java->cur_viewpoint;
+            flag_viewpoint = visu->cur_viewpoint;
         #else
-            (*env)->CallObjectMethod(env, jni_struct->obj, jni_struct->setVpMethod, java->cur_viewpoint);
+            (*env)->CallObjectMethod(env, jni_struct->obj, jni_struct->setVpMethod, visu->cur_viewpoint);
         #endif
     }
     #ifdef APPLE_VISU
@@ -450,10 +454,6 @@ void update_jni(JNI_struct *jni_struct, Realtime_java *java, int nb_models, int 
 
     write(pipe_viewpoint[1], &flag_viewpoint, sizeof(int));
     #endif
-
-    jint av;
-
-    av = 0;
 
     // update the 3D view
     #ifndef APPLE_VISU

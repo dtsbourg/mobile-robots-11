@@ -17,7 +17,8 @@
 #include "mbs_project_fct_ptr.h"
 
 // back in visualization period
-#define PERIOD_BACK_IN_VISU 0.03 // [s]
+#define PERIOD_BACK_IN_VISU 0.03    // [s]
+#define INTERRUPT_BACK_IN_VISU 0.25 // [s]
 
 // -- Structures -- //
 
@@ -29,8 +30,8 @@ typedef struct Realtime_extern
     Realtime_sdl *sdl; ///< SDL structure
     #endif
 
-    #ifdef JAVA
-    Realtime_java *java; ///< Java structure
+    #ifdef VISU_3D
+    Realtime_visu *visu; ///< Java structure
     #endif
 
     MbsData* mbs_data; ///< Robotran main structure
@@ -50,7 +51,7 @@ struct Realtime_option
     int init_break;  ///< 1 to start with a break, 0 otherwise
     int final_break; ///< 1 to finish with a break, 0 otherwise
 
-    int buffer_size; ///< size of the buffer for java and sdl
+    int buffer_size; ///< size of the buffer for 3D and sdl
 
     double init_speed_factor; ///< initial speed factor
 
@@ -80,7 +81,7 @@ struct Realtime_option
 
     int start_viewpoint; ///< initial visu viewpoint ID
 
-    double fqc_visu; ///< frequence of the java visualization refreshment [Hz]
+    double fqc_visu; ///< frequence of the 3D visualization refreshment [Hz]
 
 };
 
@@ -116,7 +117,7 @@ struct Simu_realtime
     double t0; ///< initial simulation time [s]
     double tf; ///< final simulation time [s]
 
-    int buffer_size; ///< size of the buffer for java and sdl
+    int buffer_size; ///< size of the buffer for 3D and sdl
 
     // initial time
     int init_t_sec;  ///< initial real time [s], without us

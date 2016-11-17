@@ -12,8 +12,15 @@
 #include "time_functions.h"
 #include "events_sdl.h"
 #include "set_plot.h"
-//#include "java_functions.h"
 #include "realtime_functions.h"
+
+#ifdef JAVA
+#include "java_functions.h"
+#endif
+
+#ifdef OPEN_GL
+#include "open_gl_c_int.h"
+#endif
 
 #define TIME_NO_INTERACTION_BREAK 3e6 ///< time eith no interaction to go on break mode [us]
 #define TIME_SDL_DELAY 25             ///< time delay for SDL
@@ -1959,8 +1966,8 @@ void plot_screen_sdl(Simu_realtime *realtime, double tsim, int screen_flag)
     Realtime_sdl *realtime_sdl;
     AutoPlot *auto_plot;
 
-    #ifdef JAVA
-    Realtime_java *java;
+    #ifdef VISU_3D
+    Realtime_visu *visu;
     #endif
 
 
@@ -2418,7 +2425,7 @@ void plot_screen_sdl(Simu_realtime *realtime, double tsim, int screen_flag)
                 sprintf(str, ")");
                 print_text_sdl(str, font_break, text_color, ren, QUIT_X_POS, screen_sdl->x_axis_indication, 2);
 
-                #ifdef JAVA
+                #ifdef VISU_3D
                 if (realtime->flag_visu)
                 {
                     sprintf(str, "t:");
@@ -2543,14 +2550,14 @@ void plot_screen_sdl(Simu_realtime *realtime, double tsim, int screen_flag)
         }
 
         // black vertical line for past visu
-        #ifdef JAVA
+        #ifdef VISU_3D
         if (screen_flag == 1 && realtime->flag_visu)
         {
-            java = realtime->ext->java;
+            visu = realtime->ext->visu;
 
-            if (legend_x_min < java->t_visu_past && java->t_visu_past < legend_x_max)
+            if (legend_x_min < visu->t_visu_past && visu->t_visu_past < legend_x_max)
             {
-                x_pixel_past = round(((java->t_visu_past - legend_x_min) / (legend_x_max - legend_x_min)) * (screen_sdl->plot_x_end-1));
+                x_pixel_past = round(((visu->t_visu_past - legend_x_min) / (legend_x_max - legend_x_min)) * (screen_sdl->plot_x_end-1));
 
                 if (1 < x_pixel_past && x_pixel_past < screen_sdl->plot_x_end-2) // safety: no vertical line next to the border
                 {
@@ -2962,8 +2969,8 @@ void break_gestion(Simu_realtime *realtime, double tsim)
 
     int cur_t_usec;
 
-    #ifdef JAVA
-    Realtime_java *java;
+    #ifdef VISU_3D
+    Realtime_visu *visu;
     #endif
 
     int init_t_sec, init_t_usec;
@@ -2977,10 +2984,10 @@ void break_gestion(Simu_realtime *realtime, double tsim)
     init_t_sec  = realtime->init_t_sec;
     init_t_usec = realtime->init_t_usec;
 
-    #ifdef JAVA
+    #ifdef VISU_3D
     if (realtime->flag_visu)
     {
-        java = realtime->ext->java;
+        visu = realtime->ext->visu;
     }
     #endif
 
@@ -3008,12 +3015,16 @@ void break_gestion(Simu_realtime *realtime, double tsim)
             plot_screen_sdl(realtime, tsim, 1);
         }
 
-        #ifdef JAVA
+        #ifdef VISU_3D
         if (realtime->flag_visu)
         {
-            if (java->change_viewpoint || java->visu_past_flag)
+            if (visu->change_viewpoint || visu->visu_past_flag)
             {
-                update_java(realtime);
+                #if (defined JAVA)
+                    update_java(realtime);
+                #elif (defined OPEN_GL)
+                    update_open_gl(realtime);
+                #endif
             }
         }
         #endif
@@ -3023,6 +3034,14 @@ void break_gestion(Simu_realtime *realtime, double tsim)
         {
             SDL_Delay(TIME_SDL_DELAY);
         }
+
+        // to update viewpoint 3D OpenGL
+        #ifdef OPEN_GL
+        if (realtime->flag_visu)
+        {
+            break_open_gl(realtime);
+        }
+        #endif
     }
 
     realtime->first_break = 0;

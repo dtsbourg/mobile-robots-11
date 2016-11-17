@@ -46,8 +46,8 @@ MbsModal* mbs_new_modal_aux(MbsData* mbs_data,MbsAux* mbs_aux);
 *
 * The MbsData structure associated should not be modified ??QD
 *
-* @param mo the MbsModal to be run
-* @return the MbsModal ...
+* @param[in,out] mo the MbsModal to be run
+* @param[in] s the MbsData structure of the model for which the modal analysis is computed
 *
 */
 void mbs_run_modal(MbsModal *mo,MbsData *s);

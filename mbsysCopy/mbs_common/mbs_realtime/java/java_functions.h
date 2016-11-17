@@ -55,7 +55,7 @@ typedef struct JNI_in_out
 // functions prototypes
 
 JNIEnv* create_vm(void);
-void init_jni(Realtime_java *java, int nb_models, int *nb_q, double **q_vec, char **mbs_file, int start_viewpoint);
+void init_jni(Realtime_visu *visu, int nb_models, int *nb_q, double **q_vec, char **mbs_file, int start_viewpoint);
 
 #ifdef APPLE_VISU
 void run_java_mac_os(JNI_struct *jni_struct, int nb_models, int *nb_q);
@@ -64,8 +64,8 @@ void* start_jni(void *args);
 void start_jni(JNI_in_out *jni_in_out);
 #endif
 
-void update_jni(JNI_struct *jni_struct, Realtime_java *java, int nb_models, int *nb_q, double **q_vec);
-void free_jni(JNI_struct *jni_struct);
+void update_jni(JNI_struct *jni_struct, Realtime_visu *visu, int nb_models, int *nb_q, double **q_vec);
+void free_jni(void *visu_class);
 void update_java(Simu_realtime *realtime);
 
 #endif

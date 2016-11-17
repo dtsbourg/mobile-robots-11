@@ -4,7 +4,7 @@
 NAMESPACE_INIT(ctrlGr11);
 
 /*! \brief wheel speed regulation
- * 
+ *
  * \param[in,out] cvs controller main structure
  * \parem[in] r_sp_ref right wheel speed reference [rad/s]
  * \parem[in] l_sp_ref left wheel speed reference [rad/s]
@@ -13,8 +13,8 @@ void speed_regulation(CtrlStruct *cvs, double r_sp_ref, double l_sp_ref)
 {
 	double r_sp, l_sp;
 	double dt;
-	double Kp = 10.0;
-	double Ki = 1.0;
+	double Kp = 10;
+	double Ki = 0;
 
 	// variables declaration
 	CtrlIn *inputs;
@@ -34,16 +34,28 @@ void speed_regulation(CtrlStruct *cvs, double r_sp_ref, double l_sp_ref)
 	dt = inputs->t - sp_reg->last_t; // time interval since last call
 
 	// ----- Wheels regulation computation start ----- //
+	printf("speed_l %f ; speed_r %f\n", l_sp, r_sp);
+	double r_err = r_sp_ref - r_sp;
+	if (r_sp > 0.15)
+		sp_reg->int_error_r += limit_range(r_err, -5.0, 5.0);
+	else
+	 	sp_reg->int_error_r = 0;
 
-	double r_err = r_sp_ref-r_sp;
-	sp_reg->int_error_r += limit_range(r_err * dt, -5.0, 5.0);
+	double l_err = l_sp_ref - l_sp;
+	if (l_sp > 0.15)
+		sp_reg->int_error_l += limit_range(l_err, -5.0, 5.0);
+	else
+		sp_reg->int_error_l = 0;
 
-	double l_err = l_sp_ref-l_sp;
-	sp_reg->int_error_l += limit_range(l_err * dt, -5.0, 5.0);
+	printf("err_l %f ; err_l_agg %f\n", l_err, sp_reg->int_error_l);
+	printf("err_r %f ; err_r_agg %f\n", r_err, sp_reg->int_error_r);
 
 	// wheel commands
-	outputs->wheel_commands[R_ID] = limit_range(Kp * r_err + Ki * sp_reg->int_error_r, -100.0, 100.0);
-	outputs->wheel_commands[L_ID] = limit_range(Kp * l_err + Ki * sp_reg->int_error_l, -100.0, 100.0);
+	outputs->wheel_commands[R_ID] = limit_range(Kp * r_err + Ki * sp_reg->int_error_r * dt, -100.0, 100.0);
+	outputs->wheel_commands[L_ID] = limit_range(Kp * l_err + Ki * sp_reg->int_error_l * dt, -100.0, 100.0);
+
+	set_plot(outputs->wheel_commands[L_ID], "Command L");
+	//set_plot(outputs->wheel_commands[R_ID], "Command R");
 
 	// ----- Wheels regulation computation end ----- //
 

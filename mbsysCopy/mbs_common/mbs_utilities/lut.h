@@ -46,12 +46,12 @@ MbsLut2D* mbs_lut_2D_alloc();
 
 /*! \brief Release memory used by 1D LUT structure
  * 
- * \param[in,out] 1D LUT structure to release memory
+ * \param[in,out] lut 1D LUT structure to release memory
  */
 void mbs_lut_1D_free(MbsLut1D *lut);
 /*! \brief Release memory used by 2D LUT structure
  * 
- * \param[in,out] 2D LUT structure to release memory
+ * \param[in,out] lut 2D LUT structure to release memory
  */
 void mbs_lut_2D_free(MbsLut2D *lut);
 

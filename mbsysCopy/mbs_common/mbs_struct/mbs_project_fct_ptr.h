@@ -53,7 +53,7 @@ typedef void (*mbs_load_user_model_xml_ptr)(MDS_gen_strct* gen, UserModel* ums);
         typedef void (*user_joystick_buttons_ptr)(MbsData* mbs_data, int buttonID);
     #endif
 
-    #ifdef JAVA
+    #ifdef VISU_3D
         typedef void    (*user_realtime_visu_ptr)(MbsData* mbs_data, int nb_models, int *nb_q, double **q_vec);
     #endif
 

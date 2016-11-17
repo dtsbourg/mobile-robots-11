@@ -5,12 +5,6 @@
 
 #include "mbs_path.h"
 
- /**
-  * Find the user folder corresponding to the given *.mbs file.
-  * 
-  * This function allocat a char* that must be freed by the user.
-  * 
-  */ 
 char* find_user_path(const char* mbsfile){
 
     char *prjpath, *userpath;
@@ -32,12 +26,6 @@ char* find_user_path(const char* mbsfile){
     return userpath;
 }
 
-/**
- * Find the project directory (containing dataR, symbolicR, ...).
- *
- * This function allocat a char* that must be freed by the user.
- * prjpath should be large enough to contain at least mbsfile
- */
 void find_project_path(const char* mbsfile, char* prjpath){
     char *ptr;
     char* c;

@@ -37,8 +37,14 @@ function(mbsysc_specific_flags)  # flag for lib_mbsysC only (not set by project)
     # use the SDL library to plot real-time graphs and to handle the user inputs (keyboard...)
     cmake_dependent_option(FLAG_PLOT "Enable realtime plots (need SDL)" ON "FLAG_REAL_TIME" OFF)
 
+    # use the Java or OpenGL libraries to display in real-time the animation
+    cmake_dependent_option(FLAG_VISU "Enable 3D visualization (need Java or OpenGL)" ON "FLAG_REAL_TIME" OFF)
+
     # use the Java library to display in real-time the animation
-    cmake_dependent_option(FLAG_VISU "Enable 3D visualization (need Java)" ON "FLAG_REAL_TIME" OFF)
+    cmake_dependent_option(FLAG_JAVA "Enable 3D visualization (need Java)" OFF "FLAG_VISU" OFF)
+
+    # use the OpenGL library to display in real-time the animation
+    cmake_dependent_option(FLAG_OPEN_GL "Enable 3D visualization (need OpenGL)" ON "FLAG_VISU" OFF)
 
 endfunction()
 
@@ -69,6 +75,19 @@ function(flags_check)
     if (NOT FLAG_REAL_TIME)
         set( FLAG_PLOT OFF )
         set( FLAG_VISU OFF )
+        set( FLAG_JAVA OFF )
+        set( FLAG_OPEN_GL OFF )
+    endif( )
+
+    # 3D visu
+    if (NOT FLAG_VISU)
+        set( FLAG_JAVA OFF )
+        set( FLAG_OPEN_GL OFF )
+    endif( )
+
+    # OpenGL only if no Java
+    if (FLAG_JAVA)
+        set( FLAG_OPEN_GL OFF )
     endif( )
 
     # separate build
@@ -90,6 +109,8 @@ function(flags_check)
     set( FLAG_REAL_TIME         ${FLAG_REAL_TIME}         PARENT_SCOPE )
     set( FLAG_PLOT              ${FLAG_PLOT}              PARENT_SCOPE )
     set( FLAG_VISU              ${FLAG_VISU}              PARENT_SCOPE )
+    set( FLAG_JAVA              ${FLAG_JAVA}              PARENT_SCOPE )
+    set( FLAG_OPEN_GL           ${FLAG_OPEN_GL}           PARENT_SCOPE )
     set( FLAG_SHARED_LIB        ${FLAG_SHARED_LIB}        PARENT_SCOPE )
     set( FLAG_SEPARATE_BUILD    ${FLAG_SEPARATE_BUILD}    PARENT_SCOPE )
     set( FLAG_SEPARATE_SYMBOLIC ${FLAG_SEPARATE_SYMBOLIC} PARENT_SCOPE )
@@ -112,6 +133,8 @@ function(flags_clean)
         unset(FLAG_REAL_TIME )
         unset(FLAG_PLOT CACHE)
         unset(FLAG_VISU CACHE)
+        unset(FLAG_JAVA CACHE)
+        unset(FLAG_OPEN_GL CACHE)
         unset(JNI_INCLUDE_JNI CACHE)
         unset(JNI_INCLUDE_JNI_MD CACHE)
         unset(SDL2_LIBRARIES_SDL2 CACHE)
@@ -168,8 +191,18 @@ function(definitions)
     endif( )
 
     if(FLAG_VISU)
+        add_definitions( -DVISU_3D )
+        set(LIB_MBSYSC_DEFINITIONS ${LIB_MBSYSC_DEFINITIONS} -DVISU_3D)
+    endif( )
+
+    if(FLAG_JAVA)
         add_definitions( -DJAVA )
         set(LIB_MBSYSC_DEFINITIONS ${LIB_MBSYSC_DEFINITIONS} -DJAVA)
+    endif( )
+
+    if(FLAG_OPEN_GL)
+        add_definitions( -DOPEN_GL )
+        set(LIB_MBSYSC_DEFINITIONS ${LIB_MBSYSC_DEFINITIONS} -DOPEN_GL)
     endif( )
 
     set(LIB_MBSYSC_DEFINITIONS ${LIB_MBSYSC_DEFINITIONS} PARENT_SCOPE)

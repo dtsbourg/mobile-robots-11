@@ -41,20 +41,44 @@ endif ( )
 
 if (WIN32)
 
-## --- WIN32 or WIN64 DETECTION --- ##
+	# avoid warnings
+	if(COMMAND cmake_policy)
+		cmake_policy(SET CMP0054 NEW)
+	endif()
+
+	# Visual studio version
+	if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+		if (${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 18.0)
+			message("Visual Studio version set to VS2012 (${CMAKE_CXX_COMPILER_VERSION})")
+			set(MSVC_VERSION lib-vc2012)
+		elseif (${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 19.0)
+			message("Visual Studio version set to VS2013 (${CMAKE_CXX_COMPILER_VERSION})")
+			set(MSVC_VERSION lib-vc2013)
+		else ( )
+			message("Visual Studio version set to VS2015 (${CMAKE_CXX_COMPILER_VERSION})")
+			set(MSVC_VERSION lib-vc2015)
+		endif ( )
+	else ( )
+		message(FATAL_ERROR "CMake error: only Visual Studio projects can currently be used on Windows !")
+	endif ( )
+
+	## --- WIN32 or WIN64 DETECTION --- ##
 	if( CMAKE_SIZEOF_VOID_P EQUAL 8 )   # 64bit Windows
 		SET(WIN_LIB_DIRECTORY win64_include_lib)
 	else( )  # 32bit Windows
 		SET(WIN_LIB_DIRECTORY win32_include_lib)
 	endif( )
 
-## ---- WINDOWS DLL FILES ---- ##
+	## ---- WINDOWS DLL FILES ---- ##
 
-# copy all the dll (except 'jvm.dll') used for Windows
-# these dll files are copied in the Executable directory (Debug or Release)
+	# copy all the dll (except 'jvm.dll') used for Windows
+	# these dll files are copied in the Executable directory (Debug or Release)
 	file(COPY ${ROBOTRAN_SOURCE_DIR}/${WIN_LIB_DIRECTORY}/dll/ DESTINATION ${CMAKE_BINARY_DIR}/Debug)
 	file(COPY ${ROBOTRAN_SOURCE_DIR}/${WIN_LIB_DIRECTORY}/dll/ DESTINATION ${CMAKE_BINARY_DIR}/Release)
 
+	# GLFW
+	file(COPY ${ROBOTRAN_SOURCE_DIR}/${WIN_LIB_DIRECTORY}/dll/GLFW/${MSVC_VERSION}/ DESTINATION ${CMAKE_BINARY_DIR}/Debug)
+	file(COPY ${ROBOTRAN_SOURCE_DIR}/${WIN_LIB_DIRECTORY}/dll/GLFW/${MSVC_VERSION}/ DESTINATION ${CMAKE_BINARY_DIR}/Release)
 endif ( )
 
 # install prefix
@@ -85,6 +109,10 @@ set (FLAG_SEPARATE_USER_FCT OFF)
 option (FLAG_REAL_TIME "Real time" ON)
 option (FLAG_PLOT "Plot and interact" ON)
 option (FLAG_VISU "Visualization" ON)
+
+# Java vs OpenGL
+option (FLAG_JAVA "Visualization" OFF)
+option (FLAG_OPEN_GL "Visualization" ON)
 
 # CMake functions
 release_debug()
@@ -117,7 +145,8 @@ add_definitions( -D SIMU_PROJECT )
 # * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
 # name of the build folder (relative to main CMakelists.txt)
-file(RELATIVE_PATH BUILD_PATH ${PROJECT_SOURCE_DIR} ${PROJECT_BINARY_DIR})
+set(BUILD_PATH ${PROJECT_BINARY_DIR})
+file(RELATIVE_PATH BUILD_PATH_REL ${PROJECT_SOURCE_DIR} ${PROJECT_BINARY_DIR})
 
 # configure a header file to pass some of the CMake settings to the source code
 configure_file (

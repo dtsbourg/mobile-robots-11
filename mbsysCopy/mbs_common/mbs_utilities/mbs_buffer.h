@@ -1,6 +1,4 @@
-
-
- /**
+ /** \file mbs_buffer.h
   *
   * Define structures and function for storing results during simulation
   * and writing them to disk.
@@ -14,8 +12,9 @@
 #define MBS_BUFFER_h
 
 #include "mbsysc_utilities_export.h"
-
-// IDs for the buffers
+/** 
+  * IDs for the buffers
+  */
 enum{BUFFER_Q, BUFFER_QD, BUFFER_QDD, BUFFER_QQ, BUFFER_UX, BUFFER_UXD, 
     BUFFER_LINK_Z, BUFFER_LINK_ZD, BUFFER_LINK_F, BUFFER_VISU, BUFFER_QC, BUFFER_OTHER};
 
@@ -106,9 +105,14 @@ typedef struct MbsGrowingBuffer{
  * Allocate and initialize a MbsBuffer structure.
  * The associated text file defined by filename is (re-)initialized
  * 
- * @param filename the name of the file associated to this buffer
- * @param nx the size of the array to be tracked by this buffer
- * @param size the size of the buffer
+ * @param[in] filename the name of the file associated to this buffer
+ * @param[in] anim_name the name of the file associated to the animation file (only used for ::BUFFER_Q)
+ * @param[in] nx the size of the array to be tracked by this buffer
+ * @param[in] size the size of the buffer
+ * @param[in] id the buffer ID, see ::BUFFER_Q, ::BUFFER_QD ...
+ * @param[in] save_anim 1 to save the anim file, 0 otherwise
+ * @param[in] save_visu 1 to save the visualization file (as it appears in 'user_realtime_visu.c'), 0 otherwise (for real-time simulation)
+ * @param[in] anim_period time interval between two recorded values in the animation file
  */ 
 MBSYSC_UTILITIES_EXPORT MbsBuffer* mbs_new_buffer(char* filename, char* anim_name, int nx, int size, int id, int save_anim, int save_visu, double anim_period);
 
@@ -116,6 +120,7 @@ MBSYSC_UTILITIES_EXPORT MbsBuffer* mbs_new_buffer(char* filename, char* anim_nam
  * 
  * \param[in] max_nx maximum number of user inputs to save
  * \param[in] size size of the buffer
+ * \param[in] respath path to the file for the results
  * \return new growing buffer initialized
  */
 MBSYSC_UTILITIES_EXPORT MbsGrowingBuffer* mbs_new_growing_buffer(int max_nx, int size, const char *respath);

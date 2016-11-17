@@ -4,7 +4,7 @@
 # Separate mbs_common build: configuration and compilation
 #
 
-if [ $# = 7 ]
+if [ $# = 9 ]
 then
     echo "\n mbs_common: dynamic libraries creation \n"
 else
@@ -25,7 +25,7 @@ mkdir $1/build/
 
 # generate CMake project
 cd $1/build/
-cmake $1/mbs_common -DFLAG_SHARED_LIB=$2 -DFLAG_SEPARATE_BUILD=$3 -DFLAG_RELEASE=$4 -DFLAG_REAL_TIME=$5 -DFLAG_PLOT=$6 -DFLAG_VISU=$7
+cmake $1/mbs_common -DFLAG_SHARED_LIB=$2 -DFLAG_SEPARATE_BUILD=$3 -DFLAG_RELEASE=$4 -DFLAG_REAL_TIME=$5 -DFLAG_PLOT=$6 -DFLAG_VISU=$7 -DFLAG_JAVA=$8 -DFLAG_OPEN_GL=$9
 
 echo "\n mbs_common dynamic libraries configured in: "
 echo "     $1build"
@@ -36,7 +36,9 @@ echo "     FLAG_SEPARATE_BUILD : $3"
 echo "     FLAG_RELEASE        : $4"
 echo "     FLAG_REAL_TIME      : $5"
 echo "     FLAG_PLOT           : $6"
-echo "     FLAG_VISU           : $7\n"
+echo "     FLAG_VISU           : $7"
+echo "     FLAG_JAVA           : $8"
+echo "     FLAG_OPEN_GL        : $9\n"
 
 # compilation
 make

@@ -15,9 +15,16 @@
 #include "plot_sdl.h"
 #endif
 
+#ifdef VISU_3D
+#include "visu_past.h"
+#endif
+
 #ifdef JAVA
 #include "java_functions.h"
-#include "visu_past.h"
+#endif
+
+#ifdef OPEN_GL
+#include "open_gl_c_int.h"
 #endif
 
 // -- Macros -- //
@@ -84,7 +91,7 @@ void mbs_realtime_update(Simu_realtime *realtime, double tsim)
     #endif
 
     // update simulation vectors save for the Java visualization
-    #ifdef JAVA
+    #ifdef VISU_3D
     if (realtime->flag_visu)
     {
         update_past_visu(realtime, tsim);
@@ -140,10 +147,10 @@ void mbs_realtime_loop(Simu_realtime *realtime, double tsim)
     }
     #endif
 
-    #ifdef JAVA
+    #ifdef VISU_3D
     if (realtime->flag_visu)
     {
-        java_time_visu_past(realtime, tsim);
+        visu_time_past(realtime, tsim);
     }
     #endif
 
@@ -168,13 +175,17 @@ void mbs_realtime_loop(Simu_realtime *realtime, double tsim)
             }
             #endif
 			
-            // Java visualization
-            #ifdef JAVA
+            // 3D visualization
+            #ifdef VISU_3D
             if (realtime->flag_visu)
             {
                 if (i == 1)
                 {
-                    update_java(realtime);
+                    #if (defined JAVA)
+                        update_java(realtime);
+                    #elif (defined OPEN_GL)
+                        update_open_gl(realtime);
+                    #endif
                 }
             }
             #endif
@@ -282,7 +293,7 @@ Realtime_option* init_Realtime_option(MbsData *mbs_data)
     options->init_break  = 0; ///< 1 to start with a break, 0 otherwise
     options->final_break = 0; ///< 1 to finish with a break, 0 otherwise
 
-    options->buffer_size = -1; ///< size of the buffer for java and sdl
+    options->buffer_size = -1; ///< size of the buffer for 3D visu and sdl
 
     options->init_speed_factor = 1.0; ///< initial speed factor
 
@@ -342,7 +353,7 @@ Realtime_option* init_Realtime_option(MbsData *mbs_data)
 
     options->start_viewpoint  = 0; ///< initial visu viewpoint ID
 
-    options->fqc_visu   = 30.0; ///< frequence of the java visualization refreshment [Hz]
+    options->fqc_visu = 30.0; ///< frequence of the 3D visualization refreshment [Hz]
 
     return options;
 }
@@ -549,10 +560,10 @@ Simu_realtime* init_simu_realtime(MbsData* mbs_data, Realtime_option *options, i
 
     realtime->ext->mbs_data = mbs_data;
 
-    #ifdef JAVA
+    #ifdef VISU_3D
     if (options->flag_visu)
     {
-        realtime->ext->java = init_realtime_java(options, mbs_data);
+        realtime->ext->visu = init_realtime_visu(options, mbs_data);
     }
     #else
     if (options->flag_visu)
@@ -710,10 +721,10 @@ void free_simu_realtime(Simu_realtime *realtime)
     }
     #endif
 
-    #ifdef JAVA
+    #ifdef VISU_3D
     if (realtime->flag_visu)
     {
-        free_realtime_java(realtime->ext->java);
+        free_realtime_visu(realtime->ext->visu);
     }
     #endif
 

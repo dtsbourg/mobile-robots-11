@@ -11,7 +11,7 @@
 
 #ifdef REAL_TIME
 
-#ifdef JAVA
+#ifdef VISU_3D
 #ifdef __cplusplus
 extern "C" {
 #endif

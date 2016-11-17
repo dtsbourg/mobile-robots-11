@@ -331,9 +331,9 @@ void mbs_equil_save(MbsEquil* eq, MbsData *mbs_data, int n)
 
 
 	/* int i;
-	#ifdef JAVA
+	#ifdef VISU_3D
 	Simu_realtime *realtime;
-	Realtime_java *java;
+	Realtime_visu *visu;
 	#endif
 
 	for (i=0 ; i < dd->bufferNb ; i++){
@@ -344,12 +344,12 @@ void mbs_equil_save(MbsEquil* eq, MbsData *mbs_data, int n)
 
 	if (dd->options->save_visu)
 	{
-	#ifdef JAVA
+	#ifdef VISU_3D
 	realtime = (Simu_realtime*) mbs_data->realtime;
-	java = realtime->ext->java;
+	visu = realtime->ext->visu;
 
-	user_realtime_visu(mbs_data, java->nb_q, java->anim_q);
-	mbs_buffer_save(dd->buffer_visu, t, java->anim_q);
+	user_realtime_visu(mbs_data, visu->nb_q, visu->anim_q);
+	mbs_buffer_save(dd->buffer_visu, t, visu->anim_q);
 	#endif
 	}*/
 }

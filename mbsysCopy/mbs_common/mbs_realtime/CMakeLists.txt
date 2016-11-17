@@ -38,13 +38,19 @@ if (FLAG_PLOT)
     include_directories ("${PROJECT_BINARY_DIR}/conf")
 endif ()
 
+# 3D visualisation
+if(FLAG_VISU)
+    include_directories("./visu_past")
+    increment_src( ${PROJECT_SOURCE_DIR}/visu_past )
+endif ()
+
 # Get java lib and add java functions to src
-if (FLAG_VISU)
+if (FLAG_JAVA)
 
     # find java and java 3d
     java_lib(mbs_realtime)
     set(JNI_LIBRARIES ${JNI_LIBRARIES} PARENT_SCOPE)
-    set (J3D_PATH ${J3D_PATH} PARENT_SCOPE)
+    set(J3D_PATH ${J3D_PATH} PARENT_SCOPE)
 
     include_directories("./java")
     increment_src( ${PROJECT_SOURCE_DIR}/java )
@@ -58,6 +64,52 @@ if (FLAG_VISU)
     configure_file (
         "./java/conf/cmake_java_config.h.in"
         "${PROJECT_BINARY_DIR}/conf/cmake_java_config.h"
+    )
+    include_directories ("${PROJECT_BINARY_DIR}/conf")
+endif ()
+
+# Get OpenGL lib
+if (FLAG_OPEN_GL)
+
+    # Threads
+    if (UNIX)
+        p_threads_lib(mbs_realtime)
+        set(CMAKE_THREAD_LIBS_INIT ${CMAKE_THREAD_LIBS_INIT} PARENT_SCOPE)
+    endif()
+
+    # find Libxml2
+    xml_lib(mbs_realtime)
+    include_directories(${LIBXML2_INCLUDE_DIR})
+
+    # find OpenGL
+    open_gl_lib(mbs_realtime)
+    set(OPEN_GL_INCLUDE_PATH ${OPEN_GL_INCLUDE_PATH} PARENT_SCOPE)
+    set(OPEN_GL_LIBS ${OPEN_GL_LIBS} PARENT_SCOPE)
+
+    include_directories("./open_gl")
+    include_directories("./open_gl/anim_read")
+    include_directories("./open_gl/components")
+    include_directories("./open_gl/interface")
+    include_directories("./open_gl/lights")
+    include_directories("./open_gl/lights/specific")
+    include_directories("./open_gl/loader")
+    include_directories("./open_gl/loader/manual/vrml")
+    include_directories("./open_gl/loader/obj")
+    include_directories("./open_gl/mbs_read")
+    include_directories("./open_gl/shaders")
+    include_directories("./open_gl/shapes")
+    include_directories("./open_gl/shapes/specific")
+    include_directories("./open_gl/viewpoint")
+    include_directories("./open_gl/viewpoint/specific")
+    include_directories("./open_gl/world")
+
+    increment_src( ${PROJECT_SOURCE_DIR}/open_gl )
+
+    set(OPEN_GL_FILES_PATH ${CMAKE_CURRENT_SOURCE_DIR}/open_gl/)
+
+    configure_file (
+        "./open_gl/conf/cmake_open_gl_config.h.in"
+        "${PROJECT_BINARY_DIR}/conf/cmake_open_gl_config.h"
     )
     include_directories ("${PROJECT_BINARY_DIR}/conf")
 endif ()
@@ -83,6 +135,11 @@ if(FLAG_PRJ_FCT_PTR)
 	target_link_libraries (${LIB_MBSYSC_REALTIME} MBsysC_struct) 
 endif()
 
+# Windows M_PI definition
+if (WIN32)
+    add_definitions( -D_USE_MATH_DEFINES)
+endif (WIN32)
+
 target_link_libraries (${LIB_MBSYSC_REALTIME} ${LIB_MBSYSC_UTILITIES}) 
 
 include (GenerateExportHeader)
@@ -96,8 +153,17 @@ if (FLAG_PLOT)
 endif ( )
 
 # Java external library: linkage
-if (FLAG_VISU)
+if (FLAG_JAVA)
     target_link_libraries (${LIB_MBSYSC_REALTIME} ${JNI_LIBRARIES})
+endif ( )
+
+# OpenGl external library: linkage
+if (FLAG_OPEN_GL)
+    target_link_libraries (${LIB_MBSYSC_REALTIME} ${OPEN_GL_LIBS})
+
+    if (UNIX)
+        target_link_libraries (${LIB_MBSYSC_REALTIME} ${CMAKE_THREAD_LIBS_INIT})
+    endif ( )
 endif ( )
 
 set(LIB_MBSYSC_REALTIME_PATH ${CMAKE_CURRENT_BINARY_DIR} PARENT_SCOPE)
@@ -108,3 +174,9 @@ include_directories("./sdl" "./sdl/auto_plot")
 include_directories("./realtime")
 include_directories("../mbs_struct")
 include_directories("../mbs_utilities")
+
+# separate executable for Windows Open GL
+if (FLAG_OPEN_GL)
+    set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+    add_subdirectory ( open_gl/process/  ${CMAKE_CURRENT_BINARY_DIR}/open_gl/process/ )
+endif ()

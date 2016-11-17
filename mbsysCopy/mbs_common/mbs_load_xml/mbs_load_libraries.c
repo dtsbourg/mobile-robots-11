@@ -112,21 +112,16 @@ FARPROC WINAPI mbs_load_function(MbsDataLibInfo* li, char* fct_name){
 
 void mbs_load_symbolic_functions(MbsData* mbs_data, const char* mbs_filename, const char* build_name){
 
-    char *lib_path, *prjpath;
+    char *lib_path;
 	MbsDataLibInfo* symbLibInfo;
 
     // allocate space for the path to the user folder
     lib_path = (char*)malloc((strlen(mbs_filename)+strlen(build_name)+50)*sizeof(char));
 
-    // allocate space for the path to the project folder
-    prjpath = (char*)malloc(sizeof(char)*(strlen(mbs_filename)+50));
-
-    find_project_path(mbs_filename, prjpath);
-
     #ifdef UNIX
-    sprintf(lib_path, "%s/workR/%s/symbolicR/libProject_symbolic.so", prjpath, build_name);
+    sprintf(lib_path, "%s/symbolicR/libProject_symbolic.so", build_name);
     #else
-	sprintf(lib_path, "%s\\workR\\%s\\Debug\\Project_symbolic.dll", prjpath, build_name);
+	sprintf(lib_path, "%s\\Debug\\Project_symbolic.dll", build_name);
     #endif
 
     symbLibInfo = mbs_load_dynamic_library(lib_path) ;
@@ -145,8 +140,6 @@ void mbs_load_symbolic_functions(MbsData* mbs_data, const char* mbs_filename, co
     mbs_data->fct.symbolicLibHandle = symbLibInfo;
 
     free(lib_path);
-    free(prjpath);
-
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -154,21 +147,16 @@ void mbs_load_symbolic_functions(MbsData* mbs_data, const char* mbs_filename, co
 
 void mbs_load_user_functions(MbsData* mbs_data, const char* mbs_filename, const char* build_name){
 
-    char *lib_path, *prjpath;
+    char *lib_path;
 	MbsDataLibInfo* userLibInfo;
 
     // allocate space for the path to the user folder
     lib_path = (char*)malloc((strlen(mbs_filename)+strlen(build_name)+50)*sizeof(char));
 
-    // allocate space for the path to the project folder
-    prjpath = (char*)malloc(sizeof(char)*(strlen(mbs_filename)+50));
-
-    find_project_path(mbs_filename, prjpath);
-
     #ifdef UNIX
-    sprintf(lib_path, "%s/workR/%s/userfctR/libProject_userfct.so", prjpath, build_name);
+    sprintf(lib_path, "%s/userfctR/libProject_userfct.so", build_name);
     #else
-	sprintf(lib_path, "%s\\workR\\%s\\Debug\\Project_userfct.dll", prjpath, build_name);
+	sprintf(lib_path, "%s\\Debug\\Project_userfct.dll", build_name);
     #endif
 
     userLibInfo = mbs_load_dynamic_library(lib_path) ;
@@ -201,15 +189,14 @@ void mbs_load_user_functions(MbsData* mbs_data, const char* mbs_filename, const 
             mbs_data->fct.user.user_joystick_buttons = (user_joystick_buttons_ptr) mbs_load_function(userLibInfo, "user_joystick_buttons");
         #endif
 
-        #ifdef JAVA
-            mbs_data->fct.user.user_realtime_visu = (user_realtime_visu_ptr)     mbs_load_function(userLibInfo, "user_realtime_visu");
+        #ifdef VISU_3D
+            mbs_data->fct.user.user_realtime_visu = (user_realtime_visu_ptr) mbs_load_function(userLibInfo, "user_realtime_visu");
         #endif
     #endif
 
     mbs_data->fct.userfctLibHandle = userLibInfo;
 
     free(lib_path);
-    free(prjpath);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

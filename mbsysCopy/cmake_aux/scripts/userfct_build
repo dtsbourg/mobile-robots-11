@@ -39,7 +39,9 @@ echo "     $BUILD_FOLDER"
 echo " with the following options:"
 echo "     FLAG_REAL_TIME      : $3"
 echo "     FLAG_PLOT           : $4"
-echo "     FLAG_VISU           : $5\n"
+echo "     FLAG_VISU           : $5"
+echo "     FLAG_JAVA           : $6"
+echo "     FLAG_OPEN_GL        : $7\n"
 
 # compilation
 make

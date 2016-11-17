@@ -51,9 +51,8 @@ MbsDirdyn* mbs_new_dirdyn_aux(MbsData* mbs_data, MbsAux* mbs_aux);
   *
   * The MbsData structure associated to dirdyn is modified 
   *
-  * @param dirdyn the MbsDirdyn to be run
-  * @return the MbsDirdyn ...
-  *
+  * @param[in,out] dirdyn the MbsDirdyn to be run
+  * @param[in,out] mbs_data the MbsData structure of the model for which the direct dynamic is computed
   */
 
 MBSYSC_MODULE_EXPORT void mbs_run_dirdyn(MbsDirdyn* dirdyn, MbsData* mbs_data);

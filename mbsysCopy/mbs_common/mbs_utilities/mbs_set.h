@@ -20,7 +20,7 @@ extern "C" {
      /**
       * Set the number of user constraints and update the related structures
       *
-      * @param[in,out] MbsData structure to modify
+      * @param[in,out] mbs_data MbsData structure to modify
       * @param[in] Nuserc number of user constraints
       *
       * This function must be called between mbs_load() and mbs_new_part() in 'main.c'
@@ -29,7 +29,7 @@ extern "C" {
 
     /*! \brief set a variable to independent partition
      * 
-     * \param[in,out] MbsData structure to modify
+     * \param[in,out] mbs_data MbsData structure to modify
      * \param[in] qu variable to set to independent
      *
      * This function must be called between mbs_load() and mbs_new_part() in 'main.c'
@@ -38,7 +38,7 @@ extern "C" {
     
     /*! \brief set a variable to dependent partition
      * 
-     * \param[in,out] MbsData structure to modify
+     * \param[in,out] mbs_data MbsData structure to modify
      * \param[in] qv variable to set to dependent
      *
      * This function must be called between mbs_load() and mbs_new_part() in 'main.c'
@@ -47,7 +47,7 @@ extern "C" {
     
     /*! \brief set a variable to driven partition
      * 
-     * \param[in,out] MbsData structure to modify
+     * \param[in,out] mbs_data MbsData structure to modify
      * \param[in] qdriven variable to set to driven
      *
      * This function must be called between mbs_load() and mbs_new_part() in 'main.c'
@@ -56,7 +56,7 @@ extern "C" {
     
     /*! \brief set a variable to locked partition
      * 
-     * \param[in,out] MbsData structure to modify
+     * \param[in,out] mbs_data MbsData structure to modify
      * \param[in] qlocked variable to set to locked
      *
      * This function must be called between mbs_load() and mbs_new_part() in 'main.c'
@@ -65,7 +65,7 @@ extern "C" {
 
     /*! \brief print the vectors qu, qv, qc, qdriven and qlocked
      *
-     * \param[in] MbsData structure to modify
+     * \param[in] mbs_data MbsData structure to modify
      */
     void print_mbs_q_all(MbsData *mbs_data);
     
@@ -104,7 +104,7 @@ int remove_mbs_q_elem(int *q_vec, int nq, int old_q);
 /*! \brief DEPRECATED; do not use: update the nq variables, SHOULD not be used
  * The function still works, however the number of joint of a specific nature should have been updated at the same time as the nature of the joint was changed. 
  *
- * \param[in,out] MbsData structure to modify
+ * \param[in,out] mbs_data MbsData structure to modify
  * \param[in] new_nqu the new number of independent joints
  * \param[in] new_nqv the new number of dependent joints
  * \param[in] new_nqc the new number of driven and locked joints

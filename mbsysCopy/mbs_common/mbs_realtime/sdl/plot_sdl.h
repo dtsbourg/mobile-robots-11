@@ -18,10 +18,6 @@
 #include "auto_plot.h"
 #include "color_sdl.h"
 
-#ifdef JAVA
-#include "java_functions.h"
-#endif
-
 #include "mbs_data.h"
 //#include "user_realtime.h"
 

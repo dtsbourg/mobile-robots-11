@@ -1,5 +1,5 @@
 
- /**
+ /** \file mbs_buffer.c
   *
   * Implements function defined in mbs_buffer.h
   * 

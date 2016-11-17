@@ -8,7 +8,7 @@
 #include "mbs_data.h"
 #include "mbs_project_interface.h"
 
-#ifdef JAVA
+#ifdef VISU_3D
     #include "visu_past.h"
 #endif
 
@@ -134,8 +134,8 @@ void events_sdl(Simu_realtime *realtime, int cur_t_usec)
             wait_key_generic(realtime, cur_t_usec, 0.2);
         }
 
-        // key M: quit the simulation
-        else if (keystates[SDL_SCANCODE_M])
+        // key M or escape key: quit the simulation
+        else if (keystates[SDL_SCANCODE_M] || keystates[SDL_SCANCODE_ESCAPE])
         {
             realtime->simu_quit  = 1; // flag to quit the simulation
             realtime->simu_break = 0;
@@ -284,11 +284,11 @@ void events_sdl(Simu_realtime *realtime, int cur_t_usec)
             wait_key_generic(realtime, cur_t_usec, 0.2);
         }
 
-        #ifdef JAVA
+        #ifdef VISU_3D
         // key V: change viewpoint for Java
         else if (realtime->flag_visu && keystates[SDL_SCANCODE_V])
         {
-            realtime->ext->java->change_viewpoint = 1;
+            realtime->ext->visu->change_viewpoint = 1;
 
             wait_key_generic(realtime, cur_t_usec, 0.2);
         }
@@ -297,10 +297,10 @@ void events_sdl(Simu_realtime *realtime, int cur_t_usec)
         // key T: go forward in simulation visualization
         else if (keystates[SDL_SCANCODE_T])
         {
-            #ifdef JAVA
+            #ifdef VISU_3D
             if (realtime->flag_visu)
             {
-                realtime->ext->java->visu_past_flag = 1;
+                realtime->ext->visu->visu_past_flag = 1;
                 update_visu_past(realtime, 1);
             }
             #endif
@@ -311,10 +311,10 @@ void events_sdl(Simu_realtime *realtime, int cur_t_usec)
         // key G: go backward in simulation visualization
         else if (keystates[SDL_SCANCODE_G])
         {
-            #ifdef JAVA
+            #ifdef VISU_3D
             if (realtime->flag_visu)
             {
-                realtime->ext->java->visu_past_flag = 1;
+                realtime->ext->visu->visu_past_flag = 1;
                 update_visu_past(realtime, 0);
             }
             #endif

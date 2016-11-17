@@ -111,3 +111,34 @@ function(java_lib arg0)
     set(JNI_LIBRARIES ${JNI_LIBRARIES} PARENT_SCOPE)
     set(J3D_PATH ${J3D_PATH} PARENT_SCOPE)
 endfunction()
+
+# OpenGL
+function(open_gl_lib arg0)
+    add_definitions( -DOPEN_GL )
+    find_package(Opengl REQUIRED)
+
+    if(OPEN_GL_FOUND)
+        include_directories (${OPEN_GL_INCLUDE_PATH})
+        message( "\n  >> ${arg0}: OpenGL found")
+    else ( )
+        message( "\n  >> ${arg0}: OpenGL not found, modify ${ROBOTRAN_SOURCE_DIR}/conf/FindOpengl.cmake")
+    endif ( )
+
+    message("      -> INC : ${OPEN_GL_INCLUDE_PATH}")
+    message("      -> LIB : ${OPEN_GL_LIBS}\n")
+
+    set(OPEN_GL_INCLUDE_PATH ${OPEN_GL_INCLUDE_PATH} PARENT_SCOPE)
+    set(OPEN_GL_LIBS ${OPEN_GL_LIBS} PARENT_SCOPE)
+
+endfunction()
+
+# OpenGL
+function(p_threads_lib arg0)
+    find_package (Threads)
+
+    message( "\n  >> ${arg0}: Threads lib")
+    message("      -> LIB : ${CMAKE_THREAD_LIBS_INIT}\n")
+
+    set(CMAKE_THREAD_LIBS_INIT ${CMAKE_THREAD_LIBS_INIT} PARENT_SCOPE)
+
+endfunction()

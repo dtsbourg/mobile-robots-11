@@ -156,7 +156,7 @@ void mbs_load_user_model_xml(MDS_gen_strct* gen, UserModel* ums){
 		}
 	#endif
 
-	#ifdef JAVA
+	#ifdef VISU_3D
         void user_realtime_visu(MbsData* s, int nb_models, int *nb_q, double **q_vec){
 			s->fct.user.user_realtime_visu(s, nb_models, nb_q, q_vec);
 		}

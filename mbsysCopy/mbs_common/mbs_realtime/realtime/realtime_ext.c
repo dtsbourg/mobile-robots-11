@@ -17,6 +17,10 @@
 #include "java_functions.h"
 #endif
 
+#ifdef OPEN_GL
+#include "open_gl_c_int.h"
+#endif
+
 #ifdef SDL
 
 /*! \brief initialize SDL real-time variables
@@ -63,14 +67,14 @@ void free_realtime_sdl(Realtime_sdl *sdl)
 }
 #endif
 
-#ifdef JAVA
+#ifdef VISU_3D
 
-/*! \brief initialize Java real-time variables
+/*! \brief initialize 3D real-time variables
  *
  * \param[in] realtime_options options for real-time
- * \return real-time structure for java visualization
+ * \return real-time structure for 3D visualization
  */
-Realtime_java* init_realtime_java(void *realtime_options, MbsData* mbs_data)
+Realtime_visu* init_realtime_visu(void *realtime_options, MbsData* mbs_data)
 {
     int i, j, k;
     int buffer_size, nb_models;
@@ -79,7 +83,7 @@ Realtime_java* init_realtime_java(void *realtime_options, MbsData* mbs_data)
     double t0;
 
     Realtime_option *options;
-	Realtime_java *java;
+	Realtime_visu *visu;
 
     // variable (pointer) to return
     options = (Realtime_option*) realtime_options;
@@ -87,148 +91,159 @@ Realtime_java* init_realtime_java(void *realtime_options, MbsData* mbs_data)
     buffer_size = options->buffer_size;
 
     // memory allocation
-    java = (Realtime_java*) malloc(sizeof(Realtime_java));
+    visu = (Realtime_visu*) malloc(sizeof(Realtime_visu));
 
     t0 = options->t0;
 
-    java->buffer_size = buffer_size;
+    visu->buffer_size = buffer_size;
 
     nb_models = options->nb_models;
 
-    java->nb_models = nb_models;
+    visu->nb_models = nb_models;
 
     // nb_q
-    java->nb_q = (int*) malloc(nb_models*sizeof(int));
+    visu->nb_q = (int*) malloc(nb_models*sizeof(int));
 
     for(i=0; i<nb_models; i++)
     {
-        java->nb_q[i] = options->nb_q[i];
+        visu->nb_q[i] = options->nb_q[i];
     }
 
-    nb_q = java->nb_q;
+    nb_q = visu->nb_q;
 
     // mbs_file
-    java->mbs_file = (char**) malloc(nb_models*sizeof(char*));
+    visu->mbs_file = (char**) malloc(nb_models*sizeof(char*));
 
     for(i=0; i<nb_models; i++)
     {
-        java->mbs_file[i] = options->mbs_file[i];
+        visu->mbs_file[i] = options->mbs_file[i];
     }
 
     // view point of the simulation
-    java->change_viewpoint = 1;
-    java->cur_viewpoint    = options->start_viewpoint-1;
+    visu->change_viewpoint = 1;
+    visu->cur_viewpoint    = options->start_viewpoint-1;
 
-    java->visu_past_flag = 0;
-    java->t_visu_past    = 0.0;
+    visu->visu_past_flag = 0;
+    visu->t_visu_past    = 0.0;
+    visu->t_last_past    = 0.0;
 
-    java->cur_tsim = t0;
+    visu->flag_t_last_past = 0;
 
-    java->min_tsim_index = 0;
-    java->max_tsim_index = buffer_size-1;
+    visu->cur_tsim = t0;
 
-    java->min_tsim = t0;
-    java->max_tsim = t0 + SAFETY_TIME;
+    visu->min_tsim_index = 0;
+    visu->max_tsim_index = buffer_size-1;
 
-    java->flag_buffer_round = 0;
+    visu->min_tsim = t0;
+    visu->max_tsim = t0 + SAFETY_TIME;
 
-    java->last_past_q_flag = 0;
+    visu->flag_buffer_round = 0;
 
-    java->cur_q = (double**) malloc(nb_models*sizeof(double*));
+    visu->last_past_q_flag = 0;
+
+    visu->cur_q = (double**) malloc(nb_models*sizeof(double*));
 
     for(i=0; i<nb_models; i++)
     {
-        java->cur_q[i] = (double*) malloc(nb_q[i]*sizeof(double));
+        visu->cur_q[i] = (double*) malloc(nb_q[i]*sizeof(double));
         for(j=0; j<nb_q[i]; j++)
         {
-            java->cur_q[i][j] = 0.0;
+            visu->cur_q[i][j] = 0.0;
         }
     }
 
-    java->past_q = (double**) malloc(nb_models*sizeof(double*));
+    visu->past_q = (double**) malloc(nb_models*sizeof(double*));
     for(i=0; i<nb_models; i++)
     {
-        java->past_q[i] = (double*) malloc(nb_q[i]*sizeof(double));
+        visu->past_q[i] = (double*) malloc(nb_q[i]*sizeof(double));
         for(j=0; j<nb_q[i]; j++)
         {
-            java->past_q[i][j] = 0.0;
+            visu->past_q[i][j] = 0.0;
         }
     }
 
-    java->anim_q = (double**) malloc(nb_models*sizeof(double*));
+    visu->anim_q = (double**) malloc(nb_models*sizeof(double*));
     for(i=0; i<nb_models; i++)
     {
-        java->anim_q[i] = (double*) malloc(nb_q[i]*sizeof(double));
+        visu->anim_q[i] = (double*) malloc(nb_q[i]*sizeof(double));
         for(j=0; j<nb_q[i]; j++)
         {
-            java->anim_q[i][j] = 0.0;
+            visu->anim_q[i][j] = 0.0;
         }
     }
 
     // full time save
-    java->tsim_save = (double*) malloc(buffer_size * sizeof(double));
+    visu->tsim_save = (double*) malloc(buffer_size * sizeof(double));
     for(i=0; i<buffer_size; i++)
     {
-        java->tsim_save[i] = t0;
+        visu->tsim_save[i] = t0;
     }
 
     // full q (positions) save
-    java->q_save = (double***) malloc(nb_models * sizeof(double**));
+    visu->q_save = (double***) malloc(nb_models * sizeof(double**));
     for(i=0; i<nb_models; i++)
     {
-        java->q_save[i] = (double**) malloc(nb_q[i] * sizeof(double*));
+        visu->q_save[i] = (double**) malloc(nb_q[i] * sizeof(double*));
         for(j=0; j<nb_q[i]; j++)
         {
-            java->q_save[i][j] = (double*) malloc(buffer_size * sizeof(double));
+            visu->q_save[i][j] = (double*) malloc(buffer_size * sizeof(double));
             for(k=0; k<buffer_size; k++)
             {
-                java->q_save[i][j][k] = 0.0;
+                visu->q_save[i][j][k] = 0.0;
             }
         }
     }
 
-    user_realtime_visu(mbs_data, nb_models, nb_q, java->cur_q);
+    user_realtime_visu(mbs_data, nb_models, nb_q, visu->cur_q);
 
-    init_jni(java, nb_models, nb_q, java->cur_q, options->mbs_file, options->start_viewpoint);
+    #if (defined JAVA)
+        init_jni(visu, nb_models, nb_q, visu->cur_q, options->mbs_file, options->start_viewpoint);
+    #elif (defined OPEN_GL)
+        init_open_gl(visu, mbs_data, nb_models, nb_q, visu->cur_q, options->mbs_file, options->start_viewpoint);
+    #endif
 
-    return java;
+    return visu;
 }
 
-/*! \brief free Java real-time structure
+/*! \brief free 3D real-time structure
  *
- * \param[out] java real-time structure for java visualization
+ * \param[out] visu real-time structure for 3D visualization
  */
-void free_realtime_java(Realtime_java *java)
+void free_realtime_visu(Realtime_visu *visu)
 {
     int i, j;
 
-    for(i=0; i<java->nb_models; i++)
+    for(i=0; i<visu->nb_models; i++)
     {
-        free(java->cur_q[i]);
-        free(java->past_q[i]);
-        free(java->anim_q[i]);
+        free(visu->cur_q[i]);
+        free(visu->past_q[i]);
+        free(visu->anim_q[i]);
     }
-    free(java->cur_q);
-    free(java->past_q);
-    free(java->anim_q);
+    free(visu->cur_q);
+    free(visu->past_q);
+    free(visu->anim_q);
 
-    for(i=0; i<java->nb_models; i++)
+    for(i=0; i<visu->nb_models; i++)
     {
-        for(j=0; j<java->nb_q[i]; j++)
+        for(j=0; j<visu->nb_q[i]; j++)
         {
-            free(java->q_save[i][j]);
+            free(visu->q_save[i][j]);
         }
-        free(java->q_save[i]);
+        free(visu->q_save[i]);
     }
-    free(java->q_save);
+    free(visu->q_save);
 
-    free(java->nb_q);
-    free(java->mbs_file);
-    free(java->tsim_save);
+    free(visu->nb_q);
+    free(visu->mbs_file);
+    free(visu->tsim_save);
 
-    free_jni(java->jni_struct);
+    #if (defined JAVA)
+        free_jni(visu->visu_class);
+    #elif (defined OPEN_GL)
+        free_open_gl(visu->visu_class);
+    #endif
 
-    free(java);
+    free(visu);
 }
 #endif
 

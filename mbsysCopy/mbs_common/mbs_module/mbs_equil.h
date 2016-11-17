@@ -10,6 +10,9 @@
 /**
   * Allocate the memory for the Equilibrium Options (but not for all the Equilibrium structure)
   * Initialize the options structure with default options
+  *
+  * @param mbs_data the MbsData structure of the model for which the equilibrium will be computed
+  * @return An allocated MbsEquil structure.
   */
 MbsEquil* mbs_new_equil(MbsData* mbs_data);
 MbsEquil* mbs_new_equil_aux(MbsData* mbs_data, MbsAux* mbs_aux);
@@ -19,6 +22,8 @@ MbsEquil* mbs_new_equil_aux(MbsData* mbs_data, MbsAux* mbs_aux);
   * 
   * The options (MbsEquilOptions) and MbsAux structures are also freed
   *
+  * @param eq the MbsEquil to be freed
+  * @param mbs_data the MbsData structure of the model for which the equilibrium is deleted
   */
 void mbs_delete_equil(MbsEquil* eq, MbsData* mbs_data);
 
@@ -30,7 +35,8 @@ void mbs_delete_equil(MbsEquil* eq, MbsData* mbs_data);
   *
   * The MbsData structure associated is modified (equilibrium configuration, q,qd,Qq  and possibly other parameters m,I,dpt, ... )
   *
-  * @param eq the MbsEquil to be run
+  * @param mbs_equil the MbsEquil to be run
+  * @param mbs_data the MbsData structure of the model for which the equilibrium is computed
   * @return the MbsEquil ...
   *
   */

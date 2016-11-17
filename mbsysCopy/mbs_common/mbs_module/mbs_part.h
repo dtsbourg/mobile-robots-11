@@ -16,11 +16,11 @@
   */
 typedef struct MbsPartOptions
 {
-    int rowperm; // no = 0, yes = 1, defaut = 0
+    int rowperm;       ///< 1 to allow line permutation; 0 otherwise, defaut = 0
     int visualise; // no = 0, yes = 1, defaut = 0
-    double treshold; // defaut = 1e-9
+    double treshold;   ///< Maximal error on constraint allowed in Newton-Raphson algorithm, defaut = 1e-9
     int drivers; // no = 0, yes = 1, defaut = 0
-    int verbose; // no = 0, yes = 1, defaut = 1
+    int verbose;       ///< 1 to get print indications related partitioning module; 0 otherwise, defaut = 1
     int clearmbsglobal; // inout = 1, out = 2, none = 3, all = 4, defaut = 1
 
 } MbsPartOptions;
@@ -35,26 +35,31 @@ typedef struct MbsPartOptions
 
 typedef struct MbsPart
 {
-    MbsPartOptions *options; 
+    MbsPartOptions *options; ///< Structure containing the options for coordinate partitioning module
 
-    int n_qu; 
-    int *ind_qu;
+    int n_qu;       ///< Number of independent variable needed
+    int *ind_qu;    ///< Array with the indices of best choice for independent variables
 
-    int n_qv; 
-    int *ind_qv; 
+    int n_qv;       ///< Number of dependent variable needed
+    int *ind_qv;    ///< Array with the indices of best choice and order for dependent variables
 
-    int n_hu; 
-    int *ind_hu; 
+    int n_hu;       ///< Number of independent constraint
+    int *ind_hu;    ///< Array with the indices of best choice for independent constraints 
 
-    int n_hv; 
-    int *ind_hv; 
+    int n_hv;       ///< Number of redundant constraint
+    int *ind_hv;    ///< Array with the indices of best choice for redundant constraints 
 
-    double *q_closed;
+    double *q_closed; ///< Array with the generalized coordinate in closed configuration (constraints solved)
 
 } MbsPart;
 
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
  /**
-  * Main function of the coordinate partitioning module.
+  * \brief Main function of the coordinate partitioning module.
   * It compute the coordinate partitioning for the given
   * MbsData structure.
   * 
@@ -63,35 +68,37 @@ typedef struct MbsPart
   *       part. must be performed
   *
   */
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 MBSYSC_MODULE_EXPORT int mbs_run_part(MbsPart*  mbs_part, MbsData* mbs_data);
 
  /** 
-  * Allocate a new MbsPart structure.
+  * \brief Allocate a new MbsPart structure for the given MbsData structure.
   * A new MbsPartOptions is also allocated and a pointer
   * to this structure is kept from the new MbsPart.
+  *
+  * \param mbs_data the structure of the mbs for which the coordinate part. will be performed.
   */
 MBSYSC_MODULE_EXPORT MbsPart* mbs_new_part(MbsData* mbs_data);
 
  /**
-  * Free the memory of the given MbsPart structure.
-  * Th memory of the associated options (mbs_part->options)
+  * \brief Free the memory of the given MbsPart structure.
+  * The memory of the associated options (mbs_part->options)
   * is also freed.
+  *
+  * \param mbs_part the structure to be freed.
   */
 MBSYSC_MODULE_EXPORT void mbs_delete_part(MbsPart* mbs_part);
 
  /**
-  * Allocate a new MbsPartOptions structure and intialize
-  * options with default values.
+  * \brief Allocate a new MbsPartOptions structure and intialize
+  options with default values.
   */
 MbsPartOptions* mbs_new_part_options(void);
 
  /**
-  * Free the memory of the given MbsPartOptions structure.
+  * \brief Free the memory of the given MbsPartOptions structure.
+  * This function will be called by mbs_delete_part() and should never be called by the user.
+  *
+  * \param part_option_strct the structure to be freed.
   */
 void mbs_delete_part_options(MbsPartOptions* part_option_strct);
 

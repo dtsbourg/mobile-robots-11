@@ -276,7 +276,12 @@ module ExternalMBS
     
   end subroutine
 
-
+  !> Add the given node reaction contribution to the reaction of the global mbs in 3D simulation
+  !! @param i_mbs the index of the mbs for which the reaction must be applied
+  !! @param i_node the index of the node on which the reaction is applied
+  !! @param reac reaction to add with the forces expressed in global frame and torque in body frame
+  !! @param storage flag to communicate the state of the computation 
+  !! @param LFTT rotation matrix to pass from global frame to body frame
   subroutine add_reac_3D(i_mbs, i_node, reac, storage, LFTT)
     implicit none
     
@@ -284,12 +289,12 @@ module ExternalMBS
     integer(kind=4), intent(in)    :: i_node
     integer(kind=4), intent(in)    :: storage
     real(kind=8)   , dimension(6)  :: reac
-    !> Reaction with Forces expressed in global frame and torque in body frame
+    ! Reaction with Forces expressed in global frame and torque in body frame
     real(kind=8)   , dimension(6)  :: reac_glob
-    !> reac vector with torques expressed in global frame.
-    !> reac is not modified because it's intent(in) in mod_mbs.f90
+    ! reac vector with torques expressed in global frame.
+    ! reac is not modified because it's intent(in) in mod_mbs.f90
     real(kind=8)   , dimension(3,3):: LFTT
-    !> Matrix to pass from global frame to body frame
+    ! Matrix to pass from global frame to body frame
     
                              !123456789012345678901
     character(len=20) :: IAM='ext_mbs::add_reac_3D'
@@ -316,16 +321,21 @@ module ExternalMBS
    
   end subroutine
   
-    subroutine add_reac_2D(i_mbs, i_node, reac, storage)
+  !> Add the given node reaction contribution to the reaction of the global mbs in 2D simulation
+  !! @param i_mbs the index of the mbs for which the reaction must be applied
+  !! @param i_node the index of the node on which the reaction is applied
+  !! @param reac reaction to add with the forces and torque expressed in global frame
+  !! @param storage flag to communicate the state of the computation 
+  subroutine add_reac_2D(i_mbs, i_node, reac, storage)
     implicit none
     
     integer(kind=4), intent(in)    :: i_mbs    
     integer(kind=4), intent(in)    :: i_node
     integer(kind=4), intent(in)    :: storage
     real(kind=8)   , dimension(3)  :: reac
-    !> Reaction with Forces along X and Y an torque around Z expressed in global frame
+    ! Reaction with Forces along X and Y an torque around Z expressed in global frame
     real(kind=8)   , dimension(6)  :: reac_glob
-    !> Same vector as reac but completed in 3D : [Fx, Fy, 0, 0, 0, Tz]
+    ! Same vector as reac but completed in 3D : [Fx, Fy, 0, 0, 0, Tz]
     
                              !123456789012345678901
     character(len=20) :: IAM='ext_mbs::add_reac_2D'

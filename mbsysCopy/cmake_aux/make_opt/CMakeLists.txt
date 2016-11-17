@@ -27,16 +27,16 @@ function(make_options)
         # -- Make mbs_common libraries -- #
 
         # mbsysc_basic (SHARED_LIB, SEPARATE_BUILD, RELEASE, REAL_TIME, PLOT, VISU)
-        add_custom_target(mbsysc_basic COMMAND ${CMAKE_COMMAND} -E chdir ${SCRIPTS_PATH} ./mbsysc_build ${ROBOTRAN_SOURCE_DIR} ON ON ON OFF OFF OFF)
+        add_custom_target(mbsysc_basic COMMAND ${CMAKE_COMMAND} -E chdir ${SCRIPTS_PATH} ./mbsysc_build ${ROBOTRAN_SOURCE_DIR} ON ON ON OFF OFF OFF OFF OFF)
 
         # mbsysc_plot (SHARED_LIB, SEPARATE_BUILD, RELEASE, REAL_TIME, PLOT, VISU)
-        add_custom_target(mbsysc_plot COMMAND ${CMAKE_COMMAND} -E chdir ${SCRIPTS_PATH} ./mbsysc_build ${ROBOTRAN_SOURCE_DIR} ON ON ON ON ON OFF)
+        add_custom_target(mbsysc_plot COMMAND ${CMAKE_COMMAND} -E chdir ${SCRIPTS_PATH} ./mbsysc_build ${ROBOTRAN_SOURCE_DIR} ON ON ON ON ON OFF OFF OFF)
 
         # mbsysc_visu (SHARED_LIB, SEPARATE_BUILD, RELEASE, REAL_TIME, PLOT, VISU)
-        add_custom_target(mbsysc_visu COMMAND ${CMAKE_COMMAND} -E chdir ${SCRIPTS_PATH} ./mbsysc_build ${ROBOTRAN_SOURCE_DIR} ON ON ON ON OFF ON)
+        add_custom_target(mbsysc_visu COMMAND ${CMAKE_COMMAND} -E chdir ${SCRIPTS_PATH} ./mbsysc_build ${ROBOTRAN_SOURCE_DIR} ON ON ON ON OFF ON OFF ON)
 
         # mbsysc_realtime (SHARED_LIB, SEPARATE_BUILD, RELEASE, REAL_TIME, PLOT, VISU)
-        add_custom_target(mbsysc_realtime COMMAND ${CMAKE_COMMAND} -E chdir ${SCRIPTS_PATH} ./mbsysc_build ${ROBOTRAN_SOURCE_DIR} ON ON ON ON ON ON)
+        add_custom_target(mbsysc_realtime COMMAND ${CMAKE_COMMAND} -E chdir ${SCRIPTS_PATH} ./mbsysc_build ${ROBOTRAN_SOURCE_DIR} ON ON ON ON ON ON OFF ON)
 
         # mbsysc_clean (SHARED_LIB, SEPARATE_BUILD, RELEASE, REAL_TIME, PLOT, VISU)
         add_custom_target(mbsysc_clean COMMAND ${CMAKE_COMMAND} -E chdir ${SCRIPTS_PATH} ./mbsysc_build ${ROBOTRAN_SOURCE_DIR} "clean")

@@ -11,64 +11,75 @@
 
 typedef struct MDS_d_data_strct
 {
-    int d_type; // other = 0; simplified = 1, forced = 2, optimized = 3, resulting = 4, related = 5,
-    double d_0; // initial value for optimization
-    double d_min; // bounds values for optimization
-    double d_max;
-    double d_opti; // result value of optimization
+    int d_type;    ///< other = 0; simplified = 1, forced = 2, optimized = 3, resulting = 4, related = 5,
+    double d_0;    ///< initial value for optimization
+    double d_min;  ///< bounds values for optimization
+    double d_max;  ///< bounds values for optimization
+    double d_opti; ///< result value of optimization
 
     // the following variables are "comptute" in "MDS_opti_structurer"
-    int is_related; // unrelated = 0, master = 1, equal salve = 2, opposite slave = 3
+    int is_related; ///< unrelated = 0, master = 1, equal salve = 2, opposite slave = 3
     struct MDS_d_data_strct *master_d_ptr;
 
     double *d_ptr;
-    // link in the creation of mbs_data
-    double *MBSdata_d_ptr;
+    
+    double *MBSdata_d_ptr; ///< link in the creation of mbs_data
 
 } MDS_d_data_strct;
 
+/**
+ * Structure defining the parent point of a body
+ */
 typedef struct MDS_ref_point_strct
 {
-    char *bodyname; 
-    char *pointname;
+    char *bodyname; ///< Name of the body that bear the reference point (origin of the joint chain until first body encounter).
+    char *pointname;///< Name of the reference point on the previous body.
 
 } MDS_ref_point_strct;
 
+/**
+ * This structure contains all information about a sensor defined on the MBS structure
+ */
 typedef struct MDS_sensor_strct
 {
-    char *name; 
+    char *name; ///< Name of the sensor
 
-    int Pos; 
-    int Rot; 
-    int Vit; 
-    int Om; 
-    int Acc; 
-    int Omp; 
-    int Jac; 
+    int Pos;    ///< 1 if the computation of the sensor position has been asked, 0 otherwise.
+    int Rot;    ///< 1 if the computation of the sensor rotation matrix has been asked, 0 otherwise.
+    int Vit;    ///< 1 if the computation of the sensor linear velocity has been asked, 0 otherwise.
+    int Om;     ///< 1 if the computation of the sensor angular velocity has been asked, 0 otherwise.
+    int Acc;    ///< 1 if the computation of the sensor linear acceleration has been asked, 0 otherwise.
+    int Omp;    ///< 1 if the computation of the sensor angular acceleration has been asked, 0 otherwise.
+    int Jac;    ///< 1 if the computation of the sensor Jacobian (\f$ \frac{dV_{sens}}{d\dot{q}} \f$) has been asked, 0 otherwise.
 
 } MDS_sensor_strct;
 
+/**
+ * This structure contains all information about an external force sensor defined on the MBS structure
+ */
 typedef struct MDS_extforce_strct
 {
     char *name; 
 
-    int Pos; 
-    int Rot; 
-    int Vit; 
-    int Om; 
-    int Acc; 
-    int Omp; 
+    int Pos;    ///< 1 if the computation of the sensor position has been asked, 0 otherwise.
+    int Rot;    ///< 1 if the computation of the sensor rotation matrix has been asked, 0 otherwise.
+    int Vit;    ///< 1 if the computation of the sensor linear velocity has been asked, 0 otherwise.
+    int Om;     ///< 1 if the computation of the sensor angular velocity has been asked, 0 otherwise.
+    int Acc;    ///< 1 if the computation of the sensor linear acceleration has been asked, 0 otherwise.
+    int Omp;    ///< 1 if the computation of the sensor angular acceleration has been asked, 0 otherwise. 
 
 } MDS_extforce_strct;
 
-
+/**
+ * This structure handle everything that a point on a MBS structure can handle (sensor, ...)
+ */
 typedef struct MDS_point_strct
 {
-    char *name;
-    double *pt; // x y z
+    char *name; ///< Name of the point
+    double *pt; ///< Array with the coordinates (x, y, z) of the point relative to the origin of the body expressed in the body frame.
 
-    MDS_sensor_strct *sensor;
-    MDS_extforce_strct *extforce;
+    MDS_sensor_strct *sensor;     ///< Pointer to a sensor structure if a sensor is defined on the point.
+    MDS_extforce_strct *extforce; ///< Pointer to an external force sensor structure if it is defined on the point.
 
     MDS_d_data_strct **d_pt; // x y z
     int is_symmmetric; // asymmetric = 0, symmetric master = 1, symmetric salve = 2
@@ -76,48 +87,57 @@ typedef struct MDS_point_strct
 
 } MDS_point_strct;
 
+/**
+ * Structure handling the informations defined on the base of the MBS
+ */
 typedef struct MDS_base_strct
 {
-    double *gravity; //x y z
-    int n_base_point;
-    MDS_point_strct **base_point_list;
+    double *gravity;    ///< Array with the component (x, y, z) of the gravity vector expressed in the inertial frame.
+    int n_base_point;   ///< Number of point of interest (extremities of joint bearing a sensor plus anchor point) defined on the MBS.
+    MDS_point_strct **base_point_list; ///< Array of pointers to the MDS_point_strct describing each point of the MBS.
 
 } MDS_base_strct;
 
+/**
+ * This structure contains all informations about a joint
+ */
 typedef struct MDS_joint_strct
 {
-    char *name;
-    int type;  // T1=1, T2=2, T3=3, R1=4, R2=5, R3=6
-    int nature; // independant=1, dependent=2, driven=3
+    char *name; ///< Name of the joint
+    int type;   ///< Joint type: T1=1, T2=2, T3=3, R1=4, R2=5, R3=6
+    int nature; ///< Nature of the joint: independent=1, dependent=2, driven=3
 
-    double q0;
-    double qd0;
-    double qdd0;
+    double q0;  ///< Initial position of the joint
+    double qd0; ///< Initial velocity of the joint
+    double qdd0;///< Initial acceleration of the joint
 
-    int actuated;
+    int actuated;///< For inverse dynamic only: 1 if actuated, 0 otherwise
 
-    MDS_d_data_strct *d_qf; // d_data for the forced q
-    int is_symmmetric; // asymmetric = 0, symmetric master = 1, symmetric salve = 2
-    char *symmetric_joint_name; // the name of the symmetric joint (filed if master, NULL if slave or non symetric)
+    MDS_d_data_strct *d_qf; ///< d_data for the forced q
+    int is_symmmetric;      ///< asymmetric = 0, symmetric master = 1, symmetric salve = 2
+    char *symmetric_joint_name; ///< the name of the symmetric joint (filed if master, NULL if slave or non symetric)
 
 
 } MDS_joint_strct;
 
+/**
+ * This structure contains all informations about a body
+ */
 typedef struct MDS_body_strct
 {
-    char *name;
+    char *name; ///< Name of the body.
 
-    MDS_ref_point_strct* parent;
+    MDS_ref_point_strct* parent; ///< Description of the parent point of the current body.
 
-    int n_joint;
-    MDS_joint_strct **joint_list; 
+    int n_joint;                 ///< Number of joints leaving the body.
+    MDS_joint_strct **joint_list;///< Array of pointers to the MDS_joint_strct describing each joint leaving the body.
 
-    double mass; 
-    double *com; //x y z
-    double *inertia; // Ixx Ixy Ixz Iyy Iyz Izz
+    double mass; ///< Mass of the body
+    double *com; ///< Array with the coordinate (x, y, z) of the center of mass of the body relative to the origin of the body expressed in the body frame.
+    double *inertia; ///< Array with the inertia tensor (Ixx, Ixy, Ixz, Iyy, Iyz, Izz) of the body relative to the center of mass expressed in the body frame.
 
-    int n_point; 
-    MDS_point_strct **point_list; 
+    int n_point; ///< Number of point defined on the body.
+    MDS_point_strct **point_list; ///< Array of pointers to the MDS_point_strct describing each point of current body.
 
 } MDS_body_strct;
 
