@@ -13,6 +13,7 @@
 #include "calibration_gr11.h"
 #include "triangulation_gr11.h"
 #include "strategy_gr11.h"
+#include <time.h>
 
 NAMESPACE_INIT(ctrlGr11);
 
@@ -84,7 +85,7 @@ void controller_loop(CtrlStruct *cvs)
 	opponents_tower(cvs);
 
 	// tower control
-	outputs->tower_command = 15.0;
+	outputs->tower_command = 50.0;
 
 	switch (cvs->main_state)
 	{
@@ -95,7 +96,6 @@ void controller_loop(CtrlStruct *cvs)
 
 		// wait before match beginning
 		case WAIT_INIT_STATE:
-			printf("WAIT_INIT_STATE");
 			speed_regulation(cvs, 0.0, 0.0);
 
 			if (t > 0.0)
@@ -107,12 +107,13 @@ void controller_loop(CtrlStruct *cvs)
 
 		// during game
 		case RUN_STATE:
+			speed_regulation(cvs, 10.0, 11.0);
+
 			main_strategy(cvs);
 			if (t > 89.0) // 1 second safety
 			{
 				cvs->main_state = STOP_END_STATE;
 			}
-			outputs->wheel_commands[R_ID] = 50.0;
 			break;
 
 		// stop at the end of the game

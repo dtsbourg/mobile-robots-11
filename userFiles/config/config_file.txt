@@ -89,7 +89,7 @@ R3_uncert : 10.0
 # -- MOTORS -- #
 #
 # The motor torque (tau_m) main equation is the following (DC motor with inductance neglected):
-#  
+#
 # tau_m = (k_phi/R) * (u_m - k_phi*omega_m)
 #
 #     k_phi: torque constant [Nm/A]

@@ -1,12 +1,12 @@
-/*! 
+/*!
  * \author Group 11
  * \file triangulation_gr11.h
  * \brief triangulation to get the robot abgrXute position
  */
 
 #ifndef _TRIANGULATION_GR11_H_
-#define _TRIANGULATION_GR11_H_ 
- 
+#define _TRIANGULATION_GR11_H_
+
 #include "namespace_ctrl.h"
 #include "CtrlStruct_gr11.h"
 

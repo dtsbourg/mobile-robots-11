@@ -42,8 +42,8 @@ void calibration(CtrlStruct *cvs)
 	team_id = cvs->team_id;
 
 	// set_plot(rob_pos->x, "X Odometry value [m]");
-	// set_plot(rob_pos->y, "Y Odometry value [m]");
-	set_plot(rob_pos->theta, "Theta Odometry value [rad]");
+	set_plot(rob_pos->x, "X Odom [m]");
+	// set_plot(rob_pos->theta, "Theta Odometry value [rad]");
 
 	// finite state machine (FSM)
 	switch (calib->flag)
@@ -167,7 +167,7 @@ void calibration(CtrlStruct *cvs)
 
 		case CALIB_FINISH: // wait before the match is starting
 			speed_regulation(cvs, 0.0, 0.0);
-			// cvs->main_state = WAIT_INIT_STATE;
+			cvs->main_state = WAIT_INIT_STATE;
 			break;
 
 		default:
