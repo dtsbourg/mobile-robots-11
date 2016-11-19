@@ -6,7 +6,7 @@
 NAMESPACE_INIT(ctrlGr11);
 
 /*! \brief compute the opponents position using the tower
- * 
+ *
  * \param[in,out] cvs controller main structure
  */
 void opponents_tower(CtrlStruct *cvs)
@@ -66,17 +66,27 @@ void opponents_tower(CtrlStruct *cvs)
 
 	// ----- opponents position computation start ----- //
 
-	opp_pos->x[0] = 0.0;
-	opp_pos->y[0] = 0.0;
+	OpponentsPosition *opp_pos_new;
+	opp_pos_new = (OpponentsPosition*) malloc(sizeof(OpponentsPosition));
 
-	opp_pos->x[1] = 0.0;
-	opp_pos->y[1] = 0.0;
+	single_opp_tower(rise_1, fall_1, rob_pos->x, rob_pos->y, rob_pos->theta, &opp_pos_new->x[0], &opp_pos_new->y[0]);
+	//single_opp_tower(rise_2, fall_2, rob_pos->x, rob_pos->y, rob_pos->theta, &opp_pos_new->x[1], &opp_pos_new->y[1]);
+
+	// Compute opponent positions
+	opp_pos->x[0] = first_order_filter(opp_pos->x[0], opp_pos_new->x[0], 1, delta_t);
+	opp_pos->y[0] = first_order_filter(opp_pos->y[0], opp_pos_new->y[0], 1, delta_t) ;
+
+	//opp_pos->x[1] = first_order_filter(opp_pos->x[1], opp_pos_new->x[1], 0.1, delta_t);
+	//opp_pos->y[1] = first_order_filter(opp_pos->y[1], opp_pos_new->y[1], 0.1, delta_t);
+
+	set_plot(opp_pos->x[0], "Predicted X [m]");
+	set_plot(opp_pos->y[0], "Predicted Y [m]");
 
 	// ----- opponents position computation end ----- //
 }
 
 /*! \brief compute a single opponent position
- * 
+ *
  * \param[in] last_rise last rise relative angle [rad]
  * \param[in] last_fall last fall relative angle [rad]
  * \param[in] rob_x robot x position [m]
@@ -88,14 +98,30 @@ void opponents_tower(CtrlStruct *cvs)
  */
 int single_opp_tower(double last_rise, double last_fall, double rob_x, double rob_y, double rob_theta, double *new_x_opp, double *new_y_opp)
 {
-	*new_x_opp = 0.0;
-	*new_y_opp = 0.0;
+	double beacon_radius = 0.020; // [m]
+	double beacon_offset = 0.083; // [m]
+
+	// Compute the beacon's arc from rising and falling edges
+	double arc = (last_fall - last_rise) * 0.5;
+
+	// Compute the beacon's angle relative to the robot from rising and falling edges
+	double beacon_angle = rob_theta + 0.5 * (last_fall + last_rise);
+
+	// Compute relative distance between robot and beacons
+	// TODO : Fix tan range
+	double dist = beacon_radius / tan(arc);
+
+	double x = dist * cos(beacon_angle) + cos(rob_theta) * beacon_offset;
+	double y = dist * sin(beacon_angle) + sin(rob_theta) * beacon_offset;
+
+	*new_x_opp = x + rob_x;
+	*new_y_opp = y + rob_y;
 
 	return 1;
 }
 
 /*! \brief check if there is an opponent in front of the robot
- * 
+ *
  * \param[in] cvs controller main structure
  * \return 1 if opponent robot in front of the current robot
  */

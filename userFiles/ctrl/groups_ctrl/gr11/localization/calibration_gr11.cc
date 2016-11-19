@@ -43,6 +43,7 @@ void calibration(CtrlStruct *cvs)
 
 	// set_plot(rob_pos->x, "X Odometry value [m]");
 	set_plot(rob_pos->x, "X Odom [m]");
+	// set_plot(rob_pos->y, "Y Odometry value [m]");
 	// set_plot(rob_pos->theta, "Theta Odometry value [rad]");
 
 	// finite state machine (FSM)
