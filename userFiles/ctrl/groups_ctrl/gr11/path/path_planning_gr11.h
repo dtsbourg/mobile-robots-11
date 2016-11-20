@@ -34,6 +34,12 @@ struct CheckedCell
 	bool stuck; 	   // is the cell stuck or not
 	CheckedCell* next; // pointer to the next element of the list
 };
+/// store the path
+struct Path
+{
+	Cell* cells;
+	int size;
+};
 
 // Evaluate distance between 2 cells on the map
 float evaluate_distance(Cell cell1, Cell cell2);
@@ -50,6 +56,8 @@ bool cell_is_viable(CheckedCell* list, Cell cell);
 bool is_in_list(CheckedCell* list, Cell cell);
 // get best cell
 CheckedCell* get_best_cell(CheckedCell* first);
+// create a new dynamic array holding the current path
+void new_path(Path* current_path, Cell cell, int step);
 // test function to display the list
 void display_list(CheckedCell* current);
 

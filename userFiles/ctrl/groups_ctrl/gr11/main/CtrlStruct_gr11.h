@@ -33,6 +33,7 @@ typedef struct OpponentsPosition OpponentsPosition;
 typedef struct PathPlanning PathPlanning;
 typedef struct Cell Cell;
 typedef struct CheckedCell CheckedCell;
+typedef struct Path Path;
 typedef struct Strategy Strategy;
 
 /// Main controller structure

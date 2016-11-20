@@ -116,8 +116,12 @@ void controller_loop(CtrlStruct *cvs)
 		list->stuck = 0;
 		list->next = NULL;
 		CheckedCell* selected_cell = list; // currently selected cell for the algorithm
-		Cell* path = NULL; // store the current optimal path
-
+		Path* path = (Path*)malloc(sizeof(*path)); // store the current optimal path
+		path->cells = NULL;
+		path->size = 0;
+		//test
+		
+		
 		bool path_found = 0;
 		while (!path_found)
 		{
@@ -159,8 +163,15 @@ void controller_loop(CtrlStruct *cvs)
 			{
 				display_list(list);
 				printf("Next Cell to check arround: (%d,%d)\n", selected_cell->cell.x, selected_cell->cell.y);
+				new_path(path, selected_cell->cell, selected_cell->step);
+
 			}
 		}
+		for (int i=0;i<path->size;i++)
+		{
+			printf("Path step #%d: (%d,%d)\n",i,path->cells[i].x,path->cells[i].y);
+		}
+		// normally just return Path* the pointer to the structure.
 	}
 	
 	return;

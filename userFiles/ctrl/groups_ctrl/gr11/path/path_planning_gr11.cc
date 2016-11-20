@@ -74,7 +74,7 @@ void add_element(CheckedCell** list, CheckedCell* element)
 
 	while (current != NULL)
 	{
-		if (element->f < current->f)
+		if (element->f <= current->f)
 		{
 			if (current == (*list))
 			{
@@ -206,6 +206,29 @@ CheckedCell* get_best_cell(CheckedCell* first)
 	return NULL;
 }
 
+void new_path(Path* current_path, Cell cell, int step)
+{
+	if(current_path == NULL)
+	{
+		exit(EXIT_FAILURE);
+	}
+	if (current_path->size >= step)
+	{
+		current_path->cells[step-1] = cell;
+	}
+	else
+	{
+		Cell* temp = (Cell*)malloc(step * sizeof(*temp));
+		for (int i=0;i<current_path->size;i++)
+		{
+			temp[i] = current_path->cells[i];
+		}
+		temp[step-1] = cell;
+		free(current_path->cells);
+		current_path->cells = temp;
+		current_path->size = step;
+	}
+}
 // test function display list:
 void display_list(CheckedCell* current)
 {
