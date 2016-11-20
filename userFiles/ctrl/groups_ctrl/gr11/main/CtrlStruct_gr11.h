@@ -1,4 +1,4 @@
-/*! 
+/*!
  * \author Group 11
  * \file CtrlStruct_gr11.h
  * \brief Controller main structure
@@ -6,6 +6,9 @@
 
 #ifndef _CTRL_STRUCT_GR11_H_
 #define _CTRL_STRUCT_GR11_H_
+
+#define OBSTACLE_NODE 1
+#define FREE_NODE 0
 
 #include "ctrl_io.h"
 #include "namespace_ctrl.h"
@@ -31,10 +34,8 @@ typedef struct SpeedRegulation SpeedRegulation;
 typedef struct RobotCalibration RobotCalibration;
 typedef struct OpponentsPosition OpponentsPosition;
 typedef struct PathPlanning PathPlanning;
-typedef struct Cell Cell;
-typedef struct CheckedCell CheckedCell;
-typedef struct Path Path;
 typedef struct Strategy Strategy;
+
 
 /// Main controller structure
 typedef struct CtrlStruct
@@ -50,10 +51,11 @@ typedef struct CtrlStruct
 	PathPlanning *path;         ///< path-planning
 	Strategy *strat;            ///< strategy
 
-	int main_state; ///< main state
-	int robot_id;   ///< ID of the robot
-	int team_id;    ///< ID of the team
-	int nb_opp;     ///< number of opponents
+	int main_state; 	///< main state
+	int robot_id;  		///< ID of the robot
+	int team_id;    	///< ID of the team
+	int nb_opp;     	///< number of opponents
+	bool map[17][27];	///< map
 
 } CtrlStruct;
 
