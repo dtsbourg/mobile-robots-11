@@ -18,6 +18,9 @@ struct PathPlanning
 	int dummy_variable; ///< put your own variable, this is just an example without purpose
 };
 
+// Evaluate distance between 2 cells on the map
+int evaluate_distance(int x1, int y1, int x2, int y2)
+
 PathPlanning* init_path_planning();
 void free_path_planning(PathPlanning *path);
 
