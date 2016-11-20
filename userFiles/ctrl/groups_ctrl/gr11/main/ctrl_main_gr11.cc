@@ -86,7 +86,16 @@ void controller_loop(CtrlStruct *cvs)
 
 	// tower control
 	outputs->tower_command = 50.0;
-
+	
+	// Path planning testing
+	static bool flag = 0;
+	if (!flag)
+	{
+		printf("Path planning testing ici\n");
+		flag = 1;
+	}
+	
+	return;
 	switch (cvs->main_state)
 	{
 		// calibration

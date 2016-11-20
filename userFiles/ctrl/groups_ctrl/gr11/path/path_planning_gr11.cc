@@ -4,6 +4,8 @@
 #include "useful_gr11.h"
 #include <math.h>
 
+#define CELL_SIZE 36
+
 NAMESPACE_INIT(ctrlGr11);
 
 

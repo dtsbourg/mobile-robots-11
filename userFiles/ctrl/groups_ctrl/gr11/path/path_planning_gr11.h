@@ -18,8 +18,24 @@ struct PathPlanning
 	int dummy_variable; ///< put your own variable, this is just an example without purpose
 };
 
+/// cell struct to store a cell
+struct Cell
+{
+	int x;	// x coordinate
+	int y;	// y coordinate
+};
+
+/// checked cell struct stored when a cell is check
+struct CheckedCell
+{
+	Cell cell;  // cell coordinates
+	int f; 		// store the score computed (f(n) = g(n) + h(n))
+	int step;   // store at which step of the path is the cell
+	bool stuck; // is the cell stuck or not
+};
+
 // Evaluate distance between 2 cells on the map
-int evaluate_distance(int x1, int y1, int x2, int y2)
+int evaluate_distance(int x1, int y1, int x2, int y2);
 
 PathPlanning* init_path_planning();
 void free_path_planning(PathPlanning *path);

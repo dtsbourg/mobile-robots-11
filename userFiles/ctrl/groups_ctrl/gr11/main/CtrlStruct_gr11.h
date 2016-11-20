@@ -31,6 +31,8 @@ typedef struct SpeedRegulation SpeedRegulation;
 typedef struct RobotCalibration RobotCalibration;
 typedef struct OpponentsPosition OpponentsPosition;
 typedef struct PathPlanning PathPlanning;
+typedef struct Cell Cell;
+typedef struct CheckedCell CheckedCell;
 typedef struct Strategy Strategy;
 
 /// Main controller structure
