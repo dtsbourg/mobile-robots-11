@@ -28,14 +28,30 @@ struct Cell
 /// checked cell struct stored when a cell is check
 struct CheckedCell
 {
-	Cell cell;  // cell coordinates
-	int f; 		// store the score computed (f(n) = g(n) + h(n))
-	int step;   // store at which step of the path is the cell
-	bool stuck; // is the cell stuck or not
+	Cell cell;  	   // cell coordinates
+	float f; 			   // store the score computed (f(n) = g(n) + h(n))
+	int step;   	   // store at which step of the path is the cell
+	bool stuck; 	   // is the cell stuck or not
+	CheckedCell* next; // pointer to the next element of the list
 };
 
 // Evaluate distance between 2 cells on the map
-int evaluate_distance(int x1, int y1, int x2, int y2);
+float evaluate_distance(Cell cell1, Cell cell2);
+// Return the 8 cells arround cell
+Cell * get_cells_arround(Cell cell);
+// add a cell to the list
+void add_cell_to_list(CheckedCell** list, Cell cell, Cell initial_pos, Cell final_pos, int step);
+// initialize the list of checked cells
+void add_element(CheckedCell** list, CheckedCell* element);
+
+// check if a cell is viable to go in the list
+bool cell_is_viable(CheckedCell* list, Cell cell);
+// test if a cell is in the list
+bool is_in_list(CheckedCell* list, Cell cell);
+// get best cell
+CheckedCell* get_best_cell(CheckedCell* first);
+// test function to display the list
+void display_list(CheckedCell* current);
 
 PathPlanning* init_path_planning();
 void free_path_planning(PathPlanning *path);
