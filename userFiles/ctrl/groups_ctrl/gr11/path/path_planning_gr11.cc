@@ -134,16 +134,18 @@ void add_cell_to_list(CheckedCell** list, Cell cell, Cell initial_pos, Cell fina
  */
 
 // TODO utiliser pointer2D sur la map pour check à la place de fake MAP
-bool cell_is_viable(CheckedCell* list, Cell cell)
+bool cell_is_viable(CheckedCell* list, Cell cell, bool map[17][27])
 {
 	// check if the cell is on the map
-	if ((cell.x < 4 && cell.x >= 0) && (cell.y < 4 && cell.y >= 0)) // TO CHANGE 4 AND 0
+	if ((cell.x < 17 && cell.x >= 0) && (cell.y < 27 && cell.y >= 0)) // TO CHANGE 4 AND 0
 	{			
 		// fake map
+		/*
 		bool map[4][4] = {0};
 		map[1][0] = 1;
 		map[1][1] = 1;
 		map[2][1] = 1;
+		*/
 
 		// check if it's not an obstacle
 		if (map[cell.x][cell.y] != 1)
@@ -286,7 +288,7 @@ void free_path(Path* path)
  	TODO ajouter comme input pointer sur la map 
  	FAIRE PASSER LE POINTER 2D a la fonction cell_is_viable
  */
-Path* path_planning(Cell start, Cell goal)
+Path* path_planning(Cell start, Cell goal, bool map[17][27])
 {
 	// état initial:
 	CheckedCell* list = (CheckedCell*)malloc(sizeof(*list)); // / pointer to the first element of the list
@@ -319,7 +321,7 @@ Path* path_planning(Cell start, Cell goal)
 				path_found = true;
 				printf("path found!\n");
 			}
-			if (cell_is_viable(list, cell_arround[i]))
+			if (cell_is_viable(list, cell_arround[i], map))
 			{
 				add_cell_to_list(&list, cell_arround[i], start, goal, selected_cell->step + 1);
 				//display_list(list);

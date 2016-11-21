@@ -42,7 +42,7 @@ struct Path
 };
 
 // main algo function
-Path* path_planning(Cell start, Cell goal);
+Path* path_planning(Cell start, Cell goal, bool map[17][27]);
 // Evaluate distance between 2 cells on the map
 float evaluate_distance(Cell cell1, Cell cell2);
 // Return the 8 cells arround cell
@@ -53,7 +53,7 @@ void add_cell_to_list(CheckedCell** list, Cell cell, Cell initial_pos, Cell fina
 void add_element(CheckedCell** list, CheckedCell* element);
 
 // check if a cell is viable to go in the list
-bool cell_is_viable(CheckedCell* list, Cell cell);
+bool cell_is_viable(CheckedCell* list, Cell cell, bool map[17][27]);
 // test if a cell is in the list
 bool is_in_list(CheckedCell* list, Cell cell);
 // get best cell

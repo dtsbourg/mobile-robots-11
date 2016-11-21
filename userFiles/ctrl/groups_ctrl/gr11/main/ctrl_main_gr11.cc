@@ -102,10 +102,10 @@ void controller_loop(CtrlStruct *cvs)
 		Cell final_pos;
 		final_pos.x = 0;
 		final_pos.y = 0;
-		
+
 		// toujours utiliser free_path avant d'appeler pour un nouveau path !!
 		free_path(cvs->path);
-		cvs->path = path_planning(initial_pos, final_pos);
+		cvs->path = path_planning(initial_pos, final_pos, cvs->map);
     	display_path(cvs->path);
 	}
 	
