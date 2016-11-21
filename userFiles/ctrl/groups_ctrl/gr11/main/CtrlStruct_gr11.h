@@ -33,7 +33,7 @@ typedef struct RobotPosition RobotPosition;
 typedef struct SpeedRegulation SpeedRegulation;
 typedef struct RobotCalibration RobotCalibration;
 typedef struct OpponentsPosition OpponentsPosition;
-typedef struct PathPlanning PathPlanning;
+typedef struct Path Path;
 typedef struct Strategy Strategy;
 
 
@@ -48,7 +48,7 @@ typedef struct CtrlStruct
 	OpponentsPosition *opp_pos; ///< opponents position
 	SpeedRegulation *sp_reg;    ///< speed regulation
 	RobotCalibration *calib;    ///< calibration
-	PathPlanning *path;         ///< path-planning
+	Path *path;                 ///< path-planning
 	Strategy *strat;            ///< strategy
 
 	int main_state; 	///< main state
@@ -56,7 +56,6 @@ typedef struct CtrlStruct
 	int team_id;    	///< ID of the team
 	int nb_opp;     	///< number of opponents
 	bool map[17][27];	///< map
-
 } CtrlStruct;
 
 // function prototypes

@@ -82,7 +82,7 @@ CtrlStruct* init_CtrlStruct(CtrlIn *inputs, CtrlOut *outputs)
 	cvs->strat = init_strategy();
 
 	// path-planning
-	cvs->path = init_path_planning();
+	//cvs->path = NULL;
 
 	// map initialization
 	for(i=0;i<17;i++)
@@ -144,14 +144,14 @@ CtrlStruct* init_CtrlStruct(CtrlIn *inputs, CtrlOut *outputs)
  */
 void free_CtrlStruct(CtrlStruct *cvs)
 {
-	free_path_planning(cvs->path);
+	free_path(cvs->path);
 	free_strategy(cvs->strat);
 	free(cvs->calib);
 	free(cvs->sp_reg);
 	free(cvs->opp_pos);
 	free(cvs->rob_pos);
 	free(cvs->triang_pos);
-	free(cvs->map);
+	//free(cvs->map);
 
 	free(cvs);
 }

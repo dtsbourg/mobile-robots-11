@@ -37,12 +37,12 @@ struct CheckedCell
 /// store the path
 struct Path
 {
-	Cell* cells;
-	int size;
+	Cell cell;
+	Path* next;
 };
 
 // main algo function
-Path* path_planning();
+Path* path_planning(Cell start, Cell goal);
 // Evaluate distance between 2 cells on the map
 float evaluate_distance(Cell cell1, Cell cell2);
 // Return the 8 cells arround cell
@@ -59,12 +59,14 @@ bool is_in_list(CheckedCell* list, Cell cell);
 // get best cell
 CheckedCell* get_best_cell(CheckedCell* first);
 // create a new dynamic array holding the current path
-void new_path(Path* current_path, Cell cell, int step);
+void add_to_path(Path** path, Cell cell, int step);
+
 // test function to display the list
 void display_list(CheckedCell* current);
+void display_path(Path* path);
 
-PathPlanning* init_path_planning();
-void free_path_planning(PathPlanning *path);
+void free_CheckedCell(CheckedCell* list);
+void free_path(Path* path);
 
 NAMESPACE_CLOSE();
 

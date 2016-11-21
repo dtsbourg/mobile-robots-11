@@ -93,12 +93,20 @@ void controller_loop(CtrlStruct *cvs)
 	if (!flag)
 	{
 		flag = 1;
+		// initial position
+		Cell initial_pos;
+		initial_pos.x = 3;
+		initial_pos.y = 1;
 
-		Path* path = path_planning();
-		for (int i=0;i<path->size;i++) 
-    	{ 
-      		printf("Path step #%d: (%d,%d)\n",i,path->cells[i].x,path->cells[i].y); 
-    	} 
+		// goal position
+		Cell final_pos;
+		final_pos.x = 0;
+		final_pos.y = 0;
+		
+		// toujours utiliser free_path avant d'appeler pour un nouveau path !!
+		free_path(cvs->path);
+		cvs->path = path_planning(initial_pos, final_pos);
+    	display_path(cvs->path);
 	}
 	
 	return;

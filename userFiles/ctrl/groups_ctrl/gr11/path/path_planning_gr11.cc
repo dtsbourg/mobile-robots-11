@@ -132,6 +132,8 @@ void add_cell_to_list(CheckedCell** list, Cell cell, Cell initial_pos, Cell fina
  * \[in] Cell cell with the cell to check in the list
  * \return bool true if the cell is viable to go in the list
  */
+
+// TODO utiliser pointer2D sur la map pour check à la place de fake MAP
 bool cell_is_viable(CheckedCell* list, Cell cell)
 {
 	// check if the cell is on the map
@@ -206,27 +208,29 @@ CheckedCell* get_best_cell(CheckedCell* first)
 	return NULL;
 }
 
-void new_path(Path* current_path, Cell cell, int step)
+void add_to_path(Path** path, Cell cell, int step)
 {
-	if(current_path == NULL)
+	if (path == NULL)
 	{
 		exit(EXIT_FAILURE);
 	}
-	if (current_path->size >= step)
+	int i = 0;
+	Path* current = *path;
+	while (i < (step-1))
 	{
-		current_path->cells[step-1] = cell;
+		current = current->next;
+		i++;
+	}
+	if (current->next == NULL)
+	{
+		Path* new_path = (Path*)malloc(sizeof(*new_path));
+		new_path->cell = cell;
+		new_path->next = NULL;
+		current->next = new_path;
 	}
 	else
 	{
-		Cell* temp = (Cell*)malloc(step * sizeof(*temp));
-		for (int i=0;i<current_path->size;i++)
-		{
-			temp[i] = current_path->cells[i];
-		}
-		temp[step-1] = cell;
-		free(current_path->cells);
-		current_path->cells = temp;
-		current_path->size = step;
+		current->cell = cell;
 	}
 }
 // test function display list:
@@ -244,53 +248,58 @@ void display_list(CheckedCell* current)
 	}
 	printf("NULL \n");
 }
-
-/*! \brief initialize the path-planning algorithm (memory allocated)
- * 
- * \param[in,out] path path-planning main structure
- */
-PathPlanning* init_path_planning()
+void display_path(Path* path)
 {
-	PathPlanning *path;
+	if (path == NULL)
+	{
+		exit(EXIT_FAILURE);
+	}
 
-	// memory allocation
-	path = (PathPlanning*) malloc(sizeof(PathPlanning));
-
-	// ----- path-planning initialization start ----- //
-
-
-	// ----- path-planning initialization end ----- //
-
-	// return structure initialized
-	return path;
+	while (path != NULL)
+	{
+		printf("(%d,%d) -> ", path->cell.x, path->cell.y);
+		path = path->next;
+	}
+	printf("NULL \n");
 }
 
-Path* path_planning()
+void free_CheckedCell(CheckedCell* list)
 {
-	// temp variables
-	// initial position
-	Cell initial_pos;
-	initial_pos.x = 3;
-	initial_pos.y = 1;
+	while(list != NULL)
+	{
+		CheckedCell* toDelete = list;
+		list = list->next;
+		free(toDelete);
+	}
+}
+void free_path(Path* path)
+{
+	while(path != NULL)
+	{
+		Path* toDelete = path;
+		path = path->next;
+		free(toDelete);
+	}
+}
 
-	// goal position
-	Cell final_pos;
-	final_pos.x = 0;
-	final_pos.y = 0;
-	
-
+/* function need: 
+ 	TODO ajouter comme input pointer sur la map 
+ 	FAIRE PASSER LE POINTER 2D a la fonction cell_is_viable
+ */
+Path* path_planning(Cell start, Cell goal)
+{
 	// état initial:
 	CheckedCell* list = (CheckedCell*)malloc(sizeof(*list)); // / pointer to the first element of the list
-	list->cell.x = initial_pos.x;
-	list->cell.y = initial_pos.y;
-	list->f = evaluate_distance(list->cell,final_pos);
+	list->cell = start;
+	list->f = evaluate_distance(start, goal);
 	list->step = 0;
 	list->stuck = 0;
 	list->next = NULL;
 	CheckedCell* selected_cell = list; // currently selected cell for the algorithm
+	
 	Path* path = (Path*)malloc(sizeof(*path)); // store the current optimal path
-	path->cells = NULL;
-	path->size = 0;
+	path->cell = start;
+	path->next = NULL;
 	//test
 	
 	
@@ -303,17 +312,16 @@ Path* path_planning()
 		{
 			int viable_cell = 0;
 
-			if (cell_arround[i].x == final_pos.x &&
-				cell_arround[i].y == final_pos.y)
+			if (cell_arround[i].x == goal.x &&
+				cell_arround[i].y == goal.y)
 			{
 				// si c'est la goal ajoute la cell au path et finish
 				path_found = true;
 				printf("path found!\n");
-				break;
 			}
 			if (cell_is_viable(list, cell_arround[i]))
 			{
-				add_cell_to_list(&list, cell_arround[i], initial_pos, final_pos, selected_cell->step + 1);
+				add_cell_to_list(&list, cell_arround[i], start, goal, selected_cell->step + 1);
 				//display_list(list);
 				viable_cell++;
 			}
@@ -322,8 +330,6 @@ Path* path_planning()
 				selected_cell->stuck = true;
 			}
 		}
-		if (path_found)
-			break;
 		// choose a new cell
 		selected_cell = get_best_cell(list);
 		if( selected_cell == NULL)
@@ -335,24 +341,16 @@ Path* path_planning()
 		{
 			display_list(list);
 			printf("Next Cell to check arround: (%d,%d)\n", selected_cell->cell.x, selected_cell->cell.y);
-			new_path(path, selected_cell->cell, selected_cell->step);
-
+			add_to_path(&path, selected_cell->cell, selected_cell->step);
 		}
 	}
+	free_CheckedCell(list);
 	return path;
 }
+
 /*! \brief close the path-planning algorithm (memory released)
  * 
  * \param[in,out] path path-planning main structure
  */
-void free_path_planning(PathPlanning *path)
-{
-	// ----- path-planning memory release start ----- //
-
-
-	// ----- path-planning memory release end ----- //
-
-	free(path);
-}
 
 NAMESPACE_CLOSE();
