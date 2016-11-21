@@ -94,84 +94,11 @@ void controller_loop(CtrlStruct *cvs)
 	{
 		flag = 1;
 
-		// initial position
-		Cell initial_pos;
-		initial_pos.x = 3;
-		initial_pos.y = 1;
-
-		// goal position
-		Cell final_pos;
-		final_pos.x = 0;
-		final_pos.y = 0;
-
-		// begin path planning
-		// init chain list:
-
-		// état initial:
-		CheckedCell* list = (CheckedCell*)malloc(sizeof(*list)); // / pointer to the first element of the list
-		list->cell.x = initial_pos.x;
-		list->cell.y = initial_pos.y;
-		list->f = evaluate_distance(list->cell,final_pos);
-		list->step = 0;
-		list->stuck = 0;
-		list->next = NULL;
-		CheckedCell* selected_cell = list; // currently selected cell for the algorithm
-		Path* path = (Path*)malloc(sizeof(*path)); // store the current optimal path
-		path->cells = NULL;
-		path->size = 0;
-		//test
-		
-		
-		bool path_found = 0;
-		while (!path_found)
-		{
-			// recupere les 8 cells autour de la position intial:
-			Cell* cell_arround = get_cells_arround(selected_cell->cell);
-			for (int i=0; i < 8; i++)
-			{
-				int viable_cell = 0;
-
-				if (cell_arround[i].x == final_pos.x &&
-					cell_arround[i].y == final_pos.y)
-				{
-					// si c'est la goal ajoute la cell au path et finish
-					path_found = true;
-					printf("path found!\n");
-					break;
-				}
-				if (cell_is_viable(list, cell_arround[i]))
-				{
-					add_cell_to_list(&list, cell_arround[i], initial_pos, final_pos, selected_cell->step + 1);
-					//display_list(list);
-					viable_cell++;
-				}
-				if (viable_cell == 0)
-				{
-					selected_cell->stuck = true;
-				}
-			}
-			if (path_found)
-				break;
-			// choose a new cell
-			selected_cell = get_best_cell(list);
-			if( selected_cell == NULL)
-			{
-				path_found = true;
-				printf("unable to find a path..");
-			}
-			else
-			{
-				display_list(list);
-				printf("Next Cell to check arround: (%d,%d)\n", selected_cell->cell.x, selected_cell->cell.y);
-				new_path(path, selected_cell->cell, selected_cell->step);
-
-			}
-		}
-		for (int i=0;i<path->size;i++)
-		{
-			printf("Path step #%d: (%d,%d)\n",i,path->cells[i].x,path->cells[i].y);
-		}
-		// normally just return Path* the pointer to the structure.
+		Path* path = path_planning();
+		for (int i=0;i<path->size;i++) 
+    	{ 
+      		printf("Path step #%d: (%d,%d)\n",i,path->cells[i].x,path->cells[i].y); 
+    	} 
 	}
 	
 	return;

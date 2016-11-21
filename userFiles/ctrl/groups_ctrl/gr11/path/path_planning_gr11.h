@@ -41,6 +41,8 @@ struct Path
 	int size;
 };
 
+// main algo function
+Path* path_planning();
 // Evaluate distance between 2 cells on the map
 float evaluate_distance(Cell cell1, Cell cell2);
 // Return the 8 cells arround cell
