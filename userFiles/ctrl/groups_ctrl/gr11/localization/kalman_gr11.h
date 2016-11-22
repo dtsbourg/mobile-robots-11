@@ -35,14 +35,14 @@ typedef struct
 	/// Covariances
 	double P[N*N]; //< Covariance of prediction error
 	double P_[N*N]; //< Predicted ovariance of prediction error
-    double Q[M*M]; //< Covariance of process noise
-	double E[M*M]; //< Covariance of expectation
-    double R[M*M]; //< Covariance of measurement noise
+    double Q[N*N]; //< Covariance of process noise
+	double E[N*N]; //< Covariance of expectation
+    double R[N*N]; //< Covariance of measurement noise
 	double Z[N*N]; //< Covariance of innovation
 
 
 	/// Jacobians
-	double H[M*N];		//< Jacobian of measurement model
+	double H[N*N];		//< Jacobian of measurement model
 	double F_x[N*N];	//< Jacobian of state model
 	double F_u[N*M];	//< Jacobian of input model
 	double F_n[N*M];	//< Jacobian of noise model
