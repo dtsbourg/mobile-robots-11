@@ -382,8 +382,7 @@ Node* new_selected_node(Node* old_node)
 		{
 			return tracker;
 		}
-		tracker = tracker->next;
-		if (tracker == NULL) 		// End of the list all node are stucked => stuck node before
+		if (tracker->next == NULL) 		// End of the list all node are stucked => stuck node before
 		{
 			tracker = tracker->before;
 			if (tracker == NULL)
@@ -395,6 +394,8 @@ Node* new_selected_node(Node* old_node)
 				tracker->stuck = 1;
 			}
 		}
+		else
+			tracker = tracker->next;
 	}
 	return NULL;
 }
@@ -416,7 +417,7 @@ Path* path_planning(Cell start, Cell goal, bool map[17][27])
 	// printf("First node: (%d,%d) \n", first_node->cell.x, first_node->cell.y);
 	Node* selected_node = first_node;
 	int algo_step = 0;
-	while (algo_step < 3)
+	while (!algo_step)
 	{
 		Cell* cell_arround = get_cells_arround(selected_node->cell);
 		int viable_cell = 0;
@@ -425,12 +426,23 @@ Path* path_planning(Cell start, Cell goal, bool map[17][27])
 			if (cell_arround[i].x == goal.x &&
 				cell_arround[i].y == goal.y)
 			{
-				// create new node ..
-				// add node to current node list
+				Node* new_node = create_new_node(cell_arround[i], start, goal);
+				insert_new_node(selected_node, new_node);
+				selected_node = new_node;
+				//Path* path = create_path(selected_node);
+				Node* tracker = selected_node;
+				printf("path found!\n");
+				while (tracker != NULL)
+				{
+					printf(" (%d,%d) ->", tracker->cell.x, tracker->cell.y);
+					tracker = tracker->before;
+				}
+				printf("NULL \n");
 				// selected_node = new node
 				// path = create_path(selected_node)
 				// return path;
-				printf("path found!\n");
+				//return;
+				algo_step = 1;
 			}
 			if (cell_is_viable(cell_arround[i], map, selected_node))
 			{
@@ -438,7 +450,6 @@ Path* path_planning(Cell start, Cell goal, bool map[17][27])
 				insert_new_node(selected_node, new_node);
 				// printf("New node: (%d,%d) \n", new_node->cell.x, new_node->cell.y);
 				Node* tracks = selected_node->list;
-				/*
 				while(tracks != NULL)
 				{
 					// printf(" %f ->", tracks->f);
@@ -446,7 +457,6 @@ Path* path_planning(Cell start, Cell goal, bool map[17][27])
 					tracks = tracks->next;
 				}
 				printf(" NULL \n");
-				*/
 				viable_cell++;
 			}
 			if (viable_cell == 0)
@@ -456,13 +466,15 @@ Path* path_planning(Cell start, Cell goal, bool map[17][27])
 		}
 		Node* old_node = selected_node;
 		selected_node = new_selected_node(old_node);
-		printf("Le node choisi est: (%d,%d)\n", selected_node->cell.x, selected_node->cell.y);
+		if (selected_node != NULL)
+			printf("Le node choisi est: (%d,%d)\n", selected_node->cell.x, selected_node->cell.y);
 		if (selected_node == NULL)
 		{
 			printf("Warning: No path Found \n");
-			// return un path bidon
+			algo_step = 1;
+			//return;
 		}
-		algo_step++;
+		//algo_step++;
 	}
 
 	Path* path = (Path*)malloc(sizeof(*path)); // store the current optimal path
