@@ -60,7 +60,8 @@ Path* path_planning(Cell start, Cell goal, bool map[17][27]);
 // Evaluate distance between 2 cells on the map
 float evaluate_distance(Cell cell1, Cell cell2);
 // Return the 8 cells arround cell
-Cell * get_cells_arround(Cell cell);
+void get_cells_arround(Cell* cell_arround, Cell cell);
+
 // add a cell to the list
 void add_cell_to_list(CheckedCell** list, Cell cell, Cell initial_pos, Cell final_pos, int step);
 // initialize the list of checked cells

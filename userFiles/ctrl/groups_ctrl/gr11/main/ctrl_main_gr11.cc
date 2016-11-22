@@ -109,10 +109,10 @@ void controller_loop(CtrlStruct *cvs)
     	//display_path(cvs->path);
 
     	free_path(cvs->path);
-    	final_pos.x = 6;
-    	final_pos.y = 25;
+    	final_pos.x = 0;
+    	final_pos.y = 0;
     	cvs->path = path_planning(initial_pos, final_pos, cvs->map);
-    	display_path(cvs->path);
+    	// display_path(cvs->path);
 
     	/*
     	printf("-- Distance Test -- \n");

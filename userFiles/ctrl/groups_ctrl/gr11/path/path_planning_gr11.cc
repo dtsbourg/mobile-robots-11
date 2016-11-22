@@ -34,9 +34,8 @@ float evaluate_distance(Cell cell1, Cell cell2)
  * \param[in] cell is the cell to check arround
  * \return Cell* cell_arround a pointer on 8 cells table
  */
-Cell * get_cells_arround(Cell cell)
+void get_cells_arround(Cell* cell_arround, Cell cell)
 {
-	Cell * cell_arround = (Cell*)malloc(8 * sizeof(Cell));
 	cell_arround[0].x = cell.x-1;
 	cell_arround[0].y = cell.y-1;
 	cell_arround[1].x = cell.x;
@@ -53,7 +52,6 @@ Cell * get_cells_arround(Cell cell)
 	cell_arround[6].y = cell.y+1;
 	cell_arround[7].x = cell.x-1;
 	cell_arround[7].y = cell.y;
-	return cell_arround;
 }
 
 /*! \brief add and order by f (score) a new element to the list storing the checked cells
@@ -151,6 +149,13 @@ bool cell_is_viable(Cell cell, bool map[17][27], Node* selected_node)
 						return false;
 					}
 					tracker = tracker->next;
+				}
+				if (selected_node->before == NULL)
+				{
+					if (selected_node->cell.x == cell.x && selected_node->cell.y == cell.y)
+					{
+						return false; // for the first cell
+					}
 				}
 				selected_node = selected_node->before;
 			}
@@ -397,6 +402,7 @@ Node* new_selected_node(Node* old_node)
 		else
 			tracker = tracker->next;
 	}
+	printf("stucked \n");
 	return NULL;
 }
 
@@ -413,13 +419,15 @@ Path* path_planning(Cell start, Cell goal, bool map[17][27])
 	list->next = NULL;
 	CheckedCell* selected_cell = list; // currently selected cell for the algorithm
 	*/
+	printf("Pathplanning from (%d,%d) to (%d,%d)\n", start.x, start.y, goal.x, goal.y);
 	Node* first_node = init_first_node(start); // TODO LIBERER LA MEMOIRE A LA FIN !!
+	Cell cell_arround[8]; 
 	// printf("First node: (%d,%d) \n", first_node->cell.x, first_node->cell.y);
 	Node* selected_node = first_node;
 	int algo_step = 0;
 	while (!algo_step)
 	{
-		Cell* cell_arround = get_cells_arround(selected_node->cell);
+		get_cells_arround(cell_arround, selected_node->cell);
 		int viable_cell = 0;
 		for (int i=0; i < 8; i++)
 		{
@@ -431,13 +439,13 @@ Path* path_planning(Cell start, Cell goal, bool map[17][27])
 				selected_node = new_node;
 				//Path* path = create_path(selected_node);
 				Node* tracker = selected_node;
-				printf("path found!\n");
+				printf("\npath found!\n");
 				while (tracker != NULL)
 				{
 					printf(" (%d,%d) ->", tracker->cell.x, tracker->cell.y);
 					tracker = tracker->before;
 				}
-				printf("NULL \n");
+				printf("NULL \n\n");
 				// selected_node = new node
 				// path = create_path(selected_node)
 				// return path;
@@ -459,10 +467,11 @@ Path* path_planning(Cell start, Cell goal, bool map[17][27])
 				printf(" NULL \n");
 				viable_cell++;
 			}
-			if (viable_cell == 0)
-			{
-				selected_node->stuck = 1;
-			}
+		}
+		if (viable_cell == 0)
+		{
+			printf("no viable cell\n");
+			selected_node->stuck = 1;
 		}
 		Node* old_node = selected_node;
 		selected_node = new_selected_node(old_node);
