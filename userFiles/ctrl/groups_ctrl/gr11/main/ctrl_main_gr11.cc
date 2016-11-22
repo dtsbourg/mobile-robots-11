@@ -95,77 +95,28 @@ void controller_loop(CtrlStruct *cvs)
 		flag = 1;
 		// initial position
 		Cell initial_pos;
-		initial_pos.x = 4;
-		initial_pos.y = 15;
+		initial_pos.x = 3;
+		initial_pos.y = 1;
 
 		// goal position
 		Cell final_pos;
 		final_pos.x = 0;
 		final_pos.y = 0;
+		// fake map
+		bool map[4][4] = {0};
+		map[1][0] = 1;
+		map[1][1] = 1;
+		map[2][1] = 1;
 
-		// toujours utiliser free_path avant d'appeler pour un nouveau path !!
-		//free_path(cvs->path);
-		//cvs->path = path_planning(initial_pos, final_pos, cvs->map);
-    	//display_path(cvs->path);
-
-    	free_path(cvs->path);
-    	final_pos.x = 6;
-    	final_pos.y = 25;
-    	cvs->path = path_planning(initial_pos, final_pos, cvs->map);
-    	display_path(cvs->path);
-
-    	/*
-    	printf("-- Distance Test -- \n");
-    	Cell temp;
-    	temp.x = 4;
-    	temp.y = 1;
-    	printf("Distance (3,1) to (4,1) = %f \n", evaluate_distance(initial_pos, temp));
-    	printf("Distance (4,1) to (6,3) = %f \n", evaluate_distance(temp, final_pos));
-		*/
-
-    	// add path to the map:
-    	char path_map[17][27];
-    	for (int i=0; i<17;i++)
+		// Algo MIT test
+		Path* test = path_planning(initial_pos, final_pos, map, NULL);
+		Path* tracker = test;
+		while (tracker != NULL)
 		{
-			for(int j=0; j<27; j++)
-			{
-				if (cvs->map[i][j])
-					path_map[i][j] = 'O';
-				else
-					path_map[i][j] = 'o';
-			}
+			printf("(%d,%d) -> ", tracker->cell.x, tracker->cell.y);
+			tracker = tracker->next;
 		}
-    	Path* current = cvs->path;
-    	int c = 0;
-    	while(current!=NULL)
-    	{
-    		if (c == 0)
-    		{
-    			path_map[current->cell.x][current->cell.y] = 'S';
-    		}
-    		else if (current->next == NULL)
-    		{
-    			path_map[current->cell.x][current->cell.y] = 'G';
-    		}
-    		else
-    		{
-    			path_map[current->cell.x][current->cell.y] = 'X';
-    		}
-    		c++;
-    		current = current->next;
-    	}
-    	// draw map:
-    	printf("--- Path map begin ---\n");
-    	for (int j=0; j < 27; j++)
-    	{
-    		printf("| ");
-    		for(int i =0; i < 17; i++)
-    		{
-    			printf("%c ",path_map[i][j]);
-    		}
-    		printf("| \n");
-    	}
-    	printf("--- Path map end ---\n");
+		printf("NULL\n");
 	}
 	
 	return;
