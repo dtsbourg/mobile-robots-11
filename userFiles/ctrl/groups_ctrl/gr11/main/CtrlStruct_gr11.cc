@@ -11,14 +11,14 @@
 NAMESPACE_INIT(ctrlGr11);
 
 /*! \brief initialize the controller structure
- * 
+ *
  * \param[in] inputs inputs of the controller
  * \param[in] outputs outputs of the controller
  * \return controller main structure
  */
 CtrlStruct* init_CtrlStruct(CtrlIn *inputs, CtrlOut *outputs)
 {
-	int i;
+	int i,j;
 	CtrlStruct *cvs;
 
 	cvs = (CtrlStruct*) malloc(sizeof(CtrlStruct));
@@ -82,24 +82,76 @@ CtrlStruct* init_CtrlStruct(CtrlIn *inputs, CtrlOut *outputs)
 	cvs->strat = init_strategy();
 
 	// path-planning
-	cvs->path = init_path_planning();
+	cvs->path = NULL;
+
+	// map initialization
+	for(i=0;i<17;i++)
+	{
+		for(j=0;j<27;j++)
+		{
+			cvs->map[i][j] = FREE_NODE;
+		}
+	}
+
+	// obstacles
+	for(i=12;i<15;i++)
+	{
+		for(j=0;j<5;j++)
+		{
+			cvs->map[i][j] = OBSTACLE_NODE;
+		}
+	}
+
+	for(i=0;i<5;i++)
+	{
+		for(j=3;j<7;j++)
+		{
+			cvs->map[i][j] = OBSTACLE_NODE;
+		}
+	}
+
+	for(i=2;i<9;i++)
+	{
+		for(j=11;j<14;j++)
+		{
+			cvs->map[i][j] = OBSTACLE_NODE;
+		}
+	}
+
+	for(i=5;i<12;i++)
+	{
+		for(j=8;j<12;j++)
+		{
+			cvs->map[i][j] = OBSTACLE_NODE;
+		}
+	}
+
+	// filling by symetry
+	for(i=0;i<17;i++)
+	{
+		for(j=0;j<27;j++)
+		{
+			cvs->map[i][j] = cvs->map[i][26-j];
+		}
+	}
 
 	return cvs;
 }
 
 /*! \brief release controller main structure memory
- * 
+ *
  * \param[in] cvs controller main structure
  */
 void free_CtrlStruct(CtrlStruct *cvs)
 {
-	free_path_planning(cvs->path);
+	free_path(cvs->path);
 	free_strategy(cvs->strat);
 	free(cvs->calib);
 	free(cvs->sp_reg);
 	free(cvs->opp_pos);
 	free(cvs->rob_pos);
 	free(cvs->triang_pos);
+	//free(cvs->map);
 
 	free(cvs);
 }

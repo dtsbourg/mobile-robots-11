@@ -130,11 +130,13 @@ void triangulation(CtrlStruct *cvs)
 	alpha_3_index = index_predicted(alpha_3_predicted, alpha_a, alpha_b, alpha_c);
 
 	// safety
+	/*
 	if ((alpha_1_index == alpha_2_index) || (alpha_1_index == alpha_3_index) || (alpha_2_index == alpha_3_index))
 	{
 		printf("Failed index sanity check\n");
 		return;
 	}
+	*/
 
 	// angle of the first beacon
 	switch (alpha_1_index)
