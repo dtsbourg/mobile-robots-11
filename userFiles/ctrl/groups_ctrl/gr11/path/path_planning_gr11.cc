@@ -133,32 +133,27 @@ void add_cell_to_list(CheckedCell** list, Cell cell, Cell initial_pos, Cell fina
  * \return bool true if the cell is viable to go in the list
  */
 
-// TODO utiliser pointer2D sur la map pour check à la place de fake MAP
-bool cell_is_viable(CheckedCell* list, Cell cell, bool map[17][27])
+bool cell_is_viable(Cell cell, bool map[17][27], Node* selected_node)
 {
-	// check if the cell is on the map
-	if ((cell.x < 17 && cell.x >= 0) && (cell.y < 27 && cell.y >= 0)) // TO CHANGE 4 AND 0
-	{			
-		// fake map
-		/*
-		bool map[4][4] = {0};
-		map[1][0] = 1;
-		map[1][1] = 1;
-		map[2][1] = 1;
-		*/
-
-		// check if it's not an obstacle
-		if (map[cell.x][cell.y] != 1)
+	if ((cell.x < 17 && cell.x >= 0) && (cell.y < 27 && cell.y >= 0)) // if cell is on the map
+	{		
+		if (map[cell.x][cell.y] != 1) // if not an obstacle
 		{
-			// check if already in the list
-			if (is_in_list(list, cell))
+			// check if the cell is already in the nodes before:
+			selected_node = selected_node->before;
+			while (selected_node != NULL)
 			{
-				return false;
+				while (selected_node->next != NULL)
+				{
+					if (selected_node->cell.x == cell.x && selected_node->cell.y == cell.y)
+					{
+						return false;
+					}
+					selected_node = selected_node->next;
+				}
+				selected_node = selected_node->before;
 			}
-			else
-			{
-				return true;
-			}	
+			return true;
 		}
 	}
 	return false;
@@ -322,6 +317,19 @@ Node* init_first_node(Cell start)
 	first_node->list = NULL;
 	first_node->before = NULL;
 	first_node->next = NULL;
+	return first_node;
+}
+
+Node* create_new_node(Cell cell, Cell start, Cell goal)
+{
+	Node* new_node = (Node*)malloc(sizeof(Node));
+	new_node->cell = cell;
+	new_node->f = evaluate_distance(cell, start) + evaluate_distance(cell, goal);
+	new_node->stuck = 0;
+	new_node->list = NULL;
+	new_node->before = NULL;
+	new_node->next = NULL;
+	return new_node;
 }
 
 Path* path_planning(Cell start, Cell goal, bool map[17][27])
@@ -337,7 +345,35 @@ Path* path_planning(Cell start, Cell goal, bool map[17][27])
 	list->next = NULL;
 	CheckedCell* selected_cell = list; // currently selected cell for the algorithm
 	*/
-	Node* first_node = init_first_node(start);
+	Node* first_node = init_first_node(start); // TODO LIBERER LA MEMOIRE A LA FIN !!
+	// printf("First node: (%d,%d) \n", first_node->cell.x, first_node->cell.y);
+	Node* selected_node = first_node;
+	int algo_step = 0;
+	while (algo_step < 1)
+	{
+		Cell* cell_arround = get_cells_arround(selected_node->cell);
+		int viable_cell = 0;
+		for (int i=0; i < 8; i++)
+		{
+			if (cell_arround[i].x == goal.x &&
+				cell_arround[i].y == goal.y)
+			{
+				// create new node ..
+				// add node to current node list
+				// selected_node = new node
+				// path = create_path(selected_node)
+				// return path;
+				printf("path found!\n");
+			}
+			if (cell_is_viable(cell_arround[i], map, selected_node))
+			{
+				Node* new_node = create_new_node(cell_arround[i], start, goal);
+				printf("New node: (%d,%d) \n", new_node->cell.x, new_node->cell.y);
+				viable_cell++;
+			}
+		}
+		algo_step++;
+	}
 
 	Path* path = (Path*)malloc(sizeof(*path)); // store the current optimal path
 	path->cell = start;

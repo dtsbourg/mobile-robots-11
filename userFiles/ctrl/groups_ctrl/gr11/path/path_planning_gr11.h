@@ -52,6 +52,7 @@ struct Node
 };
 //new function:
 Node* init_first_node(Cell start);
+Node* create_new_node(Cell cell, Cell start, Cell goal);
 // main algo function
 Path* path_planning(Cell start, Cell goal, bool map[17][27]);
 
@@ -65,7 +66,8 @@ void add_cell_to_list(CheckedCell** list, Cell cell, Cell initial_pos, Cell fina
 void add_element(CheckedCell** list, CheckedCell* element);
 
 // check if a cell is viable to go in the list
-bool cell_is_viable(CheckedCell* list, Cell cell, bool map[17][27]);
+bool cell_is_viable(Cell cell, bool map[17][27], Node* selected_node);
+
 // test if a cell is in the list
 bool is_in_list(CheckedCell* list, Cell cell);
 // get best cell

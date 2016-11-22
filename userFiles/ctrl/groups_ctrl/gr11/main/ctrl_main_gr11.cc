@@ -95,8 +95,8 @@ void controller_loop(CtrlStruct *cvs)
 		flag = 1;
 		// initial position
 		Cell initial_pos;
-		initial_pos.x = 4;
-		initial_pos.y = 15;
+		initial_pos.x = 0;
+		initial_pos.y = 0;
 
 		// goal position
 		Cell final_pos;
@@ -124,6 +124,7 @@ void controller_loop(CtrlStruct *cvs)
 		*/
 
     	// add path to the map:
+    	/*
     	char path_map[17][27];
     	for (int i=0; i<17;i++)
 		{
@@ -166,6 +167,7 @@ void controller_loop(CtrlStruct *cvs)
     		printf("| \n");
     	}
     	printf("--- Path map end ---\n");
+    	*/
 	}
 	
 	return;
