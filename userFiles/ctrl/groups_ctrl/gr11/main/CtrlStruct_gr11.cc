@@ -82,7 +82,7 @@ CtrlStruct* init_CtrlStruct(CtrlIn *inputs, CtrlOut *outputs)
 	cvs->strat = init_strategy();
 
 	// path-planning
-	//cvs->path = NULL;
+	cvs->path = NULL;
 
 	// map initialization
 	for(i=0;i<17;i++)

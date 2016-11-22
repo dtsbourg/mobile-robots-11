@@ -43,6 +43,7 @@ struct Path
 
 // main algo function
 Path* path_planning(Cell start, Cell goal, bool map[17][27]);
+
 // Evaluate distance between 2 cells on the map
 float evaluate_distance(Cell cell1, Cell cell2);
 // Return the 8 cells arround cell

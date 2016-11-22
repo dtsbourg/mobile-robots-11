@@ -4,7 +4,7 @@
 #include "useful_gr11.h"
 #include <math.h>
 
-#define CELL_SIZE 1
+#define CELL_SIZE 1.0
 
 NAMESPACE_INIT(ctrlGr11);
 
@@ -243,12 +243,40 @@ void display_list(CheckedCell* current)
 		exit(EXIT_FAILURE);
 	}
 
+	float fake_map[17][27];
+	for (int i=0; i<17;i++)
+	{
+		for(int j=0; j<27; j++)
+		{
+			fake_map[i][j] = 0;
+		}
+	}
+
 	while (current != NULL)
 	{
-		printf("(%d,%d) | f:%f | Step: %d -> ", current->cell.x, current->cell.y, current->f, current->step);
+		//printf("(%d,%d) | f:%f | Step: %d -> ", current->cell.x, current->cell.y, current->f, current->step);
+		fake_map[current->cell.x][current->cell.y] = current->f;
 		current = current->next;
 	}
-	printf("NULL \n");
+	//printf("NULL \n");
+	// print fake map
+	printf("--- Score Map Begin ---\n");
+	for (int j=0; j < 27; j++)
+	{
+		if (j < 10)
+			printf("%d  | ", j);
+		else
+			printf("%d | ", j);
+		for(int i =0; i < 17; i++)
+		{
+			if(fake_map[i][j] == 0)
+				printf(" 0  ");
+			else
+				printf("%d ", (int)(100*fake_map[i][j]));
+		}
+		printf("| \n");
+	}
+	printf("--- Score Map End ---\n");
 }
 void display_path(Path* path)
 {
@@ -284,14 +312,12 @@ void free_path(Path* path)
 	}
 }
 
-/* function need: 
- 	TODO ajouter comme input pointer sur la map 
- 	FAIRE PASSER LE POINTER 2D a la fonction cell_is_viable
- */
+
 Path* path_planning(Cell start, Cell goal, bool map[17][27])
 {
-	// état initial:
-	CheckedCell* list = (CheckedCell*)malloc(sizeof(*list)); // / pointer to the first element of the list
+
+	// create a function to initialize everything
+	CheckedCell* list = (CheckedCell*)malloc(sizeof(*list)); // pointer to the first element of the list
 	list->cell = start;
 	list->f = evaluate_distance(start, goal);
 	list->step = 0;
