@@ -53,6 +53,7 @@ struct Node
 //new function:
 Node* init_first_node(Cell start);
 Node* create_new_node(Cell cell, Cell start, Cell goal);
+void insert_new_node(Node* selected_node, Node* new_node);
 // main algo function
 Path* path_planning(Cell start, Cell goal, bool map[17][27]);
 

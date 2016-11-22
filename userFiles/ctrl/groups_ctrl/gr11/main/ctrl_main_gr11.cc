@@ -95,8 +95,8 @@ void controller_loop(CtrlStruct *cvs)
 		flag = 1;
 		// initial position
 		Cell initial_pos;
-		initial_pos.x = 0;
-		initial_pos.y = 0;
+		initial_pos.x = 5;
+		initial_pos.y = 5;
 
 		// goal position
 		Cell final_pos;

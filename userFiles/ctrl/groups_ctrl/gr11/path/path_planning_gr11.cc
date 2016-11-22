@@ -332,6 +332,42 @@ Node* create_new_node(Cell cell, Cell start, Cell goal)
 	return new_node;
 }
 
+void insert_new_node(Node* selected_node, Node* new_node)
+{
+	Node* current = selected_node->list;
+	if (current == NULL)
+	{
+		selected_node->list = new_node; // first new node in the list
+	}
+	else
+	{
+		Node* before = NULL;
+		while(current != NULL)
+		{
+			if (new_node->f <= current->f)
+			{
+				new_node->next = current;
+				if (before == NULL)
+				{
+					selected_node->list = new_node; // become first node of the list
+				}
+				else
+				{
+					before->next = new_node; // inserted in the middle
+				}
+				break;
+			}
+			before = current;
+			current = current->next;
+			if (current == NULL)
+			{
+				before->next = new_node; // inserted at the end
+			}
+		}
+	}
+	new_node->before = selected_node;
+}
+
 Path* path_planning(Cell start, Cell goal, bool map[17][27])
 {
 
@@ -368,7 +404,15 @@ Path* path_planning(Cell start, Cell goal, bool map[17][27])
 			if (cell_is_viable(cell_arround[i], map, selected_node))
 			{
 				Node* new_node = create_new_node(cell_arround[i], start, goal);
-				printf("New node: (%d,%d) \n", new_node->cell.x, new_node->cell.y);
+				insert_new_node(selected_node, new_node);
+				// printf("New node: (%d,%d) \n", new_node->cell.x, new_node->cell.y);
+				Node* tracks = selected_node->list;
+				while(tracks != NULL)
+				{
+					printf(" %f ->", tracks->f);
+					tracks = tracks->next;
+				}
+				printf(" NULL \n");
 				viable_cell++;
 			}
 		}
