@@ -312,11 +312,23 @@ void free_path(Path* path)
 	}
 }
 
+// New function / New algo
+Node* init_first_node(Cell start)
+{
+	Node* first_node = (Node*)malloc(sizeof(Node));
+	first_node->cell = start;
+	first_node->f = 0;
+	first_node->stuck = 0;
+	first_node->list = NULL;
+	first_node->before = NULL;
+	first_node->next = NULL;
+}
 
 Path* path_planning(Cell start, Cell goal, bool map[17][27])
 {
 
 	// create a function to initialize everything
+	/*
 	CheckedCell* list = (CheckedCell*)malloc(sizeof(*list)); // pointer to the first element of the list
 	list->cell = start;
 	list->f = evaluate_distance(start, goal);
@@ -324,12 +336,14 @@ Path* path_planning(Cell start, Cell goal, bool map[17][27])
 	list->stuck = 0;
 	list->next = NULL;
 	CheckedCell* selected_cell = list; // currently selected cell for the algorithm
-	
+	*/
+	Node* first_node = init_first_node(start);
+
 	Path* path = (Path*)malloc(sizeof(*path)); // store the current optimal path
 	path->cell = start;
 	path->next = NULL;
 	//test
-	
+	/*
 	
 	bool path_found = 0;
 	while (!path_found)
@@ -373,6 +387,7 @@ Path* path_planning(Cell start, Cell goal, bool map[17][27])
 		}
 	}
 	free_CheckedCell(list);
+	*/
 	return path;
 }
 

@@ -41,6 +41,17 @@ struct Path
 	Path* next;
 };
 
+struct Node
+{
+	Cell cell;
+	float f;
+	bool stuck;
+	Node* list;
+	Node* next;
+	Node* before;
+};
+//new function:
+Node* init_first_node(Cell start);
 // main algo function
 Path* path_planning(Cell start, Cell goal, bool map[17][27]);
 

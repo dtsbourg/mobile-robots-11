@@ -34,6 +34,7 @@ typedef struct SpeedRegulation SpeedRegulation;
 typedef struct RobotCalibration RobotCalibration;
 typedef struct OpponentsPosition OpponentsPosition;
 typedef struct Path Path;
+typedef struct Node Node;
 typedef struct Strategy Strategy;
 
 
