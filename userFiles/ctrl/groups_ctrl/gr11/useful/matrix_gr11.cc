@@ -3,12 +3,19 @@
 
 NAMESPACE_INIT(ctrlGr11);
 
+void matcopy(double * res, double * src, int m, int n)
+{
+    for (int i = 0; i < m; i++)
+        for (int j = 0; j < n ; j++ )
+            res[i*n+j] = src[i*j+n];
+}
+
 void mulmat(double * a, double * b, double * c, int arows, int acols, int bcols)
 {
     int i, j,l;
 
-    for(i=0; i<arows; ++i)
-        for(j=0; j<bcols; ++j) {
+    for(i=0; i<arows; i++)
+        for(j=0; j<bcols; j++) {
             c[i*bcols+j] = 0;
             for(l=0; l<acols; ++l)
                 c[i*bcols+j] += a[i*acols+l] * b[l*bcols+j];
@@ -19,29 +26,20 @@ void mulvec(double * a, double * x, double * y, int m, int n)
 {
     int i, j;
 
-    for(i=0; i<m; ++i) {
+    for(i=0; i<m; i++) {
         y[i] = 0;
-        for(j=0; j<n; ++j)
+        for(j=0; j<n; j++)
             y[i] += x[j] * a[i*n+j];
     }
 }
 
-void transpose(double * a, double * at, int m, int n)
-{
-    int i,j;
-
-    for(i=0; i<m; ++i)
-        for(j=0; j<n; ++j) {
-            at[j*m+i] = a[i*n+j];
-        }
-}
 
 /* C <- A + B */
 void add(double * a, double * b, double * c, int n)
 {
     int j;
 
-    for(j=0; j<n; ++j)
+    for(j=0; j<n; j++)
         c[j] = a[j] + b[j];
 }
 
@@ -50,13 +48,13 @@ void sub(double * a, double * b, double * c, int n)
 {
     int j;
 
-    for(j=0; j<n; ++j)
+    for(j=0; j<n; j++)
         c[j] = a[j] - b[j];
 }
 
 void accum(double * a, double * b, int n)
 {
-    int i,j;
+    int i;
 
     for(i=0; i<n; i++)
         a[i] += b[i];
@@ -67,7 +65,7 @@ void mulmataccum(double * a, double * b, double * c, int arows, int acols, int b
 	double * tmp = (double *) malloc(arows * bcols * sizeof(double));
 
 	mulmat(a, b, tmp, arows, acols, bcols);
-	accum(tmp, c, bcols);
+	accum(c, tmp, bcols);
 }
 
 void mulvecaccum(double * a, double * b, double * c, int m, int n)
@@ -75,7 +73,7 @@ void mulvecaccum(double * a, double * b, double * c, int m, int n)
 	double * tmp = (double *) malloc(m * n * sizeof(double));
 
 	mulvec(a, b, tmp, m, n);
-	accum(tmp, c, n);
+	accum(c, tmp, n);
 }
 
 
@@ -83,8 +81,8 @@ void matsum(double * a, double * b, double * c, int m, int n)
 {
     int i,j;
 
-    for(i=0; i<m; ++i)
-        for(j=0; j<n; ++j)
+    for(i=0; i<m; i++)
+        for(j=0; j<n; j++)
             c[i*n+j] = a[i*n+j] + b[i*n+j];
 }
 
@@ -92,22 +90,22 @@ void matsub(double * a, double * b, double * c, int m, int n)
 {
     int i,j;
 
-    for(i=0; i<m; ++i)
-        for(j=0; j<n; ++j)
+    for(i=0; i<m; i++)
+        for(j=0; j<n; j++)
             c[i*n+j] = a[i*n+j] - b[i*n+j];
 }
 
 void zeros(double * a, int m, int n)
 {
     int j;
-    for (j=0; j<m*n; ++j)
+    for (j=0; j<m*n; j++)
         a[j] = 0;
 }
 
 void mat_addeye(double * a, int n)
 {
     int i;
-    for (i=0; i<n; ++i)
+    for (i=0; i<n; i++)
         a[i*n+i] += 1;
 }
 

@@ -12,6 +12,7 @@
 
 NAMESPACE_INIT(ctrlGr11);
 
+void matcopy(double * res, double * src, int m, int n);
 void mulmat(double * a, double * b, double * c, int arows, int acols, int bcols);
 void mulvec(double * a, double * x, double * y, int m, int n);
 void transpose(double * a, double * at, int m, int n);

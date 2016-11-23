@@ -25,7 +25,7 @@ void unpack_input(double * u, double * wheel_commands)
 void kalman_init(KalmanStruc * ekf, CtrlStruct * cvs)
 {
 	printf("Initializing Kalman filter ...\n");
-	double dt = cvs->inputs->t - ekf->last_t;
+	double dt = 0.001;
 	ekf->dt = dt;
 
 	// Pointers for x, u
@@ -127,13 +127,11 @@ void kalman(CtrlStruct *cvs)
 	} else {
 		kalman_step(&ekf, cvs);
 	}
-
-	set_plot(ekf.x[0], "X ekf");
 }
 
 void kalman_step(KalmanStruc * ekf, CtrlStruct * cvs)
 {
-	printf("%f -- Starting Kalman filter step ...\n", cvs->inputs->t);
+	// printf("%f -- Starting Kalman filter step ...\n", cvs->inputs->t);
 
 	// printf("[EKF] Unpacking state ...\n");
 	unpack_state(ekf->x, cvs);
@@ -146,8 +144,16 @@ void kalman_step(KalmanStruc * ekf, CtrlStruct * cvs)
 	 ***/
 	// F_x . x
 	mulvec(ekf->F_x, ekf->x, ekf->x_, N, N);
+	// for (int i=0; i<N; i++) { for (int j=0; j<N; j++) {  printf("%f ", ekf->F_x[i*N+j]); } printf("\n"); }
+
+
+	// set_plot(ekf->x_[1], "X_ 2");
+	// set_plot(ekf->x_[2], "X_ 3");
+	// set_plot(ekf->x_[3], "X_ 4");
+
 	// F_u . u
 	mulvecaccum(ekf->F_u, ekf->u, ekf->x_, M, N);
+	//set_plot(ekf->x_[0], "X_ 2");
 	//F_n . n , n = 0
 
 	// printf("[EKF] Starting covariance prediction ...\n");
@@ -164,7 +170,6 @@ void kalman_step(KalmanStruc * ekf, CtrlStruct * cvs)
 	mulmat(ekf->tmp2, ekf->F_nt, ekf->Q, N, M, N);
 	// P+ = F_x . P . F_x' + F_n . Q . F_n'
 	accum(ekf->P_, ekf->Q, N);
-	//for (int i=0; i<N; i++) { for (int j=0; j<N; j++) {  printf("%f ", ekf->P_[i*N+j]); } printf("\n"); }
 
 	//printf("[EKF] Ended covariance prediction ...\n");
 
@@ -209,6 +214,7 @@ void kalman_step(KalmanStruc * ekf, CtrlStruct * cvs)
 	 mulmat(ekf->tmp3, ekf->tmp4, ekf->K, N, N, N);
 	 //printf("[EKF] Kalman gain done ...\n");
 
+
 	/***
 	 * x+ = x + K . z
 	 ***/
@@ -223,7 +229,10 @@ void kalman_step(KalmanStruc * ekf, CtrlStruct * cvs)
 	 mulmat(ekf->K, ekf->H, ekf->tmp1, N, N, N);
 	 mulmat(ekf->tmp1, ekf->P, ekf->tmp2, N, N, N);
 	 matsub(ekf->P, ekf->tmp2, ekf->P_, N, N);
-	 printf("[EKF] End filter step ...\n");
+	 matcopy(ekf->P, ekf->P_, N, N);
+	//  printf("[EKF] End filter step ...\n");
+
+	 set_plot(ekf->x_[0], "X EKF [m]");
 
 	// for (int i=0; i<N; i++) { printf("[EKF] ekf.x_[%d] = %f\n", i, ekf->x_[i]);}
 
