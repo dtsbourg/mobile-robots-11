@@ -42,6 +42,15 @@ void kalman_init(KalmanStruc * ekf, CtrlStruct * cvs)
 
 	memcpy(ekf->H, H, N*N*sizeof(double));
 
+	double Ht[N*N] = {
+		 1, 0, 0, 0 , \
+		 0, 1, 0, 0 , \
+		 0, 0, 0, 0 , \
+		 0, 0, 0, 0   \
+	};
+
+	memcpy(ekf->Ht, Ht, N*N*sizeof(double));
+
 	double F_x[N*N] = {
 		 1, 0, dt,  0 , \
 		 0, 1,  0, dt , \
@@ -52,8 +61,8 @@ void kalman_init(KalmanStruc * ekf, CtrlStruct * cvs)
 	memcpy(ekf->F_x, F_x, N*N*sizeof(double));
 
 	double F_xt[N*N] = {
-		 1, 0,  0,  0 , \
-		 0, 1,  0,  0 , \
+		 1,  0,  0,  0 , \
+		 0,  1,  0,  0 , \
 		 dt, 0,  1,  0 , \
 		 0, dt,  0,  1   \
 	};
@@ -85,7 +94,6 @@ void kalman_init(KalmanStruc * ekf, CtrlStruct * cvs)
 
 	memcpy(ekf->F_nt, F_nt, M*N*sizeof(double));
 
-	mat_addeye(ekf->H, N);
 	mat_addeye(ekf->P, N);
 	mat_addeye(ekf->Z, N);
 	mat_addeye(ekf->E, N);
@@ -120,20 +128,19 @@ void kalman(CtrlStruct *cvs)
 		kalman_step(&ekf, cvs);
 	}
 
-	set_plot(rob_pos->x, "X odom");
 	set_plot(ekf.x[0], "X ekf");
 }
 
 void kalman_step(KalmanStruc * ekf, CtrlStruct * cvs)
 {
-	printf("Starting Kalman filter step ...\n");
+	printf("%f -- Starting Kalman filter step ...\n", cvs->inputs->t);
 
-	printf("[EKF] Unpacking state ...\n");
+	// printf("[EKF] Unpacking state ...\n");
 	unpack_state(ekf->x, cvs);
-	printf("[EKF] Unpacking input ...\n");
+	// printf("[EKF] Unpacking input ...\n");
 	unpack_input(ekf->u, cvs->outputs->wheel_commands);
 	// 1. Predict
-	printf("[EKF] Starting state prediction ...\n");
+	// printf("[EKF] Starting state prediction ...\n");
 	/***
 	 * x+ = f(x, u, n) = F_x . x + F_u . u + F_n . n
 	 ***/
@@ -143,7 +150,7 @@ void kalman_step(KalmanStruc * ekf, CtrlStruct * cvs)
 	mulvecaccum(ekf->F_u, ekf->u, ekf->x_, M, N);
 	//F_n . n , n = 0
 
-	printf("[EKF] Starting covariance prediction ...\n");
+	// printf("[EKF] Starting covariance prediction ...\n");
 	/***
 	 * P+ = F_x . P . F_x' + F_n . Q . F_n'
 	 ***/
@@ -157,22 +164,22 @@ void kalman_step(KalmanStruc * ekf, CtrlStruct * cvs)
 	mulmat(ekf->tmp2, ekf->F_nt, ekf->Q, N, M, N);
 	// P+ = F_x . P . F_x' + F_n . Q . F_n'
 	accum(ekf->P_, ekf->Q, N);
-	for (int i=0; i<N; i++) { for (int j=0; j<N; j++) {  printf("%f ", ekf->P[i*N+j]); } printf("\n"); }
+	//for (int i=0; i<N; i++) { for (int j=0; j<N; j++) {  printf("%f ", ekf->P_[i*N+j]); } printf("\n"); }
 
-	printf("[EKF] Ended covariance prediction ...\n");
+	//printf("[EKF] Ended covariance prediction ...\n");
 
 	// 2. Update
-	printf("[EKF] Starting Update ...\n");
+	//printf("[EKF] Starting Update ...\n");
 	/***
-	 * e = h(x) = H . x
+	 * e = h(x+) = H . x+
 	 ***/
-	 printf("[EKF] Expected ...\n");
+	 //printf("[EKF] Expected ...\n");
 	 mulvec(ekf->H, ekf->x_, ekf->e, N, N);
 
 	/***
 	 * E = H . P . H'
 	 ***/
-	 printf("[EKF] Expected Covariance ...\n");
+	 //printf("[EKF] Expected Covariance ...\n");
 	 // H . P
 	 mulmat(ekf->H, ekf->P, ekf->tmp1, N, N, N);
 	 // H . P . H'
@@ -181,45 +188,44 @@ void kalman_step(KalmanStruc * ekf, CtrlStruct * cvs)
 	/***
 	 * z = y - e
 	 ***/
-	 printf("[EKF] Innovation ...\n");
+	 //printf("[EKF] Innovation ...\n");
 	 sub(ekf->y, ekf->e, ekf->z, M);
 
 	/***
 	 * Z = R + E
 	 ***/
-	 printf("[EKF] Innovation Covariance ...\n");
+	 //printf("[EKF] Innovation Covariance ...\n");
 	 matsum(ekf->R, ekf->E, ekf->Z, N, N);
 
 	/***
 	 * K = P H' Z^-1
 	 ***/
-	 printf("[EKF] Kalman gain ...\n");
-	 transpose(ekf->H, ekf->Ht, N, N);
+	 //printf("[EKF] Kalman gain ...\n");
 	 mulmat(ekf->P, ekf->Ht, ekf->tmp3, N, N, N);
 	 if (cholsl(ekf->Z, ekf->tmp4, ekf->tmp5, N)) {
 		 printf("[EKF] ERROR : Could not compute innovation covariance inverse ...\n");
 		 return;
 	 }
 	 mulmat(ekf->tmp3, ekf->tmp4, ekf->K, N, N, N);
-	 printf("[EKF] Kalman gain done ...\n");
+	 //printf("[EKF] Kalman gain done ...\n");
 
 	/***
 	 * x+ = x + K . z
 	 ***/
-	 printf("[EKF] Updating state ...\n");
+	 //printf("[EKF] Updating state ...\n");
 	 mulvec(ekf->K, ekf->z, ekf->x_, N, N);
 	 accum(ekf->x_, ekf->x, N);
 
 	/***
 	 * P+ = P - K . H . P
 	 ***/
-	 printf("[EKF] Updating covariances ...\n");
+	 //printf("[EKF] Updating covariances ...\n");
 	 mulmat(ekf->K, ekf->H, ekf->tmp1, N, N, N);
 	 mulmat(ekf->tmp1, ekf->P, ekf->tmp2, N, N, N);
 	 matsub(ekf->P, ekf->tmp2, ekf->P_, N, N);
 	 printf("[EKF] End filter step ...\n");
 
-	 for (int i=0; i<N; i++) { printf("[EKF] ekf.x_[%d] = %f\n", i, ekf->x_[i]);}
+	// for (int i=0; i<N; i++) { printf("[EKF] ekf.x_[%d] = %f\n", i, ekf->x_[i]);}
 
 }
 

@@ -59,7 +59,7 @@ typedef struct
 
 	double F_xt[N*N]; //< Jacobian of state model transposed
 	double F_nt[N*N]; //< Jacobian of noise model transposed
-	double Ht[M*N];   //< Jacobian of measurement model transposed
+	double Ht[N*N];   //< Jacobian of measurement model transposed
 } KalmanStruc;
 
 void kalman(CtrlStruct *cvs);
