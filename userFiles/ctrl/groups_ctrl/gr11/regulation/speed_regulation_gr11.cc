@@ -34,7 +34,6 @@ void speed_regulation(CtrlStruct *cvs, double r_sp_ref, double l_sp_ref)
 	dt = inputs->t - sp_reg->last_t; // time interval since last call
 
 	// ----- Wheels regulation computation start ----- //
-	printf("speed_l %f ; speed_r %f\n", l_sp, r_sp);
 	double r_err = r_sp_ref - r_sp;
 	if (r_sp > 0.15)
 		sp_reg->int_error_r += limit_range(r_err, -5.0, 5.0);
@@ -47,15 +46,15 @@ void speed_regulation(CtrlStruct *cvs, double r_sp_ref, double l_sp_ref)
 	else
 		sp_reg->int_error_l = 0;
 
-	printf("err_l %f ; err_l_agg %f\n", l_err, sp_reg->int_error_l);
-	printf("err_r %f ; err_r_agg %f\n", r_err, sp_reg->int_error_r);
+	// printf("err_l %f ; err_l_agg %f\n", l_err, sp_reg->int_error_l);
+	// printf("err_r %f ; err_r_agg %f\n", r_err, sp_reg->int_error_r);
 
 	// wheel commands
 	outputs->wheel_commands[R_ID] = limit_range(Kp * r_err + Ki * sp_reg->int_error_r * dt, -100.0, 100.0);
 	outputs->wheel_commands[L_ID] = limit_range(Kp * l_err + Ki * sp_reg->int_error_l * dt, -100.0, 100.0);
 
-	set_plot(outputs->wheel_commands[L_ID], "Command L");
-	//set_plot(outputs->wheel_commands[R_ID], "Command R");
+	// set_plot(outputs->wheel_commands[L_ID], "Command L");
+	// set_plot(outputs->wheel_commands[R_ID], "Command R");
 
 	// ----- Wheels regulation computation end ----- //
 

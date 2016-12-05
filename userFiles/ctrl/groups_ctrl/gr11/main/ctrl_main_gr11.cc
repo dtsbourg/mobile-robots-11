@@ -13,6 +13,7 @@
 #include "calibration_gr11.h"
 #include "triangulation_gr11.h"
 #include "strategy_gr11.h"
+#include "kalman_gr11.h"
 #include <time.h>
 
 NAMESPACE_INIT(ctrlGr11);
@@ -92,6 +93,11 @@ void controller_loop(CtrlStruct *cvs)
 		// calibration
 		case CALIB_STATE:
 			calibration(cvs);
+			kalman(cvs);
+			set_plot(cvs->rob_pos->x, "X Odom [m]");
+			set_output(cvs->rob_pos->x, "rob_pos_x");
+			set_plot(cvs->triang_pos->x, "X Tri [m]");
+			set_output(cvs->triang_pos->x, "rob_tri_x");
 			break;
 
 		// wait before match beginning
@@ -108,7 +114,7 @@ void controller_loop(CtrlStruct *cvs)
 		// during game
 		case RUN_STATE:
 			speed_regulation(cvs, 10.0, 10.0);
-
+			kalman(cvs);
 			main_strategy(cvs);
 			if (t > 89.0) // 1 second safety
 			{

@@ -18,8 +18,16 @@ void unpack_state(double * x, CtrlStruct * cvs)
 
 void unpack_input(double * u, double * wheel_commands)
 {
-	u[0] = wheel_commands[0];
-	u[1] = wheel_commands[1];
+	u[0] = 0;
+	u[1] = 0;
+	u[2] = wheel_commands[0];
+	u[3] = wheel_commands[1];
+}
+
+void unpack_observation(double * y, CtrlStruct * cvs)
+{
+	y[0] = cvs->triang_pos->x;
+	y[1] = cvs->triang_pos->y;
 }
 
 void kalman_init(KalmanStruc * ekf, CtrlStruct * cvs)
@@ -69,7 +77,7 @@ void kalman_init(KalmanStruc * ekf, CtrlStruct * cvs)
 
 	memcpy(ekf->F_xt, F_xt, N*N*sizeof(double));
 
-	double F_u[N*M] = {
+	double F_u[M*N] = {
 		  0,  0 , \
 		  0,  0 , \
 		 dt,  0 , \
@@ -85,7 +93,7 @@ void kalman_init(KalmanStruc * ekf, CtrlStruct * cvs)
 		0, 1   \
 	};
 
-	memcpy(ekf->F_n, F_n, M*N*sizeof(double));
+	memcpy(ekf->F_n, F_n, N*M*sizeof(double));
 
 	double F_nt[N*M] = {
 		0, 0 , 1, 0 , \
@@ -94,11 +102,11 @@ void kalman_init(KalmanStruc * ekf, CtrlStruct * cvs)
 
 	memcpy(ekf->F_nt, F_nt, M*N*sizeof(double));
 
-	mat_addeye(ekf->P, N);
-	mat_addeye(ekf->Z, N);
-	mat_addeye(ekf->E, N);
-	mat_addeye(ekf->Q, N);
-	mat_addeye(ekf->R, N);
+	mat_addeye(ekf->P, N, 0.001);
+	mat_addeye(ekf->Z, N, 0.01);
+	mat_addeye(ekf->E, N, 0.01);
+	mat_addeye(ekf->Q, N, 0.01);
+	mat_addeye(ekf->R, N, 0.001);
 
 	printf("Initialized Kalman filter ...\n");
 
@@ -137,6 +145,7 @@ void kalman_step(KalmanStruc * ekf, CtrlStruct * cvs)
 	unpack_state(ekf->x, cvs);
 	// printf("[EKF] Unpacking input ...\n");
 	unpack_input(ekf->u, cvs->outputs->wheel_commands);
+	unpack_observation(ekf->y, cvs);
 	// 1. Predict
 	// printf("[EKF] Starting state prediction ...\n");
 	/***
@@ -195,7 +204,6 @@ void kalman_step(KalmanStruc * ekf, CtrlStruct * cvs)
 	 ***/
 	 //printf("[EKF] Innovation ...\n");
 	 sub(ekf->y, ekf->e, ekf->z, M);
-
 	/***
 	 * Z = R + E
 	 ***/
@@ -220,6 +228,7 @@ void kalman_step(KalmanStruc * ekf, CtrlStruct * cvs)
 	 ***/
 	 //printf("[EKF] Updating state ...\n");
 	 mulvec(ekf->K, ekf->z, ekf->x_, N, N);
+	//  for (int i=0; i<N; i++) { for (int j=0; j<N; j++) {  printf("%f ", ekf->K[i*N+j]); } printf("\n"); }
 	 accum(ekf->x_, ekf->x, N);
 
 	/***
@@ -231,11 +240,8 @@ void kalman_step(KalmanStruc * ekf, CtrlStruct * cvs)
 	 matsub(ekf->P, ekf->tmp2, ekf->P_, N, N);
 	 matcopy(ekf->P, ekf->P_, N, N);
 	//  printf("[EKF] End filter step ...\n");
-
-	 set_plot(ekf->x_[0], "X EKF [m]");
-
-	// for (int i=0; i<N; i++) { printf("[EKF] ekf.x_[%d] = %f\n", i, ekf->x_[i]);}
-
+	set_plot(ekf->x_[0]+0.01, "X EKF [m]");
+	set_output(ekf->x_[0]+0.01, "x_");
 }
 
 NAMESPACE_CLOSE();

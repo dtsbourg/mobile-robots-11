@@ -109,6 +109,12 @@ void mat_addeye(double * a, int n)
         a[i*n+i] += 1;
 }
 
+void mat_addeye(double * a, int n, double scale)
+{
+    int i;
+    for (i=0; i<n; i++)
+        a[i*n+i] += scale;
+}
 
  int choldc1(double * a, double * p, int n) {
     int i,j,k;

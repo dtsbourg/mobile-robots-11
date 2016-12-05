@@ -48,7 +48,7 @@ typedef struct
 	double F_n[N*M];	//< Jacobian of noise model
 
 	/// Kalman
-	double K[N*M]; //< Kalman gain
+	double K[N*N]; //< Kalman gain
 
 	/// Utility
 	double tmp1[N*N];
