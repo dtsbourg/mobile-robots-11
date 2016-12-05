@@ -22,44 +22,16 @@ typedef struct
    	int m; //< number of observables
 
 	double dt;		//< Delta time
-	double last_t;  //< Last call time
 
 	/// State vectors
-	double x[N];  //< State
+	double x[N];  //< State (odom)
 	double x_[N]; //< Predicted state
-	double e[M];  //< State expectation
 	double u[M];  //< State Input
-	double y[M];  //< State Observed
+	double y[M];  //< State Observed (tri)
 	double z[N];  //< Innovation
 
-	/// Covariances
-	double P[N*N]; //< Covariance of prediction error
-	double P_[N*N]; //< Predicted ovariance of prediction error
-    double Q[N*N]; //< Covariance of process noise
-	double E[N*N]; //< Covariance of expectation
-    double R[N*N]; //< Covariance of measurement noise
-	double Z[N*N]; //< Covariance of innovation
+	double cov_pred;
 
-
-	/// Jacobians
-	double H[N*N];		//< Jacobian of measurement model
-	double F_x[N*N];	//< Jacobian of state model
-	double F_u[N*M];	//< Jacobian of input model
-	double F_n[N*M];	//< Jacobian of noise model
-
-	/// Kalman
-	double K[N*N]; //< Kalman gain
-
-	/// Utility
-	double tmp1[N*N];
-	double tmp2[N*N];
-	double tmp3[N*N];
-	double tmp4[N*N];
-	double tmp5[N*N];
-
-	double F_xt[N*N]; //< Jacobian of state model transposed
-	double F_nt[N*N]; //< Jacobian of noise model transposed
-	double Ht[N*N];   //< Jacobian of measurement model transposed
 } KalmanStruc;
 
 void kalman(CtrlStruct *cvs);

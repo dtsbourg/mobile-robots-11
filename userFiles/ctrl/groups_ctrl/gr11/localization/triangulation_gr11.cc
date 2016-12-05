@@ -223,8 +223,11 @@ void triangulation(CtrlStruct *cvs)
 	double new_x = x_beac_2 + tower_shift * cos(rob_pos->theta) + K * (y_12 - y_23);
 	double new_y = y_beac_2 + tower_shift * sin(rob_pos->theta) + K * (x_23 - x_12);
 
-	pos_tri->x = first_order_filter(pos_tri->x, new_x, 0.05, dt);
-	pos_tri->y = first_order_filter(pos_tri->y, new_y, 0.05, dt);
+	pos_tri->x = new_x;
+	pos_tri->y = new_y;
+	// pos_tri->x = first_order_filter(pos_tri->x, new_x, 0.05, dt);
+	// pos_tri->y = first_order_filter(pos_tri->y, new_y, 0.05, dt);
+
 	// robot orientation
 	pos_tri->theta = rob_pos->theta;
 	//set_plot(pos_tri->x, "X tri [m]");
