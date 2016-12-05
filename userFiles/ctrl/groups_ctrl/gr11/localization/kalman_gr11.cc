@@ -2,7 +2,6 @@
 #include "odometry_gr11.h"
 #include "triangulation_gr11.h"
 #include "useful_gr11.h"
-#include "matrix_gr11.h"
 
 #define X  0
 #define Y  1
@@ -60,7 +59,7 @@ void kalman_step(KalmanStruc * ekf, CtrlStruct * cvs)
 {
 	// printf("%f -- Starting Kalman filter step ...\n", cvs->inputs->t);
 	ekf->dt = 0.001;
-	
+
 	// printf("[EKF] Unpacking state ...\n");
 	unpack_state(ekf->x, cvs);
 	// printf("[EKF] Unpacking input ...\n");
