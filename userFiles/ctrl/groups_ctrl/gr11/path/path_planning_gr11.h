@@ -33,7 +33,7 @@ struct Node{
 };
 
 // main algo function
-Path* path_planning(Cell start, Cell goal, bool map[4][4], Path* old_path);
+Path* path_planning(Cell start, Cell goal, bool map[17][27], Path* old_path);
 // Evaluate distance between 2 cells on the map
 float evaluate_distance(Cell cell1, Cell cell2);
 // Return the 8 cells arround a cell
@@ -41,7 +41,7 @@ void get_cells_arround(Cell* cell_arround, Cell cell);
 // Generate path from the goal_node
 Path* generate_path(Node* goal_node);
 // check if a cell is viable to go in the list
-bool cell_is_viable(Cell cell, bool map[4][4]);
+bool cell_is_viable(Cell cell, bool map[17][27]);
 // check if the node is already in a list
 bool is_in_list(Node* list, Node* element);
 // free nodes list:

@@ -60,7 +60,7 @@ void get_cells_arround(Cell* cell_arround, Cell cell)
  * \[in] map[4][4] pointer on the array of the map
  * \return bool true if the cell is viable
  */
-bool cell_is_viable(Cell cell, bool map[4][4])
+bool cell_is_viable(Cell cell, bool map[17][27])
 {
 	if ((cell.x < 17 && cell.x >= 0) && (cell.y < 27 && cell.y >= 0)) // check if the cell is on the map
 	{			
@@ -151,13 +151,23 @@ Path* generate_path(Node* goal_node)
 	Path* path = NULL;
 	Node* tracker = goal_node;
 	Node* before = NULL;
+
+	FILE * fp;
+	fp = fopen("path.txt", "w");
+
 	while (tracker != NULL)
 	{
+		
+		fprintf(fp, "%d %d \n", tracker->cell.x, tracker->cell.y);
+
 		Node* parent = tracker->parent;
 		tracker->parent = before;
 		before = tracker;
 		tracker = parent;
 	}
+
+	fclose(fp);
+	
 	tracker = before;
 	Path* path_tracker = NULL;
 	while (tracker != NULL)
@@ -188,15 +198,22 @@ Path* generate_path(Node* goal_node)
 bool is_in_list(Node* list, Node* element)
 {
 	Node* tracker = list;
-	while (tracker != NULL) // if a node with lower f and same position in open_list skip it
+	while (tracker != NULL) // if a node with lower f and same position in the list skip it
 	{
+		/*
 		if (tracker->f <= element->f && (tracker->cell.x == element->cell.x && tracker->cell.y == element->cell.y))
 		{
+			if(display)printf("Return TRUE\n");
 			return true;
 		}
 		if (tracker->f > element->f)
 		{
 			break;
+		}
+		*/
+		if (tracker->cell.x == element->cell.x && tracker->cell.y == element->cell.y)
+		{
+			return true;
 		}
 		tracker = tracker->next;
 	}
@@ -239,8 +256,23 @@ void free_path(Path* path)
  * \[in] Path* old_path the old_path you want to free from memory before path_planning again
  * \return Path* the new path calculated
  */
-Path* path_planning(Cell start, Cell goal, bool map[4][4], Path* old_path)
+Path* path_planning(Cell start, Cell goal, bool map[17][27], Path* old_path)
 {
+	// output to file
+	FILE *fp;
+	FILE *fd;
+	fp = fopen("Output.txt", "w");// "w" means that we are going to write on this file
+	for(int j=0; j < 27; j++)
+	{
+		for(int i=0; i < 17; i ++)
+		{
+			fprintf(fp, "%d ", map[i][j]);
+		}
+		fprintf(fp, "\n");
+	}
+	fclose(fp);
+
+	fp = fopen("nodes.txt", "w");
 
 	// -- initialization ---
 	Node* open_list = (Node*)malloc(sizeof(Node));
@@ -265,6 +297,9 @@ Path* path_planning(Cell start, Cell goal, bool map[4][4], Path* old_path)
 	while (open_list != NULL)
 	{
 		Node* current = open_list; //=> pop the current node with lowest f
+
+		fprintf(fp, "%d %d %d \n", current->cell.x, current->cell.y, 3);
+
 		open_list = open_list->next;
 		get_cells_arround(cell_arround, current->cell); // generate the 8 successors
 
@@ -283,12 +318,15 @@ Path* path_planning(Cell start, Cell goal, bool map[4][4], Path* old_path)
 					path = generate_path(successor);
 					free_nodes(open_list);
 					free_nodes(closed_list);
+
+					fclose(fp);
+
 					return path;
 					break;
 				}
-				successor->g = current->g + evaluate_distance(current->cell,successor->cell);
+				successor->g = successor->parent->g + evaluate_distance(successor->parent->cell, successor->cell); 
 				successor->h = evaluate_distance(goal,successor->cell);
-				successor->f = successor->g + successor->h;
+				successor->f = 0.5 * successor->g + successor->h; // increase the importance of h compare to g
 
 				if(is_in_list(open_list, successor) || is_in_list(closed_list, successor))
 				{
@@ -297,23 +335,18 @@ Path* path_planning(Cell start, Cell goal, bool map[4][4], Path* old_path)
 				else
 				{
 					add_to_list(&open_list, successor);
+					fprintf(fp, "%d %d %d \n", successor->cell.x, successor->cell.y, 4);
 				}
 			}
 		}
 		add_to_list(&closed_list, current);
-
-		if (open_list == NULL)
-		{
-			printf("Warning: NO PATH FOUND.. \n");
-			return path;
-		}
+		fprintf(fp, "%d %d %d \n", current->cell.x, current->cell.y, 5);
 	}
+
+	fclose(fp);
+	
+	printf("Warning: NO PATH FOUND.. \n");
 	return path;
 }
-
-/*! \brief close the path-planning algorithm (memory released)
- * 
- * \param[in,out] path path-planning main structure
- */
 
 NAMESPACE_CLOSE();

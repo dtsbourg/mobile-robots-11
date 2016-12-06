@@ -95,13 +95,23 @@ void controller_loop(CtrlStruct *cvs)
 		flag = 1;
 		// initial position
 		Cell initial_pos;
-		initial_pos.x = 3;
-		initial_pos.y = 1;
+		initial_pos.x = 16;
+		initial_pos.y = 0;
+		
+		FILE *fp;
+		fp = fopen("initial.txt", "w");
+		fprintf(fp, "%d %d", initial_pos.x, initial_pos.y);
+		fclose(fp);
 
 		// goal position
 		Cell final_pos;
 		final_pos.x = 0;
 		final_pos.y = 0;
+
+		fp = fopen("final.txt", "w");
+		fprintf(fp, "%d %d", final_pos.x, final_pos.y);
+		fclose(fp);
+
 		// fake map
 		bool map[4][4] = {0};
 		map[1][0] = 1;
@@ -109,8 +119,9 @@ void controller_loop(CtrlStruct *cvs)
 		map[2][1] = 1;
 
 		// Algo MIT test
-		Path* test = path_planning(initial_pos, final_pos, map, NULL);
+		Path* test = path_planning(initial_pos, final_pos, cvs->map, NULL);
 		Path* tracker = test;
+		
 		while (tracker != NULL)
 		{
 			printf("(%d,%d) -> ", tracker->cell.x, tracker->cell.y);
