@@ -129,7 +129,7 @@ CtrlStruct* init_CtrlStruct(CtrlIn *inputs, CtrlOut *outputs)
 	// filling by symetry
 	for(i=0;i<17;i++)
 	{
-		for(j=0;j<27;j++)
+		for(j=14;j<27;j++)
 		{
 			cvs->map[i][j] = cvs->map[i][26-j];
 		}
