@@ -1,4 +1,4 @@
-/*! 
+/*!
  * \author Group 11
  * \file kalman_gr11.h
  * \brief localization sensors fusion with Kalman
@@ -12,11 +12,27 @@
 
 NAMESPACE_INIT(ctrlGr11);
 
+#define N 4
+#define M 2
+
 /// Kalman main structure
-struct KalmanStruc
+typedef struct
 {
-	int dummy_variable; ///< put your own variable, this is just an example without purpose
-};
+	int n; //< number of state values
+   	int m; //< number of observables
+
+	double dt;		//< Delta time
+
+	/// State vectors
+	double x[N];  //< State (odom)
+	double x_[N]; //< Predicted state
+	double u[M];  //< State Input
+	double y[M];  //< State Observed (tri)
+	double z[N];  //< Innovation
+
+	double cov_pred;
+
+} KalmanStruc;
 
 void kalman(CtrlStruct *cvs);
 
