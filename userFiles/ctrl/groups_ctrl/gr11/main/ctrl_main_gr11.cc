@@ -14,6 +14,7 @@
 #include "triangulation_gr11.h"
 #include "path_planning_gr11.h"
 #include "strategy_gr11.h"
+#include "kalman_gr11.h"
 #include <time.h>
 
 NAMESPACE_INIT(ctrlGr11);
@@ -87,7 +88,7 @@ void controller_loop(CtrlStruct *cvs)
 
 	// tower control
 	outputs->tower_command = 50.0;
-	
+
 	// Path planning testing
 	static bool flag = 0;
 	if (!flag)
@@ -169,12 +170,12 @@ void controller_loop(CtrlStruct *cvs)
     	printf("--- Path map end ---\n");
     	*/
 	}
-	
-	return;
+
 	switch (cvs->main_state)
 	{
 		// calibration
 		case CALIB_STATE:
+			kalman(cvs);
 			calibration(cvs);
 			break;
 
