@@ -254,9 +254,9 @@ void free_path(Path* path)
  * \[in] Cell goal the cell where your path planning aim
  * \[in] bool map[4][4] the map with the obstacle you want to dodge
  * \[in] Path* old_path the old_path you want to free from memory before path_planning again
- * \return Path* the new path calculated
+ * \return Void* the new path calculated or the G distance from the initial to goal
  */
-Path* path_planning(Cell start, Cell goal, bool map[17][27], Path* old_path)
+void* path_planning(Cell start, Cell goal, bool map[17][27], Path* old_path, bool return_distance)
 {
 	// output to file
 	FILE *fp;
@@ -314,14 +314,26 @@ Path* path_planning(Cell start, Cell goal, bool map[17][27], Path* old_path)
 				successor->cell = cell_arround[i];
 				if (successor->cell.x == goal.x && successor->cell.y == goal.y)
 				{
-					printf("Path found\n");
-					path = generate_path(successor);
-					free_nodes(open_list);
-					free_nodes(closed_list);
-
-					fclose(fp);
-
-					return path;
+					// printf("Path found\n");
+					if (return_distance)
+					{
+						float* distance = (float*)malloc(sizeof(float));
+						*distance = successor->g = successor->parent->g + evaluate_distance(successor->parent->cell, successor->cell);
+						free_nodes(open_list);
+						free_nodes(closed_list);
+						
+						fclose(fp);
+						return distance;
+					}
+					else
+					{
+						path = generate_path(successor);
+						free_nodes(open_list);
+						free_nodes(closed_list);
+						
+						fclose(fp);
+						return path;
+					}
 					break;
 				}
 				successor->g = successor->parent->g + evaluate_distance(successor->parent->cell, successor->cell);

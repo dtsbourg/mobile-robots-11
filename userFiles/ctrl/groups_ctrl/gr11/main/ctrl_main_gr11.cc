@@ -120,7 +120,7 @@ void controller_loop(CtrlStruct *cvs)
 		map[2][1] = 1;
 
 		// Algo MIT test
-		Path* test = path_planning(initial_pos, final_pos, cvs->map, NULL);
+		Path* test = (Path *)path_planning(initial_pos, final_pos, cvs->map, NULL, false);
 		Path* tracker = test;
 
 		while (tracker != NULL)
@@ -129,6 +129,12 @@ void controller_loop(CtrlStruct *cvs)
 			tracker = tracker->next;
 		}
 		printf("NULL\n");
+
+		// Test to return distance:
+		float* distance = (float *)path_planning(initial_pos, final_pos, cvs->map, NULL, true);
+		printf("Distance: %f\n", (*distance));
+		// do not forget to free distance:
+		free(distance);
 	}
 
 	switch (cvs->main_state)
