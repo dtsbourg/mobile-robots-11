@@ -83,65 +83,16 @@ void controller_loop(CtrlStruct *cvs)
 	// triangulation
 	triangulation(cvs);
 
-	// opponents position
-	opponents_tower(cvs);
-
 	// tower control
 	outputs->tower_command = 50.0;
 
-	// Path planning testing
-	static bool flag = 0;
-	if (!flag)
-	{
-		flag = 1;
-		// initial position
-		Cell initial_pos;
-		initial_pos.x = 16;
-		initial_pos.y = 0;
-
-		FILE *fp;
-		fp = fopen("initial.txt", "w");
-		fprintf(fp, "%d %d", initial_pos.x, initial_pos.y);
-		fclose(fp);
-
-		// goal position
-		Cell final_pos;
-		final_pos.x = 0;
-		final_pos.y = 0;
-
-		fp = fopen("final.txt", "w");
-		fprintf(fp, "%d %d", final_pos.x, final_pos.y);
-		fclose(fp);
-
-		// fake map
-		bool map[4][4] = {0};
-		map[1][0] = 1;
-		map[1][1] = 1;
-		map[2][1] = 1;
-
-		// Algo MIT test
-		Path* test = (Path *)path_planning(initial_pos, final_pos, cvs->map, NULL, false);
-		Path* tracker = test;
-
-		while (tracker != NULL)
-		{
-			printf("(%d,%d) -> ", tracker->cell.x, tracker->cell.y);
-			tracker = tracker->next;
-		}
-		printf("NULL\n");
-
-		// Test to return distance:
-		float* distance = (float *)path_planning(initial_pos, final_pos, cvs->map, NULL, true);
-		printf("Distance: %f\n", (*distance));
-		// do not forget to free distance:
-		free(distance);
-	}
+	// opponents position
+	opponents_tower(cvs);
 
 	switch (cvs->main_state)
 	{
 		// calibration
 		case CALIB_STATE:
-			kalman(cvs);
 			calibration(cvs);
 			break;
 
@@ -152,13 +103,13 @@ void controller_loop(CtrlStruct *cvs)
 			if (t > 0.0)
 			{
 				cvs->main_state = RUN_STATE;
-				cvs->strat->main_state = GAME_STATE_A;
+				cvs->strat->main_state = STATE_INIT;
 			}
 			break;
 
 		// during game
 		case RUN_STATE:
-			speed_regulation(cvs, 10.0, 11.0);
+			speed_regulation(cvs, 10.0, 10.0);
 
 			main_strategy(cvs);
 			if (t > 89.0) // 1 second safety
