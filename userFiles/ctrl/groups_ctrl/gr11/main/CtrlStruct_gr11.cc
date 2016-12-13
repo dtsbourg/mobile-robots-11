@@ -79,7 +79,7 @@ CtrlStruct* init_CtrlStruct(CtrlIn *inputs, CtrlOut *outputs)
 	cvs->calib->t_flag = 0.0;
 
 	// strategy
-	cvs->strat = init_strategy();
+	cvs->strat = init_strategy(cvs);
 
 	// path-planning
 	cvs->path = NULL;
