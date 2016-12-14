@@ -12,7 +12,9 @@
 #include "speed_regulation_gr11.h"
 #include "calibration_gr11.h"
 #include "triangulation_gr11.h"
+#include "path_planning_gr11.h"
 #include "strategy_gr11.h"
+#include "kalman_gr11.h"
 #include <time.h>
 
 NAMESPACE_INIT(ctrlGr11);
@@ -81,11 +83,11 @@ void controller_loop(CtrlStruct *cvs)
 	// triangulation
 	triangulation(cvs);
 
-	// opponents position
-	opponents_tower(cvs);
-
 	// tower control
 	outputs->tower_command = 50.0;
+
+	// opponents position
+	opponents_tower(cvs);
 
 	switch (cvs->main_state)
 	{
@@ -101,7 +103,7 @@ void controller_loop(CtrlStruct *cvs)
 			if (t > 0.0)
 			{
 				cvs->main_state = RUN_STATE;
-				cvs->strat->main_state = GAME_STATE_A;
+				cvs->strat->main_state = STATE_INIT;
 			}
 			break;
 

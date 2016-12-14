@@ -13,8 +13,8 @@ void speed_regulation(CtrlStruct *cvs, double r_sp_ref, double l_sp_ref)
 {
 	double r_sp, l_sp;
 	double dt;
-	double Kp = 10;
-	double Ki = 0;
+	double Kp = 80.0;
+	double Ki = 0.7;
 
 	// variables declaration
 	CtrlIn *inputs;

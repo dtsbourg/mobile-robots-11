@@ -16,8 +16,8 @@ cmake_minimum_required(VERSION 2.8.7)
 project (projectRobotran)
 
 # project configuration
-set( CMAKE_C_FLAGS_RELEASE   "-O3" )
-set( CMAKE_CXX_FLAGS_RELEASE "-O3" )
+set( CMAKE_C_FLAGS_RELEASE   "-O3 -g" )
+set( CMAKE_CXX_FLAGS_RELEASE "-O3 -g" )
 
 # Variable for storing the path to Robotran common files (should be adapted depending on the location of those source)
 set(TRIAL_PATHS_MBSYSC
