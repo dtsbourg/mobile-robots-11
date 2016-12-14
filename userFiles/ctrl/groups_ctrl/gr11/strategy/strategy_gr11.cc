@@ -10,12 +10,43 @@
 
 NAMESPACE_INIT(ctrlGr11);
 
+
+Cell get_home(CtrlStruct * cvs)
+{
+	Cell home;
+	if (cvs->rob_pos->y > 0)
+	{
+		switch (cvs->team_id) {
+			case TEAM_A:
+				home.x = 16; home.y = 0;
+				break;
+			case TEAM_B:
+				home.x = 0; home.y = 0;
+				break;
+			default:
+				printf("Invalid team\n");
+				break;
+		}
+	} else {
+		switch (cvs->team_id) {
+			case TEAM_A:
+				home.x = 0; home.y = 26;
+				break;
+			case TEAM_B:
+				home.x = 16; home.y = 26;
+				break;
+			default:
+				printf("Invalid team\n");
+				break;
+		}
+	}
+	return home;
+}
+
 float get_target_dist(CtrlStruct *cvs, Target t)
 {
 	Cell initial_pos = { .x =   0, .y =  16 };
 	Cell final_pos   = { .x = t.x, .y = t.y };
-
-	printf("x : %d, y: %d\n", final_pos.x, final_pos.y);
 
 	float* distance = (float *)path_planning(initial_pos, final_pos, cvs->map, NULL, true);
 
@@ -48,21 +79,17 @@ Strategy* init_strategy(CtrlStruct *cvs)
 		{ .present = true, .points = 2, .x = 11, .y = 26, .dist = 0 }
 	};
 
+	strat->tmp_targets = ts;
+
 	for (int i = 0; i < N_TARGETS; i++)
 	{
 		ts[i].dist = get_target_dist(cvs, ts[i]);
-		printf("dist = %f \n", ts[i].dist);
+		// printf("dist = %f \n", ts[i].dist);
 	}
 
 	qsort(ts, N_TARGETS, sizeof(Target), dist_compare);
 
-	for (int i = 0; i < N_TARGETS; i++)
-	{
-		printf("sorted dist = %f \n", ts[i].dist);
-	}
-
 	strat->targets = ts;
-
 	strat->main_state = STATE_EMPTY;
 
 	return strat;
@@ -91,6 +118,11 @@ void main_strategy(CtrlStruct *cvs)
 	strat  = cvs->strat;
 	inputs = cvs->inputs;
 
+	int cell_x = (int)(cvs->rob_pos->x * 10.0 + 0.9);
+	int cell_y = (int)(cvs->rob_pos->y * 10.0 + 1.4);
+	Cell start = { .x = cell_x, .y = cell_y };
+	Cell objective;
+
 	switch (strat->main_state)
 	{
 		case STATE_INIT:
@@ -99,15 +131,26 @@ void main_strategy(CtrlStruct *cvs)
 			break;
 
 		case STATE_EMPTY:
-			speed_regulation(cvs, 0.0, 0.0);
+			objective.x = strat->targets[0].x; objective.y = strat->targets[0].y;
+			cvs->path = (Path *)path_planning(start , objective, cvs->map, cvs->path, false);
+			follow_path(cvs);
 			break;
 
 		case STATE_ONE_DISK:
-			speed_regulation(cvs, 0.0, 0.0);
+			for (int i = 0; i < N_TARGETS; i++)
+			{
+				strat->tmp_targets[i].dist = get_target_dist(cvs, strat->tmp_targets[i]);
+			}
+			qsort(strat->tmp_targets, N_TARGETS, sizeof(Target), dist_compare);
+			objective.x = strat->tmp_targets[0].x; objective.y = strat->tmp_targets[0].y;
+			cvs->path = (Path *)path_planning(start, objective, cvs->map, cvs->path, false);
+			follow_path(cvs);
 			break;
 
 		case STATE_TWO_DISKS:
-			speed_regulation(cvs, 0.0, 0.0);
+			objective = get_home(cvs);
+			cvs->path = (Path *)path_planning(start , objective, cvs->map, cvs->path, false);
+			follow_path(cvs);
 			break;
 
 		default:

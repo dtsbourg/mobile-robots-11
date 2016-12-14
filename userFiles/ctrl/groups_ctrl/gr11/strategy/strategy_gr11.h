@@ -26,6 +26,7 @@ typedef struct Strategy
 {
 	int main_state; ///< main state of the strategy
 	Target * targets;
+	Target * tmp_targets;
 } Strategy;
 
 /// 'main_state' states (adapt with your own states)
