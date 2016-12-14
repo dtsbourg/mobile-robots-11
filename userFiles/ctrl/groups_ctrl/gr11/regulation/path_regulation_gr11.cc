@@ -34,18 +34,18 @@ void follow_path(CtrlStruct *cvs)
 
 		double dist_x = (double)path->cell.x / 10.0 - 0.9 - rob_pos->x;
 		double dist_y = (double)path->cell.y / 10.0 - 1.4 - rob_pos->y;
-		printf("%d  celle.x y \n", path->cell.y);
-		printf("%f  distance rob y \n", rob_pos->y);
-		printf("%f  distance y \n", dist_y);
+		//printf("%d  celle.x y \n", path->cell.y);
+		//printf("%f  distance rob y \n", rob_pos->y);
+		//printf("%f  distance y \n", dist_y);
 		double dist = sqrt(dist_x*dist_x + dist_y*dist_y);
-		printf("%f  distance \n", dist);
+		//printf("%f  distance \n", dist);
 		double angle = rob_pos->theta - atan(dist_y / dist_x);
-		printf("%f  distance \n", dist);
+		//printf("%f  distance \n", dist);
 
 		if (cvs->path->next == NULL)
 		{// Dernière case: vitesse est proportionnelle à la distance qui reste
 		 //vitesse = distance restante 		 //rotation = angle
-			printf("pas de chemin mec");
+			//printf("pas de chemin mec");
 
 			if(angle>0)
 				speed_regulation(cvs, dist * 100, dist*100-angle*10/ M_PI);
@@ -55,7 +55,7 @@ void follow_path(CtrlStruct *cvs)
 
 		if (cvs->path->next != NULL)
 		{// il reste des noeuds
-			printf("fgdjfzhg");
+			//printf("fgdjfzhg");
 			//speed_regulation(cvs, 10.0, 10.0);
 			// rotation = angle
 

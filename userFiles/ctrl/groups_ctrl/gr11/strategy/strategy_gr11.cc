@@ -118,10 +118,11 @@ void main_strategy(CtrlStruct *cvs)
 	strat  = cvs->strat;
 	inputs = cvs->inputs;
 
-	int cell_x = (int)(cvs->rob_pos->x * 10.0 + 0.9);
-	int cell_y = (int)(cvs->rob_pos->y * 10.0 + 1.4);
+	int cell_x = (int)(cvs->rob_pos->x / 10.0);
+	int cell_y = (int)(cvs->rob_pos->y / 10.0);
 	Cell start = { .x = cell_x, .y = cell_y };
-	Cell objective;
+	Cell objective = { .x = strat->targets[0].x, .y = strat->targets[0].y };
+
 
 	switch (strat->main_state)
 	{
@@ -131,26 +132,27 @@ void main_strategy(CtrlStruct *cvs)
 			break;
 
 		case STATE_EMPTY:
-			objective.x = strat->targets[0].x; objective.y = strat->targets[0].y;
-			cvs->path = (Path *)path_planning(start , objective, cvs->map, cvs->path, false);
-			follow_path(cvs);
-			break;
-
-		case STATE_ONE_DISK:
-			for (int i = 0; i < N_TARGETS; i++)
-			{
-				strat->tmp_targets[i].dist = get_target_dist(cvs, strat->tmp_targets[i]);
-			}
-			qsort(strat->tmp_targets, N_TARGETS, sizeof(Target), dist_compare);
-			objective.x = strat->tmp_targets[0].x; objective.y = strat->tmp_targets[0].y;
+			printf("x_start = %d ; y_start = %d \n", start.x, start.y);
+			printf("x_obj = %d ; y_obj = %d \n", objective.x, objective.y);
 			cvs->path = (Path *)path_planning(start, objective, cvs->map, cvs->path, false);
 			follow_path(cvs);
 			break;
 
+		case STATE_ONE_DISK:
+			// for (int i = 0; i < N_TARGETS; i++)
+			// {
+			// 	strat->tmp_targets[i].dist = get_target_dist(cvs, strat->tmp_targets[i]);
+			// }
+			// qsort(strat->tmp_targets, N_TARGETS, sizeof(Target), dist_compare);
+			// objective.x = strat->tmp_targets[0].x; objective.y = strat->tmp_targets[0].y;
+			// cvs->path = (Path *)path_planning(start, objective, cvs->map, cvs->path, false);
+			// follow_path(cvs);
+			break;
+
 		case STATE_TWO_DISKS:
-			objective = get_home(cvs);
-			cvs->path = (Path *)path_planning(start , objective, cvs->map, cvs->path, false);
-			follow_path(cvs);
+			// objective = get_home(cvs);
+			// cvs->path = (Path *)path_planning(start , objective, cvs->map, cvs->path, false);
+			// follow_path(cvs);
 			break;
 
 		default:
