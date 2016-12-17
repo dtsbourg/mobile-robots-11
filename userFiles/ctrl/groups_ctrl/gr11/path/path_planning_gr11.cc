@@ -321,7 +321,7 @@ void* path_planning(Cell start, Cell goal, bool map[17][27], Path* old_path, boo
 						*distance = successor->g = successor->parent->g + evaluate_distance(successor->parent->cell, successor->cell);
 						free_nodes(open_list);
 						free_nodes(closed_list);
-						
+
 						fclose(fp);
 						return distance;
 					}
@@ -330,7 +330,7 @@ void* path_planning(Cell start, Cell goal, bool map[17][27], Path* old_path, boo
 						path = generate_path(successor);
 						free_nodes(open_list);
 						free_nodes(closed_list);
-						
+
 						fclose(fp);
 						return path;
 					}

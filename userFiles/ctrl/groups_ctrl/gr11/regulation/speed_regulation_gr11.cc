@@ -34,7 +34,6 @@ void speed_regulation(CtrlStruct *cvs, double r_sp_ref, double l_sp_ref)
 	dt = inputs->t - sp_reg->last_t; // time interval since last call
 
 	// ----- Wheels regulation computation start ----- //
-	printf("speed_l %f ; speed_r %f\n", l_sp, r_sp);
 	double r_err = r_sp_ref - r_sp;
 	if (r_sp > 0.15)
 		sp_reg->int_error_r += limit_range(r_err, -5.0, 5.0);
@@ -46,9 +45,6 @@ void speed_regulation(CtrlStruct *cvs, double r_sp_ref, double l_sp_ref)
 		sp_reg->int_error_l += limit_range(l_err, -5.0, 5.0);
 	else
 		sp_reg->int_error_l = 0;
-
-	printf("err_l %f ; err_l_agg %f\n", l_err, sp_reg->int_error_l);
-	printf("err_r %f ; err_r_agg %f\n", r_err, sp_reg->int_error_r);
 
 	// wheel commands
 	outputs->wheel_commands[R_ID] = limit_range(Kp * r_err + Ki * sp_reg->int_error_r * dt, -100.0, 100.0);
