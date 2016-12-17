@@ -21,6 +21,9 @@ typedef struct RobotPosition
 
 	double last_t; ///< last time position was updated
 
+	int grid_x; ///< x position on the grid from top left
+	int grid_y; ///< y position on the grid from top left
+
 } RobotPosition;
 
 void set_init_position(int robot_id, RobotPosition *rob_pos);

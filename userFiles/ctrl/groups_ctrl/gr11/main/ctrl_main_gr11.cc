@@ -80,6 +80,9 @@ void controller_loop(CtrlStruct *cvs)
 	// update the robot odometry
 	update_odometry(cvs);
 
+	// update the robot grid position
+	update_grid_position(cvs);
+
 	// triangulation
 	triangulation(cvs);
 

@@ -21,27 +21,30 @@ void set_init_position(int robot_id, RobotPosition *rob_pos)
 			break;
 
 		case ROBOT_R: // red robot
-			rob_pos->x = 0.0;
-			rob_pos->y = 0.0;
-			rob_pos->theta = 0.0;
+			rob_pos->x = 0.82;
+			rob_pos->y = 1.4;
+			rob_pos->theta = - M_PI / 2.0;
 			break;
 
 		case ROBOT_Y: // yellow robot
-			rob_pos->x = 0.0;
-			rob_pos->y = 0.0;
-			rob_pos->theta = 0.0;
+			rob_pos->x = 0.67;
+			rob_pos->y = -1.15;
+			rob_pos->theta = M_PI / 2.0;
 			break;
 
 		case ROBOT_W: //  white robot
-			rob_pos->x = 0.0;
-			rob_pos->y = 0.0;
-			rob_pos->theta = 0.0;
+			rob_pos->x = 0.82;
+			rob_pos->y = -1.4;
+			rob_pos->theta = M_PI / 2.0;
 			break;
 
 		default:
 			printf("Error: unknown robot ID: %d !\n", robot_id);
 			exit(EXIT_FAILURE);
 	}
+
+	// set init robot position:
+
 }
 
 NAMESPACE_CLOSE();
