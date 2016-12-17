@@ -55,8 +55,8 @@ void set_init_position(int robot_id, RobotPosition *rob_pos)
  */
  void update_grid_pos(RobotPosition *rob_pos)
  {
- 	rob_pos->grid_x = (int)((rob_pos->x + 0.80) * 10.0);
-	rob_pos->grid_y = (int)((rob_pos->y + 1.30) * 10.0);
+ 	rob_pos->grid_x = round((rob_pos->x + 0.80) * 10.0);
+	rob_pos->grid_y = round((rob_pos->y + 1.30) * 10.0);
 	// printf("position: (%d,%d)\n", rob_pos->grid_x, rob_pos->grid_y);
  }
 

@@ -91,4 +91,14 @@ bool equal2float(float a, float b)
 	return fabs(a-b) < EPSILON;
 }
 
+/*! \brief Round a float into an int
+ *
+ * \param[in] a float to round
+ * \return int value rounded
+ */
+int round(float a)
+{
+	return (a > 0.5) ? (int)a + 1 : (int)a;
+}
+
 NAMESPACE_CLOSE();
