@@ -14,6 +14,7 @@
 #include "triangulation_gr11.h"
 #include "path_planning_gr11.h"
 #include "strategy_gr11.h"
+#include "kalman_gr11.h"
 #include <time.h>
 
 NAMESPACE_INIT(ctrlGr11);
@@ -82,55 +83,12 @@ void controller_loop(CtrlStruct *cvs)
 	// triangulation
 	triangulation(cvs);
 
+	// tower control
+	outputs->tower_command = 50.0;
+
 	// opponents position
 	opponents_tower(cvs);
 
-	// tower control
-	outputs->tower_command = 50.0;
-	
-	// Path planning testing
-	static bool flag = 0;
-	if (!flag)
-	{
-		flag = 1;
-		// initial position
-		Cell initial_pos;
-		initial_pos.x = 16;
-		initial_pos.y = 0;
-		
-		FILE *fp;
-		fp = fopen("initial.txt", "w");
-		fprintf(fp, "%d %d", initial_pos.x, initial_pos.y);
-		fclose(fp);
-
-		// goal position
-		Cell final_pos;
-		final_pos.x = 1;
-		final_pos.y = 10;
-
-		fp = fopen("final.txt", "w");
-		fprintf(fp, "%d %d", final_pos.x, final_pos.y);
-		fclose(fp);
-
-		// fake map
-		bool map[4][4] = {0};
-		map[1][0] = 1;
-		map[1][1] = 1;
-		map[2][1] = 1;
-
-		// Algo MIT test
-		Path* test = path_planning(initial_pos, final_pos, cvs->map, NULL);
-		Path* tracker = test;
-		
-		while (tracker != NULL)
-		{
-			printf("(%d,%d) -> ", tracker->cell.x, tracker->cell.y);
-			tracker = tracker->next;
-		}
-		printf("NULL\n");
-	}
-	
-	return;
 	switch (cvs->main_state)
 	{
 		// calibration
@@ -145,14 +103,12 @@ void controller_loop(CtrlStruct *cvs)
 			if (t > 0.0)
 			{
 				cvs->main_state = RUN_STATE;
-				cvs->strat->main_state = GAME_STATE_A;
+				cvs->strat->main_state = STATE_INIT;
 			}
 			break;
 
 		// during game
 		case RUN_STATE:
-			speed_regulation(cvs, 10.0, 11.0);
-
 			main_strategy(cvs);
 			if (t > 89.0) // 1 second safety
 			{
