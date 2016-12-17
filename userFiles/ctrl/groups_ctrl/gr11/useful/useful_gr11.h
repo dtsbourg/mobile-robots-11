@@ -9,6 +9,7 @@
 
 #define COT_MAX     1e8
 #define cot(x)      ( 1 / tan(x) )
+#define EPSILON     6e-8
 
 #include "namespace_ctrl.h"
 
@@ -23,6 +24,7 @@ double norm_dist(double dx, double dy);
 double limit_range(double x, double min, double max);
 double limit_angle(double x);
 double first_order_filter(double last_val, double new_val, double tau, double delta_t);
+bool equal2float(float a, float b);
 
 NAMESPACE_CLOSE();
 
