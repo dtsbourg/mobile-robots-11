@@ -118,8 +118,9 @@ void add_to_list(Node** list, Node* element)
 		Node* before = NULL;
 		while (tracker != NULL)
 		{
-			if (element->f <= tracker->f)
+			if (element->f < tracker->f)
 			{
+				// put element before
 				element->next = tracker;
 				if (before == NULL)
 				{
@@ -131,6 +132,25 @@ void add_to_list(Node** list, Node* element)
 				}
 				break;
 			}
+			else if (equal2float(element->f,tracker->f))
+			{
+				if (element->h < tracker->h)
+				{
+					// put element before
+					element->next = tracker;
+					if (before == NULL)
+					{
+						(*list) = element;
+					}
+					else
+					{
+						before->next = element;
+					}
+					break;
+				}
+				// else we keep going on the loop to put it right after.
+			}
+			// if we reach the end just 
 			if (tracker->next == NULL)
 			{
 				tracker->next = element;
@@ -200,17 +220,6 @@ bool is_in_list(Node* list, Node* element)
 	Node* tracker = list;
 	while (tracker != NULL) // if a node with lower f and same position in the list skip it
 	{
-		/*
-		if (tracker->f <= element->f && (tracker->cell.x == element->cell.x && tracker->cell.y == element->cell.y))
-		{
-			if(display)printf("Return TRUE\n");
-			return true;
-		}
-		if (tracker->f > element->f)
-		{
-			break;
-		}
-		*/
 		if (tracker->cell.x == element->cell.x && tracker->cell.y == element->cell.y)
 		{
 			return true;
@@ -326,7 +335,7 @@ Path* path_planning(Cell start, Cell goal, bool map[17][27], Path* old_path)
 				}
 				successor->g = successor->parent->g + evaluate_distance(successor->parent->cell, successor->cell); 
 				successor->h = evaluate_distance(goal,successor->cell);
-				successor->f = 0.5 * successor->g + successor->h; // increase the importance of h compare to g
+				successor->f = successor->g + successor->h; 
 
 				if(is_in_list(open_list, successor) || is_in_list(closed_list, successor))
 				{

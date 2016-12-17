@@ -105,8 +105,8 @@ void controller_loop(CtrlStruct *cvs)
 
 		// goal position
 		Cell final_pos;
-		final_pos.x = 0;
-		final_pos.y = 0;
+		final_pos.x = 1;
+		final_pos.y = 10;
 
 		fp = fopen("final.txt", "w");
 		fprintf(fp, "%d %d", final_pos.x, final_pos.y);
