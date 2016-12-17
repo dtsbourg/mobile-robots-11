@@ -44,7 +44,20 @@ void set_init_position(int robot_id, RobotPosition *rob_pos)
 	}
 
 	// set init robot position:
+	update_grid_pos(rob_pos);
 
 }
+
+/*! \brief update the grid position from the rob_pos
+ *
+ * \param[in/out] rob_pos robot position structure
+ *
+ */
+ void update_grid_pos(RobotPosition *rob_pos)
+ {
+ 	rob_pos->grid_x = (int)((rob_pos->x + 0.90) * 10.0);
+	rob_pos->grid_y = (int)((rob_pos->x + 0.90) * 10.0);
+	printf("position: (%d,%d)\n", rob_pos->grid_x, rob_pos->grid_y);
+ }
 
 NAMESPACE_CLOSE();

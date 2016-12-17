@@ -50,7 +50,6 @@ typedef struct CtrlStruct
 	SpeedRegulation *sp_reg;    ///< speed regulation
 	RobotCalibration *calib;    ///< calibration
 	Path *path;                 ///< path-planning
-	Cell *rob_grid_pos;         ///< robot position on the grid
 	Strategy *strat;            ///< strategy
 
 	int main_state; 	///< main state

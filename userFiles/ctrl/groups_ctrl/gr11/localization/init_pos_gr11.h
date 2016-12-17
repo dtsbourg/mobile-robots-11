@@ -27,6 +27,7 @@ typedef struct RobotPosition
 } RobotPosition;
 
 void set_init_position(int robot_id, RobotPosition *rob_pos);
+void update_grid_pos(RobotPosition *rob_pos);
 
 NAMESPACE_CLOSE();
 

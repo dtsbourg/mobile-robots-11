@@ -80,11 +80,11 @@ void controller_loop(CtrlStruct *cvs)
 	// update the robot odometry
 	update_odometry(cvs);
 
-	// update the robot grid position
-	update_grid_position(cvs);
-
 	// triangulation
 	triangulation(cvs);
+
+	// update the robot grid position
+	update_grid_pos(cvs->rob_pos);
 
 	// tower control
 	outputs->tower_command = 50.0;
