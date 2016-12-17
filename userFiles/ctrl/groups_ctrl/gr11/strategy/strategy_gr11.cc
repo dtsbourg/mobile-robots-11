@@ -67,6 +67,8 @@ Strategy* init_strategy(CtrlStruct *cvs)
 	Strategy *strat;
 
 	strat = (Strategy*) malloc(sizeof(Strategy));
+	strat->targets = (Target *) malloc(N_TARGETS*sizeof(Target));
+	strat->tmp_targets = (Target *) malloc(N_TARGETS*sizeof(Target));
 
 	Target ts[N_TARGETS] = {
 		{ .present = true, .points = 2, .x = 11, .y =  0, .dist = 0 },
@@ -79,17 +81,22 @@ Strategy* init_strategy(CtrlStruct *cvs)
 		{ .present = true, .points = 2, .x = 11, .y = 26, .dist = 0 }
 	};
 
-	strat->tmp_targets = ts;
+	memcpy(strat->tmp_targets, ts, N_TARGETS*sizeof(Target));
 
 	for (int i = 0; i < N_TARGETS; i++)
 	{
 		ts[i].dist = get_target_dist(cvs, ts[i]);
-		// printf("dist = %f \n", ts[i].dist);
 	}
 
 	qsort(ts, N_TARGETS, sizeof(Target), dist_compare);
 
-	strat->targets = ts;
+	memcpy(strat->targets, ts, N_TARGETS*sizeof(Target));
+
+	for (int i = 0; i < N_TARGETS; i++)
+	{
+		printf("dist = %f \n", strat->targets[i].dist);
+	}
+
 	strat->main_state = STATE_EMPTY;
 
 	return strat;
@@ -118,11 +125,10 @@ void main_strategy(CtrlStruct *cvs)
 	strat  = cvs->strat;
 	inputs = cvs->inputs;
 
-	int cell_x = (int)(cvs->rob_pos->x / 10.0);
-	int cell_y = (int)(cvs->rob_pos->y / 10.0);
+	int cell_x = (int)((cvs->rob_pos->x + 0.90) * 10.0);
+	int cell_y = (int)((cvs->rob_pos->y + 1.14) * 10.0);
 	Cell start = { .x = cell_x, .y = cell_y };
 	Cell objective = { .x = strat->targets[0].x, .y = strat->targets[0].y };
-
 
 	switch (strat->main_state)
 	{
@@ -132,6 +138,7 @@ void main_strategy(CtrlStruct *cvs)
 			break;
 
 		case STATE_EMPTY:
+			// printf("x = %f ; y = %f\n", cvs->rob_pos->x, cvs->rob_pos->y);
 			printf("x_start = %d ; y_start = %d \n", start.x, start.y);
 			printf("x_obj = %d ; y_obj = %d \n", objective.x, objective.y);
 			cvs->path = (Path *)path_planning(start, objective, cvs->map, cvs->path, false);
