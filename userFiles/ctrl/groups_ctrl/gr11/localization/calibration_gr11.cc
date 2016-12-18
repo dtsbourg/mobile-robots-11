@@ -7,11 +7,14 @@
 
 NAMESPACE_INIT(ctrlGr11);
 
-#define CALIB_SPEED 10.0 ///< Robot wheel speed for calibration steps
-#define WAIT_TIME   1.0  ///< Time to wait to ensure contact
+#define CALIB_SPEED  10.0 ///< Robot wheel speed for calibration steps
+#define WAIT_TIME    1.0  ///< Time to wait to ensure contact
 
-#define WALL_X 		0.94 ///< Y coordinates of the teams base wall
-#define WALL_Y 		1.44 ///< Y coordinates of the teams base wall
+#define WALL_X 		 0.94 ///< X coordinates of the teams base wall
+#define SMALL_WALL_X 0.56 ///< X coordinates of the teams base small wall
+#define WALL_Y 		 1.44 ///< Y coordinates of the teams base wall
+
+#define ANGLE_OFFSET 0.6
 
 // calibration states
 enum {CALIB_START, CALIB_STATE_A, CALIB_STATE_B, CALIB_STATE_C, CALIB_STATE_D, CALIB_STATE_E, CALIB_STATE_F, CALIB_STATE_G, CALIB_STATE_H, CALIB_FINISH};
@@ -43,11 +46,11 @@ void calibration(CtrlStruct *cvs)
 
 	team_id = cvs->team_id;
 	robot_id = cvs->robot_id;
-
-	// set_plot(rob_pos->x, "X Odometry value [m]");
-	set_plot(rob_pos->x, "X Odom [m]");
-	// set_plot(rob_pos->y, "Y Odometry value [m]");
-	set_plot(rob_pos->theta, "Theta Odometry value [rad]");
+	
+	//set_plot(rob_pos->x, "X Odometry value [m]");
+	//set_plot(rob_pos->y, "Y Odometry value [m]");
+	// set_plot(rob_pos->theta, "Theta Odometry value [rad]");
+	
 
 	// finite state machine (FSM)
 	switch (calib->flag)
@@ -56,27 +59,27 @@ void calibration(CtrlStruct *cvs)
 			switch (robot_id)
 			{
 				case ROBOT_R:
+				case ROBOT_W:
 					speed_regulation(cvs, 0.0, 0.0);
 					calib->flag = CALIB_STATE_A; // directly go to state A
 					calib->t_flag = t;
 					break;
 				case ROBOT_B:
-					if (t < -10.0)
+					speed_regulation(cvs, CALIB_SPEED, -CALIB_SPEED); // give a small angle to avoid collision
+					if (rob_pos->theta >= 0.0 + ANGLE_OFFSET)
 					{
-						speed_regulation(cvs, 0.0, 0.0);
-					}
-					else
-					{
-						speed_regulation(cvs, CALIB_SPEED, -CALIB_SPEED); // give a small angle to avoid collision
-						if (rob_pos->theta >= M_PI * 0.5 + 5 * DEG_TO_RAD)
-						{
-							calib->flag = CALIB_STATE_A; // go to state A after calibration one
-							calib->t_flag = t;
-							
-						}
+						calib->flag = CALIB_STATE_A; // go to state A after calibration one
+						calib->t_flag = t;			
 					}
 					break;
-
+				case ROBOT_Y:
+					speed_regulation(cvs, -CALIB_SPEED, CALIB_SPEED);
+					if (rob_pos->theta <= 0.0 - ANGLE_OFFSET)
+					{
+						calib->flag = CALIB_STATE_A; // go to state A after calibration one
+						calib->t_flag = t;			
+					}
+					break;
 			}
 			break;
 
@@ -103,22 +106,27 @@ void calibration(CtrlStruct *cvs)
 		 * - set angle to -90(deg) / set Y position to 1.44[m] (top of the map minus wall)
 		*/
 		case CALIB_STATE_B: // state B
-			switch (robot_id)
+			speed_regulation(cvs, -CALIB_SPEED, -CALIB_SPEED);
+			if (t - calib->t_flag > WAIT_TIME)
 			{
-				case ROBOT_R:
-					speed_regulation(cvs, -CALIB_SPEED, -CALIB_SPEED);
-					if (t - calib->t_flag > WAIT_TIME)
-					{
+				switch (robot_id)
+				{
+					case ROBOT_R:
 						rob_pos->y = WALL_Y;
 						rob_pos->theta = -M_PI * 0.5;
-
-						calib->flag = CALIB_STATE_C;
-						calib->t_flag = t;
-					}
-					break;
-				case ROBOT_B:
-					calib->flag = CALIB_FINISH;
-					break;
+						break;
+					case ROBOT_B:
+					case ROBOT_Y:
+						rob_pos->x = SMALL_WALL_X;
+						rob_pos->theta = 0.0;		
+						break;
+					case ROBOT_W:
+						rob_pos->y = -WALL_Y;
+						rob_pos->theta = M_PI * 0.5;
+						break;
+				}
+				calib->flag = CALIB_STATE_C;
+				calib->t_flag = t;
 			}
 			break;
 
@@ -126,15 +134,10 @@ void calibration(CtrlStruct *cvs)
 		/* - move forward 0.5 seconds to center the robot
 		*/
 		case CALIB_STATE_C: // state C
-			switch (robot_id)
+			speed_regulation(cvs, CALIB_SPEED, CALIB_SPEED);
+			if (t - calib->t_flag > 0.6)
 			{
-				case ROBOT_R:
-					speed_regulation(cvs, CALIB_SPEED, CALIB_SPEED);
-					if (t - calib->t_flag > 0.6)
-					{
-						calib->flag = CALIB_STATE_D;
-					}
-					break;
+				calib->flag = CALIB_STATE_D;
 			}
 			break;
 
@@ -142,14 +145,32 @@ void calibration(CtrlStruct *cvs)
 		/* - move in a round until 90° -> we want to put the robot in a -180° angle
 		*/
 		case CALIB_STATE_D:
+			
+			if (team_id == TEAM_A)
+				speed_regulation(cvs, -CALIB_SPEED, CALIB_SPEED);
+			else
+				speed_regulation(cvs, CALIB_SPEED, -CALIB_SPEED);
+
 			switch (robot_id)
 			{
 				case ROBOT_R:
-					speed_regulation(cvs, -CALIB_SPEED, CALIB_SPEED);
 					if (rob_pos->theta <= - M_PI)
-					{
 						calib->flag = CALIB_STATE_E;
-					}
+					break;
+
+				case ROBOT_W:
+					if (rob_pos->theta >= M_PI)
+						calib->flag = CALIB_STATE_E;
+					break;
+
+				case ROBOT_B:
+					if (rob_pos->theta <= - M_PI * 0.5)
+						calib->flag = CALIB_STATE_E;
+					break;
+
+				case ROBOT_Y:
+					if (rob_pos->theta >= M_PI * 0.5)
+						calib->flag = CALIB_STATE_E;
 					break;
 			}
 			break;
@@ -160,17 +181,11 @@ void calibration(CtrlStruct *cvs)
 		 * - detect wall with micro switch and enter state F
 		*/
 		case CALIB_STATE_E: // state E:
-			switch (robot_id)
+			speed_regulation(cvs, -CALIB_SPEED, -CALIB_SPEED);
+			if (inputs->u_switch[R_ID] && inputs->u_switch[L_ID])
 			{
-				case ROBOT_R:
-					speed_regulation(cvs, -CALIB_SPEED, -CALIB_SPEED);
-
-					if (inputs->u_switch[R_ID] && inputs->u_switch[L_ID])
-					{
-						calib->flag = CALIB_STATE_F;
-						calib->t_flag = t;
-					}
-					break;
+				calib->flag = CALIB_STATE_F;
+				calib->t_flag = t;
 			}
 			break;
 
@@ -179,20 +194,36 @@ void calibration(CtrlStruct *cvs)
 		 * - set angle to -180(deg) / set X position to 0.94[m] (right of the map minus wall)
 		*/
 		case CALIB_STATE_F: // state F
-			switch (robot_id)
+			speed_regulation(cvs, -CALIB_SPEED, -CALIB_SPEED);
+			if (t - calib->t_flag > WAIT_TIME)
 			{
-				case ROBOT_R:
-					speed_regulation(cvs, -CALIB_SPEED, -CALIB_SPEED);
-					if (t - calib->t_flag > WAIT_TIME)
-					{
+				switch (robot_id)
+				{
+					case ROBOT_R:
 						rob_pos->x = WALL_X;
 						rob_pos->theta = -M_PI;
-
 						calib->flag = CALIB_FINISH;
-						calib->t_flag = t;
-						printf("Time: %f \n", calib->t_flag);
-					}
-					break;
+						break;
+
+					case ROBOT_W:
+						rob_pos->x = WALL_X;
+						rob_pos->theta = M_PI;
+						calib->flag = CALIB_FINISH;
+						break;
+
+					case ROBOT_B:
+						rob_pos->y = WALL_Y;
+						rob_pos->theta = -M_PI * 0.5;
+						calib->flag = CALIB_STATE_G;
+						break;
+
+					case ROBOT_Y:
+						rob_pos->y = -WALL_Y;
+						rob_pos->theta = M_PI * 0.5;
+						calib->flag = CALIB_STATE_G;
+						break;
+				}
+				calib->t_flag = t;
 			}
 			break;
 
@@ -201,11 +232,8 @@ void calibration(CtrlStruct *cvs)
 		*/
 		case CALIB_STATE_G: // state G
 			speed_regulation(cvs, CALIB_SPEED, CALIB_SPEED);
-
-			if (t - calib->t_flag > WAIT_TIME)
-			{
-				calib->flag = CALIB_STATE_H;
-			}
+			if (t - calib->t_flag > 2 * WAIT_TIME)
+				calib->flag = CALIB_FINISH;
 			break;
 
 		// ----- Calibration State H ----- //
