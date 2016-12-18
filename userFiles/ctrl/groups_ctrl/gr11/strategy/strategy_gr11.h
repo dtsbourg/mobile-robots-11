@@ -13,24 +13,25 @@
 
 NAMESPACE_INIT(ctrlGr11);
 
+/// Target Struct
 typedef struct {
-	bool present;
-	int points;
-	int x;
-	int y;
-	float dist;
+	bool present; // Is the target still available
+	int points;   // How much is it worth
+	int x;		  // position x
+	int y;		  // position x
+	float dist;   // How far is the target
 } Target;
 
 /// strategy main structure
 typedef struct Strategy
 {
-	int main_state; ///< main state of the strategy
+	int main_state; 	///< main state of the strategy
 	int tmp_nb_targets;
 	int current_target;
 	Target * targets;
 } Strategy;
 
-/// 'main_state' states (adapt with your own states)
+/// 'main_state' states
 enum {
 	   STATE_INIT,
 	   STATE_TWO_DISKS,

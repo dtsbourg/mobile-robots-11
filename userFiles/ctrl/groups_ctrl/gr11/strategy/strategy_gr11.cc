@@ -111,16 +111,8 @@ void main_strategy(CtrlStruct *cvs)
 	inputs = cvs->inputs;
 	outputs = cvs->outputs;
 
-
-	/*Ici j'ai une id�e du tonerre. Plut�t que de prendre le noeud le plus proche,
-	on peut prendre le prochain noeud de la liste. Attention tout de m�me � la fin de la liste,
-	lorsqu'il n'y a plus de noeuds.
-
-	Peut�tre l'id�al serait d'avoir le noeud d'avant?
-	*/
 	int cell_x = (int)round((cvs->kal_pos->x + 0.8) * 10.0);
 	int cell_y = (int)round((cvs->kal_pos->y + 1.3) * 10.0);
-
 
 	Cell start;
 	start.x = cell_x;
