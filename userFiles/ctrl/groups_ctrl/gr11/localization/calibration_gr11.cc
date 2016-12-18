@@ -13,8 +13,19 @@ NAMESPACE_INIT(ctrlGr11);
 #define WALL_X 		0.94 ///< Y coordinates of the teams base wall
 #define WALL_Y 		1.44 ///< Y coordinates of the teams base wall
 
-// calibration states
-enum {CALIB_START, CALIB_STATE_A, CALIB_STATE_B, CALIB_STATE_C, CALIB_STATE_D, CALIB_STATE_E, CALIB_STATE_F, CALIB_STATE_G, CALIB_STATE_H, CALIB_FINISH};
+// Calibration FSM States
+enum {
+		CALIB_START,
+		CALIB_STATE_A,
+		CALIB_STATE_B,
+		CALIB_STATE_C,
+		CALIB_STATE_D,
+		CALIB_STATE_E,
+		CALIB_STATE_F,
+		CALIB_STATE_G,
+		CALIB_STATE_H,
+		CALIB_FINISH
+	};
 
 /*! \brief calibration of the robot to calibrate its position
  *
@@ -41,11 +52,6 @@ void calibration(CtrlStruct *cvs)
 	t = inputs->t;
 	team_id = cvs->team_id;
 
-	// set_plot(rob_pos->x, "X Odometry value [m]");
-	// set_plot(rob_pos->x, "X Odom [m]");
-	// set_plot(rob_pos->y, "Y Odometry value [m]");
-	// set_plot(rob_pos->theta, "Theta Odometry value [rad]");
-
 	// finite state machine (FSM)
 	switch (calib->flag)
 	{
@@ -64,8 +70,8 @@ void calibration(CtrlStruct *cvs)
 			speed_regulation(cvs, -CALIB_SPEED, -CALIB_SPEED);
 
 			if (inputs->u_switch[R_ID] && inputs->u_switch[L_ID])
-			{
-				calib->flag = CALIB_STATE_B;
+			{   // Touched the wall
+				calib->flag   = CALIB_STATE_B;
 				calib->t_flag = t;
 			}
 			break;
@@ -79,10 +85,10 @@ void calibration(CtrlStruct *cvs)
 
 			if (t - calib->t_flag > WAIT_TIME)
 			{
-				rob_pos->y = WALL_Y;
+				rob_pos->y     = WALL_Y;
 				rob_pos->theta = -M_PI * 0.5;
 
-				calib->flag = CALIB_STATE_C;
+				calib->flag   = CALIB_STATE_C;
 				calib->t_flag = t;
 			}
 			break;
@@ -119,8 +125,8 @@ void calibration(CtrlStruct *cvs)
 			speed_regulation(cvs, -CALIB_SPEED, -CALIB_SPEED);
 
 			if (inputs->u_switch[R_ID] && inputs->u_switch[L_ID])
-			{
-				calib->flag = CALIB_STATE_F;
+			{	// Touched the wall
+				calib->flag   = CALIB_STATE_F;
 				calib->t_flag = t;
 			}
 			break;
@@ -134,10 +140,10 @@ void calibration(CtrlStruct *cvs)
 
 			if (t - calib->t_flag > WAIT_TIME)
 			{
-				rob_pos->x = WALL_X;
+				rob_pos->x     = WALL_X;
 				rob_pos->theta = -M_PI;
 
-				calib->flag = CALIB_STATE_G;
+				calib->flag   = CALIB_STATE_G;
 				calib->t_flag = t;
 			}
 			break;
