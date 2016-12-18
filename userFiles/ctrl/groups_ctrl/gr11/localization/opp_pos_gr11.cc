@@ -3,6 +3,9 @@
 #include "useful_gr11.h"
 #include <math.h>
 
+// Time constant for first order filter
+#define ALPHA 1
+
 NAMESPACE_INIT(ctrlGr11);
 
 /*! \brief compute the opponents position using the tower
@@ -19,12 +22,12 @@ void opponents_tower(CtrlStruct *cvs)
 	double rise_1, rise_2, fall_1, fall_2;
 
 	CtrlIn *inputs;
-	RobotPosition *rob_pos;
+	RobotPosition *kal_pos;
 	OpponentsPosition *opp_pos;
 
 	// variables initialization
 	inputs  = cvs->inputs;
-	rob_pos = cvs->rob_pos;
+	kal_pos = cvs->kal_pos;
 	opp_pos = cvs->opp_pos;
 
 	nb_opp = opp_pos->nb_opp;
@@ -72,18 +75,23 @@ void opponents_tower(CtrlStruct *cvs)
 	OpponentsPosition *opp_pos_new;
 	opp_pos_new = (OpponentsPosition*) malloc(sizeof(OpponentsPosition));
 
-	single_opp_tower(rise_1, fall_1, rob_pos->x, rob_pos->y, rob_pos->theta, &opp_pos_new->x[0], &opp_pos_new->y[0]);
+	single_opp_tower(rise_1, fall_1, kal_pos->x, kal_pos->y, kal_pos->theta, &opp_pos_new->x[0], &opp_pos_new->y[0]);
 
 	// Compute opponent positions
-	opp_pos->x[0] = first_order_filter(opp_pos->x[0], opp_pos_new->x[0], 1, delta_t);
-	opp_pos->y[0] = first_order_filter(opp_pos->y[0], opp_pos_new->y[0], 1, delta_t) ;
+	opp_pos->x[0] = first_order_filter(opp_pos->x[0], opp_pos_new->x[0], ALPHA, delta_t);
+	opp_pos->y[0] = first_order_filter(opp_pos->y[0], opp_pos_new->y[0], ALPHA, delta_t);
+
+	if (nb_opp == 2) {
+		single_opp_tower(rise_2, fall_2, kal_pos->x, kal_pos->y, kal_pos->theta, &opp_pos_new->x[1], &opp_pos_new->y[1]);
+
+		opp_pos->x[1] = first_order_filter(opp_pos->x[1], opp_pos_new->x[1], ALPHA, delta_t);
+		opp_pos->y[1] = first_order_filter(opp_pos->y[1], opp_pos_new->y[1], ALPHA, delta_t);
+	}
 
 
 	// Add new opponents positions on map
-	opp_pos_map(cvs,ADD);
+	opp_pos_map(cvs, ADD);
 
-	set_plot(opp_pos->x[0], "pred X");
-	set_plot(opp_pos->y[0], "pred Y");
 	// ----- opponents position computation end ----- //
 }
 
@@ -133,10 +141,10 @@ int check_opp_front(CtrlStruct *cvs)
 	int i, nb_opp;
 
 	OpponentsPosition *opp_pos;
-	RobotPosition *rob_pos;
+	RobotPosition *kal_pos;
 
 	// variables initialization
-	rob_pos = cvs->rob_pos;
+	kal_pos = cvs->kal_pos;
 	opp_pos = cvs->opp_pos;
 	nb_opp = opp_pos->nb_opp;
 
