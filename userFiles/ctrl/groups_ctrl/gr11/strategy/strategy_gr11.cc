@@ -15,7 +15,7 @@ NAMESPACE_INIT(ctrlGr11);
 Cell get_home(CtrlStruct * cvs)
 {
 	Cell home;
-	if (cvs->kal_pos->y > 0)
+	if (cvs->rob_pos->y > 0)
 	{
 		switch (cvs->team_id) {
 			case TEAM_A:
@@ -112,8 +112,8 @@ void main_strategy(CtrlStruct *cvs)
 	inputs = cvs->inputs;
 	outputs = cvs->outputs;
 
-	int cell_x = world_to_map_x(cvs->kal_pos->x);
-	int cell_y = world_to_map_y(cvs->kal_pos->y);
+	int cell_x = world_to_map_x(cvs->rob_pos->x);
+	int cell_y = world_to_map_y(cvs->rob_pos->y);
 
 	Cell start;
 	start.x = cell_x;
