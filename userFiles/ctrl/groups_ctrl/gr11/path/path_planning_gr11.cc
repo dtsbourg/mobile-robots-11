@@ -83,19 +83,19 @@ void display_nodes(Node* current)
 	int count = 0;
 	while(current != NULL && count < 50)
 	{
-		printf("(%d,%d) -> ", current->cell.x, current->cell.y);
+		// printf("(%d,%d) -> ", current->cell.x, current->cell.y);
 		current = current->next;
 		count++;
 	}
-	printf("NULL\n");
+	// printf("NULL\n");
 	count = 0;
 	while(tracker != NULL && count < 50)
 	{
-		printf("   %f   -> ", tracker->f);
+		// printf("   %f   -> ", tracker->f);
 		tracker = tracker->next;
 		count++;
 	}
-	printf("NULL\n");
+	// printf("NULL\n");
 
 }
 
@@ -170,7 +170,7 @@ Path* generate_path(Node* goal_node)
  		before = tracker;
  		tracker = parent;
  	}
-    
+
 	tracker = before;
 	Path* path_tracker = NULL;
 
@@ -320,7 +320,7 @@ void* path_planning(Cell start, Cell goal, bool map[17][27], Path* old_path, boo
 		add_to_list(&closed_list, current);
 	}
 
-	printf("Warning: NO PATH FOUND.. \n");
+	// printf("Warning: NO PATH FOUND.. \n");
 	return path;
 }
 

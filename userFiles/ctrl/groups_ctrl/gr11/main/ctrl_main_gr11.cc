@@ -44,7 +44,7 @@ void controller_init(CtrlStruct *cvs)
 		case ROBOT_W: cvs->team_id = TEAM_B; break;
 
 		default:
-			printf("Error: unknown robot ID: %d !\n", inputs->robot_id);
+			// printf("Error: unknown robot ID: %d !\n", inputs->robot_id);
 			exit(EXIT_FAILURE);
 	}
 
@@ -127,12 +127,12 @@ void controller_loop(CtrlStruct *cvs)
 			break;
 
 		case NB_MAIN_STATES:
-			printf("Error: state NB_MAIN_STATES should not be reached !\n");
+			// printf("Error: state NB_MAIN_STATES should not be reached !\n");
 			exit(EXIT_FAILURE);
 			break;
 
 		default:
-			printf("Error:unknown state : %d !\n", cvs->main_state);
+			// printf("Error:unknown state : %d !\n", cvs->main_state);
 			exit(EXIT_FAILURE);
 	}
 }

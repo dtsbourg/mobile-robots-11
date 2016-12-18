@@ -51,7 +51,7 @@ void fixed_beacon_positions(int team_id, double *x_beac_1, double *y_beac_1,
 			break;
 
 		default:
-			printf("Error unknown team ID (%d) !\n", team_id);
+			// printf("Error unknown team ID (%d) !\n", team_id);
 			exit(EXIT_FAILURE);
 	}
 }
@@ -150,7 +150,7 @@ void triangulation(CtrlStruct *cvs)
 		case 2: alpha_1 = alpha_c; break;
 
 		default:
-			printf("Error: unknown index %d !\n", alpha_1_index);
+			// printf("Error: unknown index %d !\n", alpha_1_index);
 			exit(EXIT_FAILURE);
 	}
 
@@ -162,7 +162,7 @@ void triangulation(CtrlStruct *cvs)
 		case 2: alpha_2 = alpha_c; break;
 
 		default:
-			printf("Error: unknown index %d !\n", alpha_2_index);
+			// printf("Error: unknown index %d !\n", alpha_2_index);
 			exit(EXIT_FAILURE);
 	}
 
@@ -174,7 +174,7 @@ void triangulation(CtrlStruct *cvs)
 		case 2: alpha_3 = alpha_c; break;
 
 		default:
-			printf("Error: unknown index %d !\n", alpha_3_index);
+			// printf("Error: unknown index %d !\n", alpha_3_index);
 			exit(EXIT_FAILURE);
 	}
 
@@ -217,7 +217,7 @@ void triangulation(CtrlStruct *cvs)
 	double D = (x_12 - x_23) * (y_23 - y_31) - (y_12 - y_23) * (x_23 - x_31);
 
 	if (fabs(D) < 1e-16) {
-		printf("[ERROR] D = 0 in triangulation_gr11.c \n");
+		// printf("[ERROR] D = 0 in triangulation_gr11.c \n");
 		return;
 	}
 

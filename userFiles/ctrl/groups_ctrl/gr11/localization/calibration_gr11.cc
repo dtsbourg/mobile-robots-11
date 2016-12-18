@@ -178,7 +178,7 @@ void calibration(CtrlStruct *cvs)
 			break;
 
 		default:
-			printf("Error: unknown state : %d !\n", calib->flag);
+			// printf("Error: unknown state : %d !\n", calib->flag);
 			exit(EXIT_FAILURE);
 	}
 }

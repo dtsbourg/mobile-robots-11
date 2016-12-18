@@ -25,7 +25,7 @@ Cell get_home(CtrlStruct * cvs)
 				home.x = 3; home.y = 25;
 				break;
 			default:
-				printf("Invalid team\n");
+				// printf("Invalid team\n");
 				break;
 		}
 	} else {
@@ -37,7 +37,7 @@ Cell get_home(CtrlStruct * cvs)
 				home.x = 15; home.y = 2;
 				break;
 			default:
-				printf("Invalid team\n");
+				// printf("Invalid team\n");
 				break;
 		}
 	}
@@ -167,6 +167,12 @@ void main_strategy(CtrlStruct *cvs)
 			break;
 
 		case STATE_MOVING_TO_TARGET:
+			if(check_opp_front(cvs))
+			{
+				cvs->path = NULL;
+				strat->main_state = STATE_LOOKING_CLOSEST_TARGET;
+				break;
+			}
 			follow_path(cvs);
 			if (cvs->path == NULL)
 			{
@@ -186,8 +192,8 @@ void main_strategy(CtrlStruct *cvs)
 		case STATE_MOVING_HOME:
 			follow_path(cvs);
 			if (cvs->path == NULL)
-			{
-				// we are home now
+			{   // we are home now
+				// printf("I'm home %d ; %d\n", start.x, start.y);
 				outputs->flag_release = 1; // release target
 				strat->main_state = STATE_LOOKING_CLOSEST_TARGET;
 			}
@@ -195,7 +201,7 @@ void main_strategy(CtrlStruct *cvs)
 
 		case STATE_PICKUP_TARGET:
 			outputs->flag_release = 0;
-			speed_regulation(cvs, 0, 0);
+			speed_regulation(cvs, 0.0, 0.0);
 			if (inputs->nb_targets == strat->tmp_nb_targets + 1)
 			{
 				strat->targets[strat->current_target].present = false;
@@ -212,11 +218,10 @@ void main_strategy(CtrlStruct *cvs)
 
 		case STATE_STRATEGY_FINISH:
 			speed_regulation(cvs, 0.0, 0.0);
-			printf("No more targets we are done\n");
 			break;
 
 		default:
-			printf("Error: unknown strategy main state: %d !\n", strat->main_state);
+			// printf("Error: unknown strategy main state: %d !\n", strat->main_state);
 			exit(EXIT_FAILURE);
 	}
 }

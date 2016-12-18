@@ -1,9 +1,14 @@
 #include "opp_pos_gr11.h"
 #include "init_pos_gr11.h"
 #include "useful_gr11.h"
+#include "strategy_gr11.h"
 #include <math.h>
 
 NAMESPACE_INIT(ctrlGr11);
+
+// Dangerous distance of opponents = 30cm
+#define DANGER_OPP 0.3
+
 
 /*! \brief compute the opponents position using the tower
  *
@@ -38,7 +43,7 @@ void opponents_tower(CtrlStruct *cvs)
 	// safety
 	if (nb_opp < 0 || nb_opp > 2)
 	{
-		printf("Error: number of opponents cannot be %d!\n", nb_opp);
+		// printf("Error: number of opponents cannot be %d!\n", nb_opp);
 		exit(EXIT_FAILURE);
 	}
 
@@ -77,6 +82,8 @@ void opponents_tower(CtrlStruct *cvs)
 	// Compute opponent positions
 	opp_pos->x[0] = first_order_filter(opp_pos->x[0], opp_pos_new->x[0], 1, delta_t);
 	opp_pos->y[0] = first_order_filter(opp_pos->y[0], opp_pos_new->y[0], 1, delta_t);
+
+	double dist = sqrt(opp_pos->x[0] * opp_pos->x[0] + opp_pos->y[0] * opp_pos->y[0]);
 
 	if (nb_opp == 2){
 		single_opp_tower(rise_2, fall_2, rob_pos->x, rob_pos->y, rob_pos->theta, opp_pos_new, 1);
@@ -135,6 +142,7 @@ int check_opp_front(CtrlStruct *cvs)
 {
 	// variables declaration
 	int i, nb_opp;
+	double x_to_opp, y_to_opp, opp_dist;
 
 	OpponentsPosition *opp_pos;
 	RobotPosition *rob_pos;
@@ -153,14 +161,19 @@ int check_opp_front(CtrlStruct *cvs)
 	// safety
 	if (nb_opp < 0 || nb_opp > 2)
 	{
-		printf("Error: number of opponents cannot be %d!\n", nb_opp);
+		// printf("Error: number of opponents cannot be %d!\n", nb_opp);
 		exit(EXIT_FAILURE);
 	}
 
 	for(i=0; i<nb_opp; i++)
 	{
 		// ----- opponents check computation start ----- //
+		x_to_opp = opp_pos->x[i] - rob_pos->x;
+		y_to_opp = opp_pos->y[i] - rob_pos->y;
+		opp_dist = norm_dist(x_to_opp,y_to_opp);
 
+		if(opp_dist <= DANGER_OPP)
+			return 1;
 		// ----- opponents check computation end ----- //
 	}
 
@@ -192,7 +205,6 @@ void opp_pos_map(CtrlStruct *cvs, bool add_erase)
 	}
 	else {
 		// printf("remove obstacle %d ; %d \n", x, y);
-
 		cvs->map[x][y] = FREE_NODE;
 	}
 
