@@ -157,7 +157,8 @@ void free_CtrlStruct(CtrlStruct *cvs)
 	free(cvs->opp_pos);
 	free(cvs->rob_pos);
 	free(cvs->triang_pos);
-	//free(cvs->map);
+	free(cvs->kal_pos);
+	free(cvs->map);
 
 	free(cvs);
 }

@@ -287,7 +287,6 @@ void* path_planning(Cell start, Cell goal, bool map[17][27], Path* old_path, boo
 						free_nodes(open_list);
 						free_nodes(closed_list);
 
-						fclose(fp);
 						return distance;
 					}
 					else
@@ -296,7 +295,6 @@ void* path_planning(Cell start, Cell goal, bool map[17][27], Path* old_path, boo
 						free_nodes(open_list);
 						free_nodes(closed_list);
 
-						fclose(fp);
 						return path;
 					}
 					break;

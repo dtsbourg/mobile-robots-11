@@ -80,7 +80,7 @@ double first_order_filter(double last_val, double new_val, double tau, double de
 	return f * frac * new_val + frac * last_val;
 }
 
-/*! \brief Check if 2 floats are equal with an EPSILON value 
+/*! \brief Check if 2 floats are equal with an EPSILON value
  *
  * \param[in] a first float to check
  * \param[in] b second float to check
@@ -90,5 +90,11 @@ bool equal2float(float a, float b)
 {
 	return fabs(a-b) < EPSILON;
 }
+
+int convert_pos_to_map(double world_pos)
+{
+	return (int)round((world_pos + 0.8)*10.0);
+}
+
 
 NAMESPACE_CLOSE();

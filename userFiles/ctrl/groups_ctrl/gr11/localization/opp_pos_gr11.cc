@@ -42,6 +42,9 @@ void opponents_tower(CtrlStruct *cvs)
 		exit(EXIT_FAILURE);
 	}
 
+	// Erase last opponents positions on map
+	opp_pos_map(cvs,ERASE);
+
 	// low pass filter time increment ('delta_t' is the last argument of the 'first_order_filter' function)
 	delta_t = inputs->t - opp_pos->last_t;
 	opp_pos->last_t = inputs->t;
@@ -70,14 +73,14 @@ void opponents_tower(CtrlStruct *cvs)
 	opp_pos_new = (OpponentsPosition*) malloc(sizeof(OpponentsPosition));
 
 	single_opp_tower(rise_1, fall_1, rob_pos->x, rob_pos->y, rob_pos->theta, &opp_pos_new->x[0], &opp_pos_new->y[0]);
-	//single_opp_tower(rise_2, fall_2, rob_pos->x, rob_pos->y, rob_pos->theta, &opp_pos_new->x[1], &opp_pos_new->y[1]);
 
 	// Compute opponent positions
 	opp_pos->x[0] = first_order_filter(opp_pos->x[0], opp_pos_new->x[0], 1, delta_t);
 	opp_pos->y[0] = first_order_filter(opp_pos->y[0], opp_pos_new->y[0], 1, delta_t) ;
 
-	//opp_pos->x[1] = first_order_filter(opp_pos->x[1], opp_pos_new->x[1], 0.1, delta_t);
-	//opp_pos->y[1] = first_order_filter(opp_pos->y[1], opp_pos_new->y[1], 0.1, delta_t);
+
+	// Add new opponents positions on map
+	opp_pos_map(cvs,ADD);
 
 	set_plot(opp_pos->x[0], "pred X");
 	set_plot(opp_pos->y[0], "pred Y");
@@ -158,6 +161,36 @@ int check_opp_front(CtrlStruct *cvs)
 	}
 
 	return 0;
+}
+
+/*!\ brief add/erase opponents positions to the map as obstacles
+	*/
+void opp_pos_map(CtrlStruct *cvs, bool add_erase)
+{
+	// variable declaration
+	int opp_pos[4];
+
+	// get first opponent position as map coordinates
+	opp_pos[0] = convert_pos_to_map(cvs->opp_pos->x[0]);
+	opp_pos[1] = convert_pos_to_map(cvs->opp_pos->y[0]);
+
+	// add/erase first opponent position to the map
+	if(add_erase)
+		cvs->map[opp_pos[0]][opp_pos[1]] = OBSTACLE_NODE;
+	else
+		cvs->map[opp_pos[0]][opp_pos[1]] = FREE_NODE;
+
+	// for the second opponent
+	if (cvs->opp_pos->nb_opp == 2)
+	{
+		opp_pos[2] = convert_pos_to_map(cvs->opp_pos->x[1]);
+		opp_pos[3] = convert_pos_to_map(cvs->opp_pos->y[1]);
+
+		if(add_erase)
+			cvs->map[opp_pos[2]][opp_pos[3]] = OBSTACLE_NODE;
+		else
+			cvs->map[opp_pos[2]][opp_pos[3]] = FREE_NODE;
+	}
 }
 
 NAMESPACE_CLOSE();
