@@ -4,8 +4,8 @@
 NAMESPACE_INIT(ctrlGr11);
 
 // Tuned PID Parameters
-#define Kp 80.0
-#define Ki  0.7
+#define Kp 5.0
+#define Ki 0.1
 
 // Utility
 // threhsold for static position hold
