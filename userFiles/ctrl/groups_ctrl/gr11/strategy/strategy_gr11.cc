@@ -14,7 +14,7 @@ NAMESPACE_INIT(ctrlGr11);
 Cell get_home(CtrlStruct * cvs)
 {
 	Cell home;
-	if (cvs->rob_pos->y > 0)
+	if (cvs->kal_pos->y > 0)
 	{
 		switch (cvs->team_id) {
 			case TEAM_A:
@@ -72,17 +72,17 @@ Strategy* init_strategy(CtrlStruct *cvs)
 	strat->targets = (Target *) malloc(N_TARGETS*sizeof(Target));
 
 	Target ts[N_TARGETS];
-	ts[0].present = true; ts[0].points = 2; ts[0].x = 10; ts[0].y = 1; ts[0].dist = 0;
-	ts[1].present = true; ts[1].points = 1; ts[1].x = 15; ts[1].y = 7; ts[1].dist = 0;
-	ts[2].present = true; ts[2].points = 1; ts[2].x = 4; ts[2].y = 7; ts[2].dist = 0;
-	ts[3].present = true; ts[3].points = 3; ts[3].x = 0; ts[3].y = 13; ts[3].dist = 0;
-	ts[4].present = true; ts[4].points = 2; ts[4].x = 9; ts[4].y = 13; ts[4].dist = 0;
-	ts[5].present = true; ts[5].points = 1; ts[5].x = 4; ts[5].y = 19; ts[5].dist = 0;
+	ts[0].present = true; ts[0].points = 2; ts[0].x = 10; ts[0].y =  1; ts[0].dist = 0;
+	ts[1].present = true; ts[1].points = 1; ts[1].x = 15; ts[1].y =  7; ts[1].dist = 0;
+	ts[2].present = true; ts[2].points = 1; ts[2].x =  4; ts[2].y =  7; ts[2].dist = 0;
+	ts[3].present = true; ts[3].points = 3; ts[3].x =  0; ts[3].y = 13; ts[3].dist = 0;
+	ts[4].present = true; ts[4].points = 2; ts[4].x =  9; ts[4].y = 13; ts[4].dist = 0;
+	ts[5].present = true; ts[5].points = 1; ts[5].x =  4; ts[5].y = 19; ts[5].dist = 0;
 	ts[6].present = true; ts[6].points = 1; ts[6].x = 15; ts[6].y = 19; ts[6].dist = 0;
 	ts[7].present = true; ts[7].points = 2; ts[7].x = 10; ts[7].y = 25; ts[7].dist = 0;
 
 	memcpy(strat->targets, ts, N_TARGETS*sizeof(Target));
-	
+
 	return strat;
 }
 
@@ -118,8 +118,8 @@ void main_strategy(CtrlStruct *cvs)
 
 	Peut�tre l'id�al serait d'avoir le noeud d'avant?
 	*/
-	int cell_x = (int)round((cvs->rob_pos->x + 0.8) * 10.0);
-	int cell_y = (int)round((cvs->rob_pos->y + 1.3) * 10.0);
+	int cell_x = (int)round((cvs->kal_pos->x + 0.8) * 10.0);
+	int cell_y = (int)round((cvs->kal_pos->y + 1.3) * 10.0);
 
 
 	Cell start;
@@ -140,6 +140,7 @@ void main_strategy(CtrlStruct *cvs)
 				strat->targets[i].dist = get_target_dist(cvs, strat->targets[i], start);
 			}
 			qsort(strat->targets, N_TARGETS, sizeof(Target), dist_compare);
+
 			for (int i = 0; i < N_TARGETS; i++)
 			{
 				if (strat->targets[i].present)
@@ -147,7 +148,6 @@ void main_strategy(CtrlStruct *cvs)
 					strat->current_target = i;
 					objective.x = strat->targets[i].x;
 					objective.y = strat->targets[i].y;
-					printf("Next target is target #%d : (%d, %d)\n", strat->current_target, objective.x, objective.y);
 					cvs->path = (Path *)path_planning(start, objective, cvs->map, cvs->path, false);
 					strat->main_state = STATE_MOVING_TO_TARGET;
 					break;
@@ -164,7 +164,7 @@ void main_strategy(CtrlStruct *cvs)
 						strat->main_state = STATE_STRATEGY_FINISH;
 					}
 				}
-			}	
+			}
 			break;
 
 		case STATE_TWO_DISKS:
@@ -175,7 +175,6 @@ void main_strategy(CtrlStruct *cvs)
 
 		case STATE_MOVING_TO_TARGET:
 			follow_path(cvs);
-			//printf("%d %d %d %d\n", objective.x, objective.y, cell_x,cell_y);
 			if (cvs->path == NULL)
 			{
 				if (inputs->target_detected)
@@ -219,8 +218,8 @@ void main_strategy(CtrlStruct *cvs)
 			break;
 
 		case STATE_STRATEGY_FINISH:
-			speed_regulation(cvs, 0, 0);
-			printf("no more targets we are done\n");
+			speed_regulation(cvs, 0.0, 0.0);
+			printf("No more targets we are done\n");
 			break;
 
 		default:
