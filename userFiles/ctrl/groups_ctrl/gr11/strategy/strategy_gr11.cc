@@ -5,6 +5,7 @@
 #include "init_pos_gr11.h"
 #include "opp_pos_gr11.h"
 #include "odometry_gr11.h"
+#include "useful_gr11.h"
 #include <math.h>
 #include <stdlib.h>
 #include <memory.h>
@@ -111,8 +112,8 @@ void main_strategy(CtrlStruct *cvs)
 	inputs = cvs->inputs;
 	outputs = cvs->outputs;
 
-	int cell_x = (int)round((cvs->kal_pos->x + 0.8) * 10.0);
-	int cell_y = (int)round((cvs->kal_pos->y + 1.3) * 10.0);
+	int cell_x = world_to_map_x(cvs->kal_pos->x);
+	int cell_y = world_to_map_y(cvs->kal_pos->y);
 
 	Cell start;
 	start.x = cell_x;

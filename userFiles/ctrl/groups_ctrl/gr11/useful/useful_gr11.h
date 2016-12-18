@@ -30,7 +30,10 @@ double limit_range(double x, double min, double max);
 double limit_angle(double x);
 double first_order_filter(double last_val, double new_val, double tau, double delta_t);
 bool equal2float(float a, float b);
-int convert_pos_to_map(double world_pos);
+int world_to_map_x(double world_x);
+int world_to_map_y(double world_y);
+double map_to_world_x(int map_x);
+double map_to_world_y(int map_y);
 
 NAMESPACE_CLOSE();
 

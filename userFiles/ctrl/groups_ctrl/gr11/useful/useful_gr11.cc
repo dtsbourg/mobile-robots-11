@@ -91,9 +91,44 @@ bool equal2float(float a, float b)
 	return fabs(a-b) < EPSILON;
 }
 
-int convert_pos_to_map(double world_pos)
+/*! \brief Converts a world X coordinate to a map X coordinate
+ *
+ * \param[in] world_x global frame coordinate
+ * \return int map cell X coordinate
+ */
+int world_to_map_x(double world_x)
 {
-	return (int)round((world_pos + 0.8)*10.0);
+	return (int)round((world_x + 0.8) * 10.0);
+}
+
+/*! \brief Converts a world Y coordinate to a map Y coordinate
+ *
+ * \param[in] world_y global frame coordinate
+ * \return int map cell Y coordinate
+ */
+int world_to_map_y(double world_y)
+{
+	return (int)round((world_y + 1.3) * 10.0);
+}
+
+/*! \brief Converts a map X coordinate to a world X coordinate
+ *
+ * \param[in] map_x map cell coordinate
+ * \return double world frame X coordinate
+ */
+double map_to_world_x(int map_x)
+{
+	return ((map_x / 10.0) - 0.8);
+}
+
+/*! \brief Converts a map Y coordinate to a world Y coordinate
+ *
+ * \param[in] map_y map cell coordinate
+ * \return double world frame Y coordinate
+ */
+double map_to_world_y(int map_y)
+{
+	return ((map_y / 10.0) - 1.3);
 }
 
 

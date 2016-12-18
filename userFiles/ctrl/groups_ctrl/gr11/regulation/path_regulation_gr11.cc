@@ -36,13 +36,11 @@ void follow_path(CtrlStruct *cvs)
 	{
 
 		// Distance du robot jusqu'au prochain noeud, en m
-		double dist_x = (double)path->cell.x / 10.0 - 0.8 - kal_pos->x;
-		double dist_y = (double)path->cell.y / 10.0 - 1.3 - kal_pos->y;
+		double dist_x = map_to_world_x(path->cell.x) - kal_pos->x;
+		double dist_y = map_to_world_y(path->cell.y) - kal_pos->y;
 
 		// Calcul de la distance
 		double distance = sqrt(dist_x*dist_x + dist_y*dist_y);
-
-		set_plot(distance, "distance");
 
 		// Calcul de l'angle avec kal_pos qui est absolu!
 		double angle_cible = atan2(dist_y, dist_x);
