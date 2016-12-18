@@ -93,14 +93,14 @@ float get_target_dist(CtrlStruct *cvs, Target t, Cell robot_pos)
 void init_strategy(CtrlStruct *cvs)
 {
 	Target ts[N_TARGETS];
-	ts[0].present = true; ts[0].points = 2; ts[0].x = 10; ts[0].y =  1; ts[0].dist = 0;
+	ts[0].present = true; ts[0].points = 2; ts[0].x = 11; ts[0].y =  0; ts[0].dist = 0;
 	ts[1].present = true; ts[1].points = 1; ts[1].x = 15; ts[1].y =  7; ts[1].dist = 0;
 	ts[2].present = true; ts[2].points = 1; ts[2].x =  4; ts[2].y =  7; ts[2].dist = 0;
 	ts[3].present = true; ts[3].points = 3; ts[3].x =  0; ts[3].y = 13; ts[3].dist = 0;
 	ts[4].present = true; ts[4].points = 2; ts[4].x =  9; ts[4].y = 13; ts[4].dist = 0;
 	ts[5].present = true; ts[5].points = 1; ts[5].x =  4; ts[5].y = 19; ts[5].dist = 0;
 	ts[6].present = true; ts[6].points = 1; ts[6].x = 15; ts[6].y = 19; ts[6].dist = 0;
-	ts[7].present = true; ts[7].points = 2; ts[7].x = 10; ts[7].y = 25; ts[7].dist = 0;
+	ts[7].present = true; ts[7].points = 2; ts[7].x = 11; ts[7].y = 26; ts[7].dist = 0;
 
 	memcpy(cvs->strat->targets, ts, N_TARGETS*sizeof(Target));
 
@@ -144,7 +144,6 @@ void main_strategy(CtrlStruct *cvs)
 	{
 		case STATE_INIT:
 			init_strategy(cvs);
-			printf("INIT\n");
 			strat->main_state = STATE_LOOKING_CLOSEST_TARGET;
 			break;
 
@@ -189,12 +188,12 @@ void main_strategy(CtrlStruct *cvs)
 			break;
 
 		case STATE_MOVING_TO_TARGET:
-			// if(check_opp_front(cvs))
-			// {
-			// 	cvs->path = NULL;
-			// 	strat->main_state = STATE_LOOKING_CLOSEST_TARGET;
-			// 	break;
-			// }
+			if(check_opp_front(cvs))
+			{
+				speed_regulation(cvs, 0.0, 0.0);
+				strat->main_state = STATE_LOOKING_CLOSEST_TARGET;
+				break;
+			}
 			follow_path(cvs);
 			if (cvs->path == NULL)
 			{
