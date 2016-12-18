@@ -5,7 +5,7 @@ NAMESPACE_INIT(ctrlGr11);
 
 // Tuned PID Parameters
 #define Kp 5.0
-#define Ki 1
+#define Ki 1.0
 
 // Utility
 // threhsold for static position hold
@@ -73,7 +73,7 @@ void speed_regulation(CtrlStruct *cvs, double r_sp_ref, double l_sp_ref)
 	if (l_sp_ref == 0 && l_sp <= STATIC_THRESH)
 	{
 		outputs->wheel_commands[L_ID] = 0;
-		sp_reg->int_error_r = 0;
+		sp_reg->int_error_l = 0;
 	}
 
 
