@@ -48,7 +48,7 @@ void opponents_tower(CtrlStruct *cvs)
 	}
 
 	// Erase last opponents positions on map
-	opp_pos_map(cvs, ERASE);
+	// opp_pos_map(cvs, ERASE);
 
 	// low pass filter time increment ('delta_t' is the last argument of the 'first_order_filter' function)
 	delta_t = inputs->t - opp_pos->last_t;
@@ -92,7 +92,7 @@ void opponents_tower(CtrlStruct *cvs)
 	}
 
 	// Add new opponents positions on map
-	opp_pos_map(cvs, ADD);
+	// opp_pos_map(cvs, ADD);
 
 	free(opp_pos_new);
 	// ----- opponents position computation end ----- //

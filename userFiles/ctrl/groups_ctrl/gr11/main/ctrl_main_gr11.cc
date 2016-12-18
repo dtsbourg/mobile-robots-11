@@ -86,14 +86,14 @@ void controller_loop(CtrlStruct *cvs)
 	// triangulation
 	triangulation(cvs);
 
-	// update the robot grid position
-	update_grid_pos(cvs->rob_pos);
-
 	// opponents position
 	opponents_tower(cvs);
 
 	// Kalman filter update
 	kalman(cvs);
+
+	// update the robot grid position
+	update_grid_pos(cvs->rob_pos);
 
 	switch (cvs->main_state)
 	{
@@ -115,7 +115,6 @@ void controller_loop(CtrlStruct *cvs)
 
 		// during game
 		case RUN_STATE:
-			return;
 			main_strategy(cvs);
 			if (t > 89.0) // 1 second safety
 			{
