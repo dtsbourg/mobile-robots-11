@@ -129,8 +129,16 @@ void main_strategy(CtrlStruct *cvs)
 	strat  = cvs->strat;
 	inputs = cvs->inputs;
 
+
+	/*Ici j'ai une idée du tonerre. Plutôt que de prendre le noeud le plus proche,
+	on peut prendre le prochain noeud de la liste. Attention tout de même à la fin de la liste,
+	lorsqu'il n'y a plus de noeuds.
+
+	Peutêtre l'idéal serait d'avoir le noeud d'avant?
+	*/
 	int cell_x = (int)round((cvs->rob_pos->x + 0.8) * 10.0);
 	int cell_y = (int)round((cvs->rob_pos->y + 1.3) * 10.0);
+	
 
 	Cell start;
 	start.x = cell_x;

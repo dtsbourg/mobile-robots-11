@@ -17,13 +17,9 @@
 #include "kalman_gr11.h"
 #include <time.h>
 
-
-/*a enlever*/
-#include "path_regulation_gr11.h"
-
 NAMESPACE_INIT(ctrlGr11);
 
-/*! \brief initialize controller operations (called once )
+/*! \brief initialize controller operations (called once)
  *
  * \param[in] cvs controller main structure
  */
@@ -93,9 +89,6 @@ void controller_loop(CtrlStruct *cvs)
 	// opponents position
 	opponents_tower(cvs);
 
-	static bool flag = 0;
-
-
 	switch (cvs->main_state)
 	{
 		// calibration
@@ -116,32 +109,11 @@ void controller_loop(CtrlStruct *cvs)
 
 		// during game
 		case RUN_STATE:
-			if (!flag)
-			{
-				flag = 1;
-
-				Cell start;
-				start.x = 15;
-				start.y = 23;
-				Cell objective;
-				objective.x = 0;
-				objective.y = 13;
-				cvs->path = (Path *)path_planning(start, objective, cvs->map, cvs->path, false);
-				Path *  list = cvs->path;
-				while (list != NULL)
-				{
-					printf("%d %d\n", list->cell.x, list ->cell.y);
-					list = list->next;;
-				}
-
-			}
-			follow_path(cvs);
-			/*
 			main_strategy(cvs);
 			if (t > 89.0) // 1 second safety
 			{
 				cvs->main_state = STOP_END_STATE;
-			}*/
+			}
 			break;
 
 		// stop at the end of the game
