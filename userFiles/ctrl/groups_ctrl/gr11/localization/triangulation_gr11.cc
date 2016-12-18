@@ -139,7 +139,6 @@ void triangulation(CtrlStruct *cvs)
 	// safety
 	if ((alpha_1_index == alpha_2_index) || (alpha_1_index == alpha_3_index) || (alpha_2_index == alpha_3_index))
 	{
-		printf("Failed index sanity check\n");
 		return;
 	}
 

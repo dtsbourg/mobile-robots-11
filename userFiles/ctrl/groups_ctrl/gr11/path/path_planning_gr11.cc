@@ -163,6 +163,14 @@ Path* generate_path(Node* goal_node)
 	Node* tracker = goal_node;
 	Node* before = NULL;
 
+    while (tracker != NULL)
+ 	{
+ 		Node* parent = tracker->parent;
+ 		tracker->parent = before;
+ 		before = tracker;
+ 		tracker = parent;
+ 	}
+    
 	tracker = before;
 	Path* path_tracker = NULL;
 

@@ -22,12 +22,12 @@ void opponents_tower(CtrlStruct *cvs)
 	double rise_1, rise_2, fall_1, fall_2;
 
 	CtrlIn *inputs;
-	RobotPosition *kal_pos;
+	RobotPosition *rob_pos;
 	OpponentsPosition *opp_pos;
 
 	// variables initialization
 	inputs  = cvs->inputs;
-	kal_pos = cvs->kal_pos;
+	rob_pos = cvs->rob_pos;
 	opp_pos = cvs->opp_pos;
 
 	nb_opp = opp_pos->nb_opp;
@@ -75,14 +75,14 @@ void opponents_tower(CtrlStruct *cvs)
 	OpponentsPosition *opp_pos_new;
 	opp_pos_new = (OpponentsPosition*) malloc(sizeof(OpponentsPosition));
 
-	single_opp_tower(rise_1, fall_1, kal_pos->x, kal_pos->y, kal_pos->theta, &opp_pos_new->x[0], &opp_pos_new->y[0]);
+	single_opp_tower(rise_1, fall_1, rob_pos->x, rob_pos->y, rob_pos->theta, &opp_pos_new->x[0], &opp_pos_new->y[0]);
 
 	// Compute opponent positions
 	opp_pos->x[0] = first_order_filter(opp_pos->x[0], opp_pos_new->x[0], ALPHA, delta_t);
 	opp_pos->y[0] = first_order_filter(opp_pos->y[0], opp_pos_new->y[0], ALPHA, delta_t);
 
 	if (nb_opp == 2) {
-		single_opp_tower(rise_2, fall_2, kal_pos->x, kal_pos->y, kal_pos->theta, &opp_pos_new->x[1], &opp_pos_new->y[1]);
+		single_opp_tower(rise_2, fall_2, rob_pos->x, rob_pos->y, rob_pos->theta, &opp_pos_new->x[1], &opp_pos_new->y[1]);
 
 		opp_pos->x[1] = first_order_filter(opp_pos->x[1], opp_pos_new->x[1], ALPHA, delta_t);
 		opp_pos->y[1] = first_order_filter(opp_pos->y[1], opp_pos_new->y[1], ALPHA, delta_t);
@@ -141,10 +141,10 @@ int check_opp_front(CtrlStruct *cvs)
 	int i, nb_opp;
 
 	OpponentsPosition *opp_pos;
-	RobotPosition *kal_pos;
+	RobotPosition *rob_pos;
 
 	// variables initialization
-	kal_pos = cvs->kal_pos;
+	rob_pos = cvs->rob_pos;
 	opp_pos = cvs->opp_pos;
 	nb_opp = opp_pos->nb_opp;
 
