@@ -12,6 +12,38 @@
 
 NAMESPACE_INIT(ctrlGr11);
 
+int dist_compare (void const * ta, void const * tb)
+{
+   return (((Target *)ta)->dist - ((Target *)tb)->dist);
+}
+
+int weighted_dist_compare (void const * ta, void const * tb)
+{
+   return ((((Target *)ta)->dist * ((Target *)ta)->points) - (((Target *)tb)->dist * ((Target *)tb)->points));
+}
+
+int pts_compare (void const * ta, void const * tb)
+{
+   return (((Target *)ta)->points - ((Target *)tb)->points);
+}
+
+void sort_targets(CtrlStruct * cvs)
+{
+	switch (cvs->strat->method) {
+		case SCORE_DISTANCE:
+			qsort(cvs->strat->targets, N_TARGETS, sizeof(Target), dist_compare);
+			break;
+		case SCORE_WEIGHTED_DISTANCE:
+			qsort(cvs->strat->targets, N_TARGETS, sizeof(Target), weighted_dist_compare);
+			break;
+		case SCORE_POINTS:
+			qsort(cvs->strat->targets, N_TARGETS, sizeof(Target), pts_compare);
+			break;
+		default:
+			break;
+	}
+}
+
 Cell get_home(CtrlStruct * cvs)
 {
 	Cell home;
@@ -55,11 +87,6 @@ float get_target_dist(CtrlStruct *cvs, Target t, Cell robot_pos)
 	return *distance;
 }
 
-int dist_compare (void const * ta, void const * tb)
-{
-   return (((Target *)ta)->dist - ((Target *)tb)->dist);
-}
-
 /*! \brief intitialize the strategy structure
  *
  */
@@ -76,6 +103,8 @@ void init_strategy(CtrlStruct *cvs)
 	ts[7].present = true; ts[7].points = 2; ts[7].x = 10; ts[7].y = 25; ts[7].dist = 0;
 
 	memcpy(cvs->strat->targets, ts, N_TARGETS*sizeof(Target));
+
+	cvs->strat->method = SCORE_DISTANCE;
 }
 
 /*! \brief release the strategy structure (memory released)
@@ -124,7 +153,8 @@ void main_strategy(CtrlStruct *cvs)
 			{
 				strat->targets[i].dist = get_target_dist(cvs, strat->targets[i], start);
 			}
-			qsort(strat->targets, N_TARGETS, sizeof(Target), dist_compare);
+
+			sort_targets(cvs);
 
 			for (int i = 0; i < N_TARGETS; i++)
 			{
@@ -185,7 +215,6 @@ void main_strategy(CtrlStruct *cvs)
 			follow_path(cvs);
 			if (cvs->path == NULL)
 			{   // we are home now
-				// printf("I'm home %d ; %d\n", start.x, start.y);
 				outputs->flag_release = 1; // release target
 				strat->main_state = STATE_LOOKING_CLOSEST_TARGET;
 			}

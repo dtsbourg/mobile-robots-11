@@ -167,7 +167,7 @@ int check_opp_front(CtrlStruct *cvs)
 		// ----- opponents check computation start ----- //
 		x_to_opp = opp_pos->x[i] - rob_pos->x;
 		y_to_opp = opp_pos->y[i] - rob_pos->y;
-		opp_dist = norm_dist(x_to_opp,y_to_opp);
+		opp_dist = norm_dist(x_to_opp, y_to_opp);
 
 		if(opp_dist <= DANGER_OPP)
 			return 1;
