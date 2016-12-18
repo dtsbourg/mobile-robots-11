@@ -147,6 +147,9 @@ void main_strategy(CtrlStruct *cvs)
 					strat->current_target = i;
 					objective.x = strat->targets[i].x;
 					objective.y = strat->targets[i].y;
+					printf("Next target is target #%d : (%d, %d)\n", strat->current_target, objective.x, objective.y);
+					cvs->path = (Path *)path_planning(start, objective, cvs->map, cvs->path, false);
+					strat->main_state = STATE_MOVING_TO_TARGET;
 					break;
 				}
 				if ( i == (N_TARGETS - 1))
@@ -161,11 +164,7 @@ void main_strategy(CtrlStruct *cvs)
 						strat->main_state = STATE_STRATEGY_FINISH;
 					}
 				}
-			}
-			printf("Next target is target #%d : (%d, %d)\n", strat->current_target, objective.x, objective.y);
-			cvs->path = (Path *)path_planning(start, objective, cvs->map, cvs->path, false);
-			if (strat->main_state == STATE_LOOKING_CLOSEST_TARGET)
-				strat->main_state = STATE_MOVING_TO_TARGET;
+			}	
 			break;
 
 		case STATE_TWO_DISKS:
