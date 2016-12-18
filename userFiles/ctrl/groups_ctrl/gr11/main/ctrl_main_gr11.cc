@@ -44,7 +44,7 @@ void controller_init(CtrlStruct *cvs)
 		case ROBOT_W: cvs->team_id = TEAM_B; break;
 
 		default:
-			printf("Error: unknown robot ID: %d !\n", inputs->robot_id);
+			// printf("Error: unknown robot ID: %d !\n", inputs->robot_id);
 			exit(EXIT_FAILURE);
 	}
 
@@ -57,6 +57,9 @@ void controller_init(CtrlStruct *cvs)
 
 	// speed regulation
 	cvs->sp_reg->last_t = t;
+
+	// tower control
+	cvs->outputs->tower_command = 50.0;
 }
 
 /*! \brief controller loop (called every time-step)
@@ -86,11 +89,11 @@ void controller_loop(CtrlStruct *cvs)
 	// update the robot grid position
 	update_grid_pos(cvs->rob_pos);
 
-	// tower control
-	outputs->tower_command = 50.0;
-
 	// opponents position
 	opponents_tower(cvs);
+
+	// Kalman filter update
+	kalman(cvs);
 
 	switch (cvs->main_state)
 	{
@@ -128,12 +131,12 @@ void controller_loop(CtrlStruct *cvs)
 			break;
 
 		case NB_MAIN_STATES:
-			printf("Error: state NB_MAIN_STATES should not be reached !\n");
+			// printf("Error: state NB_MAIN_STATES should not be reached !\n");
 			exit(EXIT_FAILURE);
 			break;
 
 		default:
-			printf("Error:unknown state : %d !\n", cvs->main_state);
+			// printf("Error:unknown state : %d !\n", cvs->main_state);
 			exit(EXIT_FAILURE);
 	}
 }

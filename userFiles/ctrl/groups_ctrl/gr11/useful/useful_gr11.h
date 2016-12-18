@@ -11,6 +11,9 @@
 #define cot(x)      ( 1 / tan(x) )
 #define EPSILON     6e-8
 
+#define ADD 1
+#define ERASE 0
+
 #include "namespace_ctrl.h"
 
 NAMESPACE_INIT(ctrlGr11);
@@ -25,7 +28,11 @@ double limit_range(double x, double min, double max);
 double limit_angle(double x);
 double first_order_filter(double last_val, double new_val, double tau, double delta_t);
 bool equal2float(float a, float b);
-int round(float a);
+int world_to_map_x(double world_x);
+int world_to_map_y(double world_y);
+double map_to_world_x(int map_x);
+double map_to_world_y(int map_y);
+int convert_pos_to_map(double world_pos);
 
 NAMESPACE_CLOSE();
 

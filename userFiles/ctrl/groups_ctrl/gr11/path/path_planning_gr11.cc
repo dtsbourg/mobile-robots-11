@@ -17,7 +17,7 @@ NAMESPACE_INIT(ctrlGr11);
  */
 float evaluate_distance(Cell cell1, Cell cell2)
 {
-	// diag movement
+	// Diagonal movement
     float distance = 0;
     while (cell1.x != cell2.x && cell1.y != cell2.y)
     {
@@ -25,7 +25,7 @@ float evaluate_distance(Cell cell1, Cell cell2)
         (cell1.y<cell2.y) ? cell1.y++ : cell1.y--;
         distance += CELL_SIZE * sqrt(2);
     }
-    // line movement
+    // Straight movement
     return distance + (abs(cell1.y-cell2.y) + abs(cell1.x-cell2.x)) * CELL_SIZE;
 }
 
@@ -34,7 +34,7 @@ float evaluate_distance(Cell cell1, Cell cell2)
  * \param[in] cell is the cell to check arround
  * \return Cell* cell_arround a pointer on 8 cells table
  */
-void get_cells_arround(Cell* cell_arround, Cell cell)
+void get_cell_neighbourhood(Cell* cell_arround, Cell cell)
 {
 	cell_arround[0].x = cell.x-1;
 	cell_arround[0].y = cell.y-1;
@@ -60,10 +60,10 @@ void get_cells_arround(Cell* cell_arround, Cell cell)
  * \[in] map[4][4] pointer on the array of the map
  * \return bool true if the cell is viable
  */
-bool cell_is_viable(Cell cell, bool map[17][27])
+bool cell_is_viable(Cell cell, bool map[MAP_SIZE_X][MAP_SIZE_Y])
 {
-	if ((cell.x < 17 && cell.x >= 0) && (cell.y < 27 && cell.y >= 0)) // check if the cell is on the map
-	{
+	if ((cell.x < MAP_SIZE_X && cell.x >= 0) && (cell.y < MAP_SIZE_Y && cell.y >= 0))
+	{  // Cell is inside the map <=> is valid
 		if (map[cell.x][cell.y] != 1) // check if it's not an obstacle
 		{
 			return true;
@@ -74,8 +74,7 @@ bool cell_is_viable(Cell cell, bool map[17][27])
 
 /*! \brief check if a cell is viable aka it's in the map and not obstacle
  *
- * \[in] Cell cell with the cell to check in the list
- * \[in] map[4][4] pointer on the array of the map
+ * \[in] Node current node
  * \return bool true if the cell is viable
  */
 void display_nodes(Node* current)
@@ -84,19 +83,19 @@ void display_nodes(Node* current)
 	int count = 0;
 	while(current != NULL && count < 50)
 	{
-		printf("(%d,%d) -> ", current->cell.x, current->cell.y);
+		// printf("(%d,%d) -> ", current->cell.x, current->cell.y);
 		current = current->next;
 		count++;
 	}
-	printf("NULL\n");
+	// printf("NULL\n");
 	count = 0;
 	while(tracker != NULL && count < 50)
 	{
-		printf("   %f   -> ", tracker->f);
+		// printf("   %f   -> ", tracker->f);
 		tracker = tracker->next;
 		count++;
 	}
-	printf("NULL\n");
+	// printf("NULL\n");
 
 }
 
@@ -109,13 +108,12 @@ void add_to_list(Node** list, Node* element)
 {
 	Node* tracker = (*list);
 	element->next = NULL;
-	if (tracker == NULL)
-	{
+
+	if (tracker == NULL) {
 		(*list) = element;
-	}
-	else
-	{
+	} else {
 		Node* before = NULL;
+
 		while (tracker != NULL)
 		{
 			if (element->f < tracker->f)
@@ -123,13 +121,9 @@ void add_to_list(Node** list, Node* element)
 				// put element before
 				element->next = tracker;
 				if (before == NULL)
-				{
 					(*list) = element;
-				}
 				else
-				{
 					before->next = element;
-				}
 				break;
 			}
 			else if (equal2float(element->f,tracker->f))
@@ -139,18 +133,15 @@ void add_to_list(Node** list, Node* element)
 					// put element before
 					element->next = tracker;
 					if (before == NULL)
-					{
 						(*list) = element;
-					}
 					else
-					{
 						before->next = element;
-					}
 					break;
 				}
 				// else we keep going on the loop to put it right after.
 			}
-			// if we reach the end just 
+
+			// if we reach the end just
 			if (tracker->next == NULL)
 			{
 				tracker->next = element;
@@ -172,37 +163,28 @@ Path* generate_path(Node* goal_node)
 	Node* tracker = goal_node;
 	Node* before = NULL;
 
-	FILE * fp;
-	fp = fopen("path.txt", "w");
-
-	while (tracker != NULL)
-	{
-
-		fprintf(fp, "%d %d \n", tracker->cell.x, tracker->cell.y);
-
-		Node* parent = tracker->parent;
-		tracker->parent = before;
-		before = tracker;
-		tracker = parent;
-	}
-
-	fclose(fp);
+    while (tracker != NULL)
+ 	{
+ 		Node* parent = tracker->parent;
+ 		tracker->parent = before;
+ 		before = tracker;
+ 		tracker = parent;
+ 	}
 
 	tracker = before;
 	Path* path_tracker = NULL;
+
 	while (tracker != NULL)
 	{
 		Path* temp = (Path*)malloc(sizeof(Path));
 		temp->cell = tracker->cell;
 		temp->next = NULL;
+
 		if (path_tracker == NULL)
-		{
 			path = temp;
-		}
 		else
-		{
 			path_tracker->next = temp;
-		}
+
 		tracker = tracker->parent;
 		path_tracker = temp;
 	}
@@ -221,9 +203,8 @@ bool is_in_list(Node* list, Node* element)
 	while (tracker != NULL) // if a node with lower f and same position in the list skip it
 	{
 		if (tracker->cell.x == element->cell.x && tracker->cell.y == element->cell.y)
-		{
 			return true;
-		}
+
 		tracker = tracker->next;
 	}
 	return false;
@@ -267,24 +248,8 @@ void free_path(Path* path)
  */
 void* path_planning(Cell start, Cell goal, bool map[17][27], Path* old_path, bool return_distance)
 {
-	// output to file
-	FILE *fp;
-	FILE *fd;
-	fp = fopen("Output.txt", "w");// "w" means that we are going to write on this file
-	for(int j=0; j < 27; j++)
-	{
-		for(int i=0; i < 17; i ++)
-		{
-			fprintf(fp, "%d ", map[i][j]);
-		}
-		fprintf(fp, "\n");
-	}
-	fclose(fp);
-
-	fp = fopen("nodes.txt", "w");
-
-	// -- initialization ---
-	Node* open_list = (Node*)malloc(sizeof(Node));
+	// -- Initialization ---
+	Node* open_list = (Node*) malloc(sizeof(Node));
 	Node* closed_list = NULL;
 	Node* tracker = NULL;
 
@@ -292,25 +257,24 @@ void* path_planning(Cell start, Cell goal, bool map[17][27], Path* old_path, boo
 	{
 		free_path(old_path);
 	}
+
 	Path* path = NULL;
 
 	open_list->cell = start;
-	open_list->g = 0.0;
-	open_list->h = evaluate_distance(start,goal);
-	open_list->f = 0.0;
+	open_list->g    = 0.0;
+	open_list->h    = evaluate_distance(start, goal);
+	open_list->f    = 0.0;
 	open_list->parent = NULL;
-	open_list->next = NULL;
+	open_list->next   = NULL;
 
 	Cell cell_arround[8];
 
 	while (open_list != NULL)
 	{
-		Node* current = open_list; //=> pop the current node with lowest f
-
-		fprintf(fp, "%d %d %d \n", current->cell.x, current->cell.y, 3);
+		Node* current = open_list; // pop the current node with lowest f
 
 		open_list = open_list->next;
-		get_cells_arround(cell_arround, current->cell); // generate the 8 successors
+		get_cell_neighbourhood(cell_arround, current->cell); // generate the 8 successors
 
 		for(int i =0;i<8;i++)
 		{
@@ -321,17 +285,16 @@ void* path_planning(Cell start, Cell goal, bool map[17][27], Path* old_path, boo
 				successor->parent = current;
 				successor->next = NULL;
 				successor->cell = cell_arround[i];
+
 				if (successor->cell.x == goal.x && successor->cell.y == goal.y)
 				{
-					// printf("Path found\n");
 					if (return_distance)
 					{
 						float* distance = (float*)malloc(sizeof(float));
 						*distance = successor->g = successor->parent->g + evaluate_distance(successor->parent->cell, successor->cell);
 						free_nodes(open_list);
 						free_nodes(closed_list);
-						
-						fclose(fp);
+
 						return distance;
 					}
 					else
@@ -339,34 +302,25 @@ void* path_planning(Cell start, Cell goal, bool map[17][27], Path* old_path, boo
 						path = generate_path(successor);
 						free_nodes(open_list);
 						free_nodes(closed_list);
-						
-						fclose(fp);
+
 						return path;
 					}
 					break;
 				}
 				successor->g = successor->parent->g + evaluate_distance(successor->parent->cell, successor->cell);
 				successor->h = evaluate_distance(goal,successor->cell);
-				successor->f = successor->g + successor->h; 
+				successor->f = successor->g + successor->h;
 
 				if(is_in_list(open_list, successor) || is_in_list(closed_list, successor))
-				{
 					free(successor);
-				}
 				else
-				{
 					add_to_list(&open_list, successor);
-					fprintf(fp, "%d %d %d \n", successor->cell.x, successor->cell.y, 4);
-				}
 			}
 		}
 		add_to_list(&closed_list, current);
-		fprintf(fp, "%d %d %d \n", current->cell.x, current->cell.y, 5);
 	}
 
-	fclose(fp);
-
-	printf("Warning: NO PATH FOUND.. \n");
+	// printf("Warning: NO PATH FOUND.. \n");
 	return path;
 }
 

@@ -8,6 +8,11 @@
 
 NAMESPACE_INIT(ctrlGr11);
 
+#define CST_INTER_CASE 0.1
+#define CST_ANGLE 50
+#define CST_PASSED_NODE 0.05
+#define MAX_SPEED 10.0
+
 /*! \brief follow a given path
  *
  * \param[in,out] cvs controller main structure
@@ -25,52 +30,83 @@ void follow_path(CtrlStruct *cvs)
 
 	if (cvs->path == NULL)
 	{
-		exit(EXIT_FAILURE);
+		speed_regulation(cvs, 0, 0);
 	}
 	else
 	{
-		rob_pos->x = rob_pos->x;
-		rob_pos->y = rob_pos->y;
 
-		double dist_x = (double)path->cell.x / 10.0 - 0.9 - rob_pos->x;
-		double dist_y = (double)path->cell.y / 10.0 - 1.4 - rob_pos->y;
-		//printf("%d  celle.x y \n", path->cell.y);
-		//printf("%f  distance rob y \n", rob_pos->y);
-		//printf("%f  distance y \n", dist_y);
-		double dist = sqrt(dist_x*dist_x + dist_y*dist_y);
-		//printf("%f  distance \n", dist);
-		double angle = rob_pos->theta - atan(dist_y / dist_x);
-		//printf("%f  distance \n", dist);
+		// Distance du robot jusqu'au prochain noeud, en m
+		double dist_x = map_to_world_x(path->cell.x) - rob_pos->x;
+		double dist_y = map_to_world_y(path->cell.y) - rob_pos->y;
 
-		if (cvs->path->next == NULL)
-		{// Dernière case: vitesse est proportionnelle à la distance qui reste
-		 //vitesse = distance restante 		 //rotation = angle
-			//printf("pas de chemin mec");
+		// Calcul de la distance
+		double distance = sqrt(dist_x*dist_x + dist_y*dist_y);
 
-			if(angle>0)
-				speed_regulation(cvs, dist * 100, dist*100-angle*10/ M_PI);
-			else
-				speed_regulation(cvs, dist * 100 + angle * 10 / M_PI, dist*100 );
-		}
+		// Calcul de l'angle avec rob_pos qui est absolu!
+		double angle_cible = atan2(dist_y, dist_x);
+		double angle_error = angle_cible - rob_pos->theta;
 
-		if (cvs->path->next != NULL)
-		{// il reste des noeuds
-			//printf("fgdjfzhg");
-			//speed_regulation(cvs, 10.0, 10.0);
-			// rotation = angle
+		// Performing modulo
+		while (angle_error > M_PI)
+			angle_error -= 2*M_PI;
+		while (angle_error < -M_PI)
+			angle_error += 2 * M_PI;
 
-			if (angle>0)
-				speed_regulation(cvs, 10, 10 - angle * 10 /M_PI);
-			else
-				speed_regulation(cvs, 10 + angle * 10 / M_PI, 10);
-			// si très prêt, enlever première case
-		}
+		// Sqrd angle is better for correcting trajectory
+		double angle_sqrd = angle_error * angle_error;
 
-		if (dist<0.05)
+		// declaration of the two final speed
+		double speed_right;
+		double speed_left;
+
+		// let's begin with max speed
+		speed_right = MAX_SPEED;
+		speed_left = MAX_SPEED;
+
+		// However, if the roboto is too far, not so speed
+		if (distance > CST_INTER_CASE*3)
 		{
-			speed_regulation(cvs,0.0 , 0.0);
+			speed_right = MAX_SPEED/2;
+			speed_left = MAX_SPEED/2;
+		}
+
+		// Has to turn left, decrease of speed left
+		if (angle_error > 0)
+			speed_left -= CST_ANGLE * angle_sqrd;
+		else
+		// Has to turn right, decrease of speed right
+			speed_right -= CST_ANGLE * angle_sqrd;
+
+		// Here is the trick if we have to turn the robot
+		if (angle_error > M_PI / 2 || angle_error < -M_PI / 2)
+		{
+			if (angle_error > 0)
+				speed_right += CST_ANGLE * angle_sqrd;
+			else
+				speed_left += CST_ANGLE * angle_sqrd;
+		}
+
+		// There's in only one node left in the path: has to stop
+		if (path->next == NULL)
+		{
+			// Calcul percentage of dist
+			double percentage_dist;
+			if (distance != 0)
+				percentage_dist = distance / CST_INTER_CASE;
+			else
+				percentage_dist = 0;
+
+			speed_left = percentage_dist * speed_left;
+			speed_right = percentage_dist * speed_right;
+		}
+
+		speed_regulation(cvs, speed_right, speed_left);
+
+		// delete node in path with the robot is in the neiborghood
+		if (distance < CST_PASSED_NODE)
+		{
 			Path* toDelete = path;
-			path = path->next;
+			cvs->path = path->next;
 			free(toDelete);
 		}
 	}

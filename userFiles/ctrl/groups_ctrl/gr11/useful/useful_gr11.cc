@@ -80,7 +80,7 @@ double first_order_filter(double last_val, double new_val, double tau, double de
 	return f * frac * new_val + frac * last_val;
 }
 
-/*! \brief Check if 2 floats are equal with an EPSILON value 
+/*! \brief Check if 2 floats are equal with an EPSILON value
  *
  * \param[in] a first float to check
  * \param[in] b second float to check
@@ -91,14 +91,54 @@ bool equal2float(float a, float b)
 	return fabs(a-b) < EPSILON;
 }
 
-/*! \brief Round a float into an int
+/*! \brief Converts a world X coordinate to a map X coordinate
  *
- * \param[in] a float to round
- * \return int value rounded
+ * \param[in] world_x global frame coordinate
+ * \return int map cell X coordinate
  */
-int round(float a)
+int world_to_map_x(double world_x)
 {
-	return (a > 0.5) ? (int)a + 1 : (int)a;
+	int map_pos_x = (int)(((world_x + 0.8) * 10.0));
+	return map_pos_x;
+}
+
+/*! \brief Converts a world Y coordinate to a map Y coordinate
+ *
+ * \param[in] world_y global frame coordinate
+ * \return int map cell Y coordinate
+ */
+int world_to_map_y(double world_y)
+{
+	int map_pos_y = (int)((world_y + 1.3) * 10.0);
+	return map_pos_y;
+}
+
+/*! \brief Converts a map X coordinate to a world X coordinate
+ *
+ * \param[in] map_x map cell coordinate
+ * \return double world frame X coordinate
+ */
+double map_to_world_x(int map_x)
+{
+	double world_x = ((map_x / 10.0) - 0.8);
+	return world_x;
+}
+
+/*! \brief Converts a map Y coordinate to a world Y coordinate
+ *
+ * \param[in] map_y map cell coordinate
+ * \return double world frame Y coordinate
+ */
+double map_to_world_y(int map_y)
+{
+	double world_y = ((map_y / 10.0) - 1.3);
+	return world_y;
+}
+
+int convert_pos_to_map(double world_pos)
+{
+	int map_pos = (int)round((world_pos + 0.8)*10.0);
+	return map_pos;
 }
 
 NAMESPACE_CLOSE();

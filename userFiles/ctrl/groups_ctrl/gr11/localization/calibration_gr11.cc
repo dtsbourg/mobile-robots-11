@@ -16,8 +16,19 @@ NAMESPACE_INIT(ctrlGr11);
 
 #define ANGLE_OFFSET 0.6
 
-// calibration states
-enum {CALIB_START, CALIB_STATE_A, CALIB_STATE_B, CALIB_STATE_C, CALIB_STATE_D, CALIB_STATE_E, CALIB_STATE_F, CALIB_STATE_G, CALIB_STATE_H, CALIB_FINISH};
+// Calibration FSM States
+enum {
+		CALIB_START,
+		CALIB_STATE_A,
+		CALIB_STATE_B,
+		CALIB_STATE_C,
+		CALIB_STATE_D,
+		CALIB_STATE_E,
+		CALIB_STATE_F,
+		CALIB_STATE_G,
+		CALIB_STATE_H,
+		CALIB_FINISH
+	};
 
 /*! \brief calibration of the robot to calibrate its position
  *
@@ -47,11 +58,6 @@ void calibration(CtrlStruct *cvs)
 	team_id = cvs->team_id;
 	robot_id = cvs->robot_id;
 	
-	//set_plot(rob_pos->x, "X Odometry value [m]");
-	//set_plot(rob_pos->y, "Y Odometry value [m]");
-	// set_plot(rob_pos->theta, "Theta Odometry value [rad]");
-	
-
 	// finite state machine (FSM)
 	switch (calib->flag)
 	{
@@ -93,8 +99,8 @@ void calibration(CtrlStruct *cvs)
 		case CALIB_STATE_A: // state A:
 			speed_regulation(cvs, -CALIB_SPEED, -CALIB_SPEED);
 			if (inputs->u_switch[R_ID] && inputs->u_switch[L_ID])
-			{
-				calib->flag = CALIB_STATE_B;
+			{   // Touched the wall
+				calib->flag   = CALIB_STATE_B;
 				calib->t_flag = t;
 			}
 			break;
@@ -183,8 +189,8 @@ void calibration(CtrlStruct *cvs)
 		case CALIB_STATE_E: // state E:
 			speed_regulation(cvs, -CALIB_SPEED, -CALIB_SPEED);
 			if (inputs->u_switch[R_ID] && inputs->u_switch[L_ID])
-			{
-				calib->flag = CALIB_STATE_F;
+			{	// Touched the wall
+				calib->flag   = CALIB_STATE_F;
 				calib->t_flag = t;
 			}
 			break;
@@ -236,25 +242,13 @@ void calibration(CtrlStruct *cvs)
 				calib->flag = CALIB_FINISH;
 			break;
 
-		// ----- Calibration State H ----- //
-		/* - move in a round until 90° -> we want to put the robot in a -90° angle with 1.0 degree margin
-		*/
-		case CALIB_STATE_H: // state H
-			speed_regulation(cvs, CALIB_SPEED, -CALIB_SPEED);
-
-			if (rob_pos->theta >= (-90.0 - 1.0) * DEG_TO_RAD)
-			{
-				calib->flag = CALIB_FINISH;
-			}
-			break;
-
 		case CALIB_FINISH: // wait before the match is starting
 			speed_regulation(cvs, 0.0, 0.0);
 			cvs->main_state = WAIT_INIT_STATE;
 			break;
 
 		default:
-			printf("Error: unknown state : %d !\n", calib->flag);
+			// printf("Error: unknown state : %d !\n", calib->flag);
 			exit(EXIT_FAILURE);
 	}
 }

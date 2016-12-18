@@ -2,7 +2,7 @@
  *
  *   Universite catholique de Louvain
  *   CEREM : Centre for research in mechatronics
- *   http://www.robotran.be  
+ *   http://www.robotran.be
  *   Contact : info@robotran.be
  *
  *
@@ -13,7 +13,7 @@
  *      - the direct dynamic module (time integration of
  *        equations of motion).
  *    It may be adapted and completed by the user.
- * 
+ *
  *    (c) Universite catholique de Louvain
  */
 
@@ -55,7 +55,7 @@ int gettimeofday (struct timeval *tp, void *tz)
 #endif
 
 /*! \brief set the number of user constraints and update the related structures
- * 
+ *
  * \param[in,out] mbs_data Robotran structure
  * \param[in] Nuserc number of user constraints
  */
@@ -83,7 +83,7 @@ void set_Nuserc(MbsData *mbs_data, int Nuserc)
 int main(int argc, char const *argv[])
 {
 	MbsData *mbs_data;
-	
+
 	MbsPart *mbs_part;
 	MbsDirdyn *mbs_dirdyn;
 
@@ -101,7 +101,7 @@ int main(int argc, char const *argv[])
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	/*                     LOADING                               *
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	
+
 	printf("Loading the Eurobot project template for the robotics course !\n");
 	mbs_data = mbs_load(PROJECT_SOURCE_DIR"/../dataR/m454_project.mbs", BUILD_PATH);
 
@@ -117,7 +117,7 @@ int main(int argc, char const *argv[])
 	mbs_part->options->rowperm = 1;
 	mbs_part->options->verbose = 1;
 	mbs_run_part(mbs_part, mbs_data);
-	
+
 	mbs_delete_part(mbs_part);
 
 
@@ -133,7 +133,7 @@ int main(int argc, char const *argv[])
 	mbs_dirdyn->options->save2file = 0;
 	mbs_dirdyn->options->respath  = PROJECT_SOURCE_DIR"/../resultsR";
 	mbs_dirdyn->options->animpath = PROJECT_SOURCE_DIR"/../animationR";
-	mbs_dirdyn->options->realtime = 1;
+	mbs_dirdyn->options->realtime = 0;
 
 	// special debug parameters
 	#ifdef DEBUG_VERSION
@@ -144,7 +144,7 @@ int main(int argc, char const *argv[])
 	set_robot_init_pos(mbs_data);
 
 	mbs_run_dirdyn(mbs_dirdyn, mbs_data);
-	
+
 	mbs_delete_dirdyn(mbs_dirdyn, mbs_data);
 
 
@@ -152,6 +152,6 @@ int main(int argc, char const *argv[])
 	/*                   CLOSING OPERATIONS                      *
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	mbs_delete_data(mbs_data);
-	
+
 	return 0;
 }

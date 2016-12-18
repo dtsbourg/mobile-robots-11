@@ -5,6 +5,11 @@
 
 NAMESPACE_INIT(ctrlGr11);
 
+// Filter time constant
+#define ALPHA 0.05
+// Tower is shifted from center of robot
+#define TOWER_SHIFT 0.083 // [m]
+
 /*! \brief set the fixed beacons positions, depending on the team
  *
  * \param[in] team_id ID of the team ('TEAM_A' or 'TEAM_B')
@@ -18,7 +23,8 @@ NAMESPACE_INIT(ctrlGr11);
  * This function can be adapted, depending on the map.
  */
 void fixed_beacon_positions(int team_id, double *x_beac_1, double *y_beac_1,
-	double *x_beac_2, double *y_beac_2, double *x_beac_3, double *y_beac_3)
+										 double *x_beac_2, double *y_beac_2,
+										 double *x_beac_3, double *y_beac_3)
 {
 	switch (team_id)
 	{
@@ -27,25 +33,25 @@ void fixed_beacon_positions(int team_id, double *x_beac_1, double *y_beac_1,
 			*y_beac_1 = 1.562;
 
 			*x_beac_2 = -1.062;
-			*y_beac_2 = 1.562;
+			*y_beac_2 =  1.562;
 
-			*x_beac_3 = 0.0;
+			*x_beac_3 =  0.000;
 			*y_beac_3 = -1.562;
 			break;
 
 		case TEAM_B:
-			*x_beac_1 = 1.062;
+			*x_beac_1 =  1.062;
 			*y_beac_1 = -1.562;
 
 			*x_beac_2 = -1.062;
 			*y_beac_2 = -1.562;
 
-			*x_beac_3 = 0.0;
+			*x_beac_3 = 0.000;
 			*y_beac_3 = 1.562;
 			break;
 
 		default:
-			printf("Error unknown team ID (%d) !\n", team_id);
+			// printf("Error unknown team ID (%d) !\n", team_id);
 			exit(EXIT_FAILURE);
 	}
 }
@@ -94,6 +100,7 @@ void triangulation(CtrlStruct *cvs)
 	pos_tri = cvs->triang_pos;
 	rob_pos = cvs->rob_pos;
 	inputs  = cvs->inputs;
+
 	dt = inputs->t - pos_tri->last_t;
 
 	// safety
@@ -130,13 +137,10 @@ void triangulation(CtrlStruct *cvs)
 	alpha_3_index = index_predicted(alpha_3_predicted, alpha_a, alpha_b, alpha_c);
 
 	// safety
-	/*
 	if ((alpha_1_index == alpha_2_index) || (alpha_1_index == alpha_3_index) || (alpha_2_index == alpha_3_index))
 	{
-		printf("Failed index sanity check\n");
 		return;
 	}
-	*/
 
 	// angle of the first beacon
 	switch (alpha_1_index)
@@ -146,7 +150,7 @@ void triangulation(CtrlStruct *cvs)
 		case 2: alpha_1 = alpha_c; break;
 
 		default:
-			printf("Error: unknown index %d !\n", alpha_1_index);
+			// printf("Error: unknown index %d !\n", alpha_1_index);
 			exit(EXIT_FAILURE);
 	}
 
@@ -158,7 +162,7 @@ void triangulation(CtrlStruct *cvs)
 		case 2: alpha_2 = alpha_c; break;
 
 		default:
-			printf("Error: unknown index %d !\n", alpha_2_index);
+			// printf("Error: unknown index %d !\n", alpha_2_index);
 			exit(EXIT_FAILURE);
 	}
 
@@ -170,7 +174,7 @@ void triangulation(CtrlStruct *cvs)
 		case 2: alpha_3 = alpha_c; break;
 
 		default:
-			printf("Error: unknown index %d !\n", alpha_3_index);
+			// printf("Error: unknown index %d !\n", alpha_3_index);
 			exit(EXIT_FAILURE);
 	}
 
@@ -213,23 +217,21 @@ void triangulation(CtrlStruct *cvs)
 	double D = (x_12 - x_23) * (y_23 - y_31) - (y_12 - y_23) * (x_23 - x_31);
 
 	if (fabs(D) < 1e-16) {
-		printf("[ERR] D = 0 in triangulation_gr11.c \n");
+		// printf("[ERROR] D = 0 in triangulation_gr11.c \n");
 		return;
 	}
 
 	// 6. Compute the robot position
 	double invD = 1. / D;
 	double K = k_31 * invD;
-	double tower_shift = -0.083; // 83 mm
+	double tower_shift = -TOWER_SHIFT;
 
-	double new_x = x_beac_2 + tower_shift * cos(rob_pos->theta) + K * (y_12 - y_23);
-	double new_y = y_beac_2 + tower_shift * sin(rob_pos->theta) + K * (x_23 - x_12);
+	double new_x = x_beac_2 + tower_shift * cos(pos_tri->theta) + K * (y_12 - y_23);
+	double new_y = y_beac_2 + tower_shift * sin(pos_tri->theta) + K * (x_23 - x_12);
 
-	pos_tri->x = first_order_filter(pos_tri->x, new_x, 0.05, dt);
-	pos_tri->y = first_order_filter(pos_tri->y, new_y, 0.05, dt);
-	// robot orientation
+	pos_tri->x = first_order_filter(pos_tri->x, new_x, ALPHA, dt);
+	pos_tri->y = first_order_filter(pos_tri->y, new_y, ALPHA, dt);
 	pos_tri->theta = rob_pos->theta;
-	// set_plot(pos_tri->x, "X tri [m]");
 	pos_tri->last_t = inputs->t;
 
 	// ----- triangulation computation end ----- //

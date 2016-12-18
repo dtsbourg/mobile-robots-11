@@ -17,22 +17,22 @@ void kalman_step(KalmanStruc * ekf, CtrlStruct * cvs);
 
 void unpack_state(double * x, CtrlStruct * cvs)
 {
-	x[0] = cvs->rob_pos->x;
-	x[1] = cvs->rob_pos->y;
-	x[2] = cvs->inputs->r_wheel_speed;
-	x[3] = cvs->inputs->l_wheel_speed;
+	x[X]  = cvs->rob_pos->x;
+	x[Y]  = cvs->rob_pos->y;
+	x[Vx] = cvs->inputs->r_wheel_speed;
+	x[Vy] = cvs->inputs->l_wheel_speed;
 }
 
 void unpack_input(double * u, double * wheel_commands)
 {
-	u[0] = wheel_commands[0];
-	u[1] = wheel_commands[1];
+	u[X] = wheel_commands[X];
+	u[Y] = wheel_commands[Y];
 }
 
 void unpack_observation(double * y, CtrlStruct * cvs)
 {
-	y[0] = cvs->triang_pos->x;
-	y[1] = cvs->triang_pos->y;
+	y[X] = cvs->triang_pos->x;
+	y[Y] = cvs->triang_pos->y;
 }
 
 /*! \brief follow a given path
@@ -41,7 +41,6 @@ void unpack_observation(double * y, CtrlStruct * cvs)
  */
 void kalman(CtrlStruct *cvs)
 {
-	static int init = 0;
 	static KalmanStruc ekf;
 
 	// variable declaration
@@ -57,16 +56,12 @@ void kalman(CtrlStruct *cvs)
 
 void kalman_step(KalmanStruc * ekf, CtrlStruct * cvs)
 {
-	// printf("%f -- Starting Kalman filter step ...\n", cvs->inputs->t);
 	ekf->dt = 0.001;
 
-	// printf("[EKF] Unpacking state ...\n");
 	unpack_state(ekf->x, cvs);
-	// printf("[EKF] Unpacking input ...\n");
 	unpack_input(ekf->u, cvs->outputs->wheel_commands);
 
 	// 1. Predict
-	// printf("[EKF] Starting state prediction ...\n");
 	/***
 	 * x+ = f(x, u, n) = F_x . x + F_u . u + F_n . n
 	 ***/
@@ -76,7 +71,6 @@ void kalman_step(KalmanStruc * ekf, CtrlStruct * cvs)
 	ekf->x_[Vx] = ekf->x[Vx] + ekf->u[X]  * ekf->dt;
 	ekf->x_[Vy] = ekf->x[Vy] + ekf->u[Y]  * ekf->dt;
 
-	// printf("[EKF] Starting covariance prediction ...\n");
 	/***
 	 * P+ = F_x . P . F_x' + F_n . Q . F_n'
 	 ***/
@@ -89,14 +83,10 @@ void kalman_step(KalmanStruc * ekf, CtrlStruct * cvs)
 	  double cov_p_2 = ekf->cov_pred * ekf->dt;
 	  double cov_p_3 = ekf->cov_pred + cov_noise;
 
-	//printf("[EKF] Ended covariance prediction ...\n");
-
 	// 2. Update
-	//printf("[EKF] Starting Update ...\n");
 	/***
 	 * e = h(x+) = H . x+
 	 ***/
-	 //printf("[EKF] Expected ...\n");
 	 unpack_observation(ekf->y, cvs);
 	 ekf->z[X] = ekf->y[X] - ekf->x_[X];
 	 ekf->z[Y] = ekf->y[Y] - ekf->x_[Y];
@@ -104,7 +94,6 @@ void kalman_step(KalmanStruc * ekf, CtrlStruct * cvs)
 	/***
 	 * Z = R + H . P . H'
 	 ***/
-	 //printf("[EKF] Innovation Covariance ...\n");
 	 /*     cov_obs+cov_p_1          0             0       0
 	  *		       0 		 cov_obs + cov_p_1     0       0
 	  * Z =        0                 0          cov_obs    0
@@ -115,25 +104,22 @@ void kalman_step(KalmanStruc * ekf, CtrlStruct * cvs)
 	/***
 	 * K = P H' Z^-1
 	 ***/
-	 //printf("[EKF] Kalman gain ...\n");
 	double k = cov_p_1 / cov_z_1;
 
 	/***
 	 * x+ = x + K . z
 	 ***/
-	 //printf("[EKF] Updating state ...\n");
 	 ekf->x_[X]  = ekf->x_[X]  + k * ekf->z[X];
 	 ekf->x_[Y]  = ekf->x_[Y]  + k * ekf->z[Y];
 
 	/***
 	 * P+ = P - K . H . P
 	 ***/
-	 //printf("[EKF] Updating covariances ...\n");
 	 ekf->cov_pred = cov_p_1 * (1 - k);
-	//  printf("[EKF] End filter step ...\n");
 
-	set_plot(ekf->x_[0], "X EKF [m]");
-	set_output(ekf->x_[0], "x_");
+	 // Update CVS
+	 cvs->kal_pos->x = ekf->x_[X];
+	 cvs->kal_pos->y = ekf->x_[Y];
 }
 
 NAMESPACE_CLOSE();
