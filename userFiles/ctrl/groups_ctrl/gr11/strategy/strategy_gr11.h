@@ -25,16 +25,20 @@ typedef struct {
 typedef struct Strategy
 {
 	int main_state; ///< main state of the strategy
+	int tmp_nb_targets;
+	int current_target;
 	Target * targets;
-	Target * tmp_targets;
 } Strategy;
 
 /// 'main_state' states (adapt with your own states)
 enum {
 	   STATE_INIT,
-	   STATE_EMPTY,
-	   STATE_ONE_DISK,
-	   STATE_TWO_DISKS
+	   STATE_TWO_DISKS,
+	   STATE_MOVING_TO_TARGET,
+	   STATE_MOVING_HOME,
+	   STATE_LOOKING_CLOSEST_TARGET,
+	   STATE_PICKUP_TARGET,
+	   STATE_STRATEGY_FINISH
      };
 
 Strategy* init_strategy(CtrlStruct *cvs);
