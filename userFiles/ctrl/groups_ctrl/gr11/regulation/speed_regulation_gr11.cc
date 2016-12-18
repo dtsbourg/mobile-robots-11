@@ -4,7 +4,7 @@
 NAMESPACE_INIT(ctrlGr11);
 
 // Tuned PID Parameters
-#define Kp 5.0
+#define Kp 9.0
 #define Ki 1.0
 
 // Utility
