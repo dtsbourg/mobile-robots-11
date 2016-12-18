@@ -17,22 +17,22 @@ void kalman_step(KalmanStruc * ekf, CtrlStruct * cvs);
 
 void unpack_state(double * x, CtrlStruct * cvs)
 {
-	x[0] = cvs->rob_pos->x;
-	x[1] = cvs->rob_pos->y;
-	x[2] = cvs->inputs->r_wheel_speed;
-	x[3] = cvs->inputs->l_wheel_speed;
+	x[X]  = cvs->rob_pos->x;
+	x[Y]  = cvs->rob_pos->y;
+	x[Vx] = cvs->inputs->r_wheel_speed;
+	x[Vy] = cvs->inputs->l_wheel_speed;
 }
 
 void unpack_input(double * u, double * wheel_commands)
 {
-	u[0] = wheel_commands[0];
-	u[1] = wheel_commands[1];
+	u[X] = wheel_commands[X];
+	u[Y] = wheel_commands[Y];
 }
 
 void unpack_observation(double * y, CtrlStruct * cvs)
 {
-	y[0] = cvs->triang_pos->x;
-	y[1] = cvs->triang_pos->y;
+	y[X] = cvs->triang_pos->x;
+	y[Y] = cvs->triang_pos->y;
 }
 
 /*! \brief follow a given path
