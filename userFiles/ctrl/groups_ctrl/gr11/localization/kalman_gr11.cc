@@ -120,6 +120,7 @@ void kalman_step(KalmanStruc * ekf, CtrlStruct * cvs)
 	 // Update CVS
 	 cvs->kal_pos->x = ekf->x_[X];
 	 cvs->kal_pos->y = ekf->x_[Y];
+
 }
 
 NAMESPACE_CLOSE();

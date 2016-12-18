@@ -24,10 +24,11 @@ enum {
 	   STATE_STRATEGY_FINISH
      };
 
+/// Scoring method Struct
 enum ScoringMethod {
-	SCORE_DISTANCE,
-	SCORE_WEIGHTED_DISTANCE,
-	SCORE_POINTS
+	SCORE_DISTANCE,				// Use the distance to target as strategy metric
+	SCORE_WEIGHTED_DISTANCE,	// Use the weighted (by score) distance to target as strategy metric
+	SCORE_POINTS				// Use the target points as a strategy metric
 };
 
 /// Target Struct

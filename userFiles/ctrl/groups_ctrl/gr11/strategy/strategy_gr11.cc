@@ -12,21 +12,33 @@
 
 NAMESPACE_INIT(ctrlGr11);
 
+// Compare functions
+/* These functions are passed to the sorting algorithm to
+ * order the target priority queue. The lower the score,
+ * the sooner the target will be aimed.
+ */
+//< Distance : Use the distance to target (Closest first)
 int dist_compare (void const * ta, void const * tb)
 {
    return (((Target *)ta)->dist - ((Target *)tb)->dist);
 }
 
+//< Weighted distance : Weight the distance with the target's score (Best distance / points ratio first)
 int weighted_dist_compare (void const * ta, void const * tb)
 {
-   return ((((Target *)ta)->dist * ((Target *)ta)->points) - (((Target *)tb)->dist * ((Target *)tb)->points));
+   return ((((Target *)ta)->dist / ((Target *)ta)->points) - (((Target *)tb)->dist / ((Target *)tb)->points)) * 100;
 }
 
+//< Points : Use the number of points brought by the target (Higher points first)
 int pts_compare (void const * ta, void const * tb)
 {
    return (((Target *)tb)->points - ((Target *)ta)->points);
 }
 
+/*! \brief
+	Used to sort the targets, so cvs->targets acts as a priority queue.
+	The sorting method used is defined in the strategy intialization
+*/
 void sort_targets(CtrlStruct * cvs)
 {
 	switch (cvs->strat->method) {
@@ -44,6 +56,9 @@ void sort_targets(CtrlStruct * cvs)
 	}
 }
 
+/*! \brief
+	Returns the robot home-base.
+*/
 Cell get_home(CtrlStruct * cvs)
 {
 	Cell home;
@@ -76,6 +91,9 @@ Cell get_home(CtrlStruct * cvs)
 	return home;
 }
 
+/*! \brief
+	Get the distance from the robot's current position to a target.
+*/
 float get_target_dist(CtrlStruct *cvs, Target t, Cell robot_pos)
 {
 	Cell final_pos;
@@ -143,11 +161,13 @@ void main_strategy(CtrlStruct *cvs)
 	switch (strat->main_state)
 	{
 		case STATE_INIT:
+		// Initialization of the strategy
 			init_strategy(cvs);
 			strat->main_state = STATE_LOOKING_CLOSEST_TARGET;
 			break;
 
 		case STATE_LOOKING_CLOSEST_TARGET:
+		// Search for the best target to aim for
 			for (int i = 0; i < N_TARGETS; i++)
 			{
 				strat->targets[i].dist = get_target_dist(cvs, strat->targets[i], start);
@@ -182,12 +202,14 @@ void main_strategy(CtrlStruct *cvs)
 			break;
 
 		case STATE_TWO_DISKS:
+		// We have two targets captured, we can go back to base
 			objective = get_home(cvs);
 			cvs->path = (Path *)path_planning(start , objective, cvs->map, cvs->path, false);
 			strat->main_state = STATE_MOVING_HOME;
 			break;
 
 		case STATE_MOVING_TO_TARGET:
+		// We are currently going towards a target
 			if(check_opp_front(cvs))
 			{
 				speed_regulation(cvs, 0.0, 0.0);
@@ -211,6 +233,7 @@ void main_strategy(CtrlStruct *cvs)
 			break;
 
 		case STATE_MOVING_HOME:
+		// We have targets and we're bringing them back to the base
 			follow_path(cvs);
 			if (cvs->path == NULL)
 			{   // we are home now
@@ -220,6 +243,7 @@ void main_strategy(CtrlStruct *cvs)
 			break;
 
 		case STATE_PICKUP_TARGET:
+		// We are picking up a target
 			outputs->flag_release = 0;
 			speed_regulation(cvs, 0.0, 0.0);
 			if (inputs->nb_targets == strat->tmp_nb_targets + 1)
@@ -237,6 +261,7 @@ void main_strategy(CtrlStruct *cvs)
 			break;
 
 		case STATE_STRATEGY_FINISH:
+		// Strategy is over
 			speed_regulation(cvs, 0.0, 0.0);
 			break;
 
