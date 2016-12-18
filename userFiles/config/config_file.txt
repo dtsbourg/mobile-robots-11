@@ -38,7 +38,7 @@
 #    GrXCtrl: The controller developed by the group. The 'X' must be replaced by the group number.
 #
 blue_ctrl   : Gr11Ctrl
-red_ctrl    : NoCtrl
+red_ctrl    : Gr11Ctrl
 yellow_ctrl : NoCtrl
 white_ctrl  : NoCtrl
 
