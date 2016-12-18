@@ -5,7 +5,7 @@ NAMESPACE_INIT(ctrlGr11);
 
 // Tuned PID Parameters
 #define Kp 5.0
-#define Ki 0.1
+#define Ki 1
 
 // Utility
 // threhsold for static position hold
@@ -55,12 +55,27 @@ void speed_regulation(CtrlStruct *cvs, double r_sp_ref, double l_sp_ref)
 	outputs->wheel_commands[R_ID] = limit_range(Kp * r_err + Ki * sp_reg->int_error_r, -MAX_SPEED, MAX_SPEED);
 	outputs->wheel_commands[L_ID] = limit_range(Kp * l_err + Ki * sp_reg->int_error_l, -MAX_SPEED, MAX_SPEED);
 
+	// if touching walls or opponent
+	if (r_sp == 0 || l_sp == 0)
+	{
+		sp_reg->int_error_r = 0;
+		sp_reg->int_error_l = 0;
+	}
+
 	// Threshold for static position
 	if (r_sp_ref == 0 && r_sp <= STATIC_THRESH)
+	{
 		outputs->wheel_commands[R_ID] = 0;
+		sp_reg->int_error_r = 0;
+	}
+
 
 	if (l_sp_ref == 0 && l_sp <= STATIC_THRESH)
+	{
 		outputs->wheel_commands[L_ID] = 0;
+		sp_reg->int_error_r = 0;
+	}
+
 
 
 	// ----- Wheels regulation computation end ----- //

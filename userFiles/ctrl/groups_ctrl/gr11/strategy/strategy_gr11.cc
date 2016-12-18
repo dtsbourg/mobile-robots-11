@@ -100,7 +100,7 @@ void init_strategy(CtrlStruct *cvs)
 	ts[4].present = true; ts[4].points = 2; ts[4].x =  9; ts[4].y = 13; ts[4].dist = 0;
 	ts[5].present = true; ts[5].points = 1; ts[5].x =  4; ts[5].y = 19; ts[5].dist = 0;
 	ts[6].present = true; ts[6].points = 1; ts[6].x = 15; ts[6].y = 19; ts[6].dist = 0;
-	ts[7].present = true; ts[7].points = 2; ts[7].x = 10; ts[7].y = 26; ts[7].dist = 0;
+	ts[7].present = true; ts[7].points = 2; ts[7].x = 11; ts[7].y = 26; ts[7].dist = 0;
 
 	memcpy(cvs->strat->targets, ts, N_TARGETS*sizeof(Target));
 

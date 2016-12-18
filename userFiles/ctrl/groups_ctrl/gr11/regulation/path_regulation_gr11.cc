@@ -9,7 +9,7 @@
 NAMESPACE_INIT(ctrlGr11);
 
 #define CST_INTER_CASE 0.1
-#define CST_ANGLE 50
+#define CST_ANGLE 100
 #define CST_PASSED_NODE 0.05
 #define MAX_SPEED 30.0
 
