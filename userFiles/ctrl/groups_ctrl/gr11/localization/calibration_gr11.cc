@@ -90,12 +90,6 @@ void calibration(CtrlStruct *cvs)
 			break;
 
 		// ----- Calibration State A ----- //
-		/* ROBOT_R
-		 * - move backward to the top wall of the map
-		 * - detect wall with micro switch and enter state B
-		 * ROBOT_B
-		 * - make a 90° rotation and enter state B
-		*/
 		case CALIB_STATE_A: // state A:
 			speed_regulation(cvs, -CALIB_SPEED, -CALIB_SPEED);
 			if (inputs->u_switch[R_ID] && inputs->u_switch[L_ID])
@@ -106,11 +100,6 @@ void calibration(CtrlStruct *cvs)
 			break;
 
 		// ----- Calibration State B ----- //
-		/* - Synchronize all ROBOT
-		 * ROBOT_R	
-		 * - wait 1 second to make sure there is contact
-		 * - set angle to -90(deg) / set Y position to 1.44[m] (top of the map minus wall)
-		*/
 		case CALIB_STATE_B: // state B
 			speed_regulation(cvs, -CALIB_SPEED, -CALIB_SPEED);
 			if (t - calib->t_flag > WAIT_TIME)
@@ -137,8 +126,6 @@ void calibration(CtrlStruct *cvs)
 			break;
 
 		// ----- Calibration State C ----- //
-		/* - move forward 0.5 seconds to center the robot
-		*/
 		case CALIB_STATE_C: // state C
 			speed_regulation(cvs, CALIB_SPEED, CALIB_SPEED);
 			if (t - calib->t_flag > 0.6)
@@ -148,8 +135,6 @@ void calibration(CtrlStruct *cvs)
 			break;
 
 		// ----- Calibration State D ----- //
-		/* - move in a round until 90° -> we want to put the robot in a -180° angle
-		*/
 		case CALIB_STATE_D:
 			
 			if (team_id == TEAM_A)
@@ -183,9 +168,6 @@ void calibration(CtrlStruct *cvs)
 			
 
 		// ----- Calibration State E ----- //
-		/* - move backward to the top wall of the map
-		 * - detect wall with micro switch and enter state F
-		*/
 		case CALIB_STATE_E: // state E:
 			speed_regulation(cvs, -CALIB_SPEED, -CALIB_SPEED);
 			if (inputs->u_switch[R_ID] && inputs->u_switch[L_ID])
@@ -196,10 +178,7 @@ void calibration(CtrlStruct *cvs)
 			break;
 
 		// ----- Calibration State F ----- //
-		/* - wait 1 seconds to make sure there is contact
-		 * - set angle to -180(deg) / set X position to 0.94[m] (right of the map minus wall)
-		*/
-		case CALIB_STATE_F: // state F
+		case CALIB_STATE_F:
 			speed_regulation(cvs, -CALIB_SPEED, -CALIB_SPEED);
 			if (t - calib->t_flag > WAIT_TIME)
 			{
@@ -234,8 +213,6 @@ void calibration(CtrlStruct *cvs)
 			break;
 
 		// ----- Calibration State G ----- //
-		/* - move forward 1 seconds to center the robot
-		*/
 		case CALIB_STATE_G: // state G
 			speed_regulation(cvs, CALIB_SPEED, CALIB_SPEED);
 			if (t - calib->t_flag > 2 * WAIT_TIME)
