@@ -96,11 +96,6 @@ Strategy* init_strategy(CtrlStruct *cvs)
 
 	memcpy(strat->targets, ts, N_TARGETS*sizeof(Target));
 
-	for (int i = 0; i < N_TARGETS; i++)
-	{
-		printf("dist = %f \n", strat->targets[i].dist);
-	}
-
 	strat->main_state = STATE_EMPTY;
 
 	return strat;
@@ -130,15 +125,15 @@ void main_strategy(CtrlStruct *cvs)
 	inputs = cvs->inputs;
 
 
-	/*Ici j'ai une idée du tonerre. Plutôt que de prendre le noeud le plus proche,
-	on peut prendre le prochain noeud de la liste. Attention tout de même à la fin de la liste,
+	/*Ici j'ai une idï¿½e du tonerre. Plutï¿½t que de prendre le noeud le plus proche,
+	on peut prendre le prochain noeud de la liste. Attention tout de mï¿½me ï¿½ la fin de la liste,
 	lorsqu'il n'y a plus de noeuds.
 
-	Peutêtre l'idéal serait d'avoir le noeud d'avant?
+	Peutï¿½tre l'idï¿½al serait d'avoir le noeud d'avant?
 	*/
 	int cell_x = (int)round((cvs->rob_pos->x + 0.8) * 10.0);
 	int cell_y = (int)round((cvs->rob_pos->y + 1.3) * 10.0);
-	
+
 
 	Cell start;
 	start.x = cell_x;
@@ -146,8 +141,6 @@ void main_strategy(CtrlStruct *cvs)
 	Cell objective;
 	objective.x = strat->targets[0].x;
 	objective.y = strat->targets[0].y;
-
-
 
 	switch (strat->main_state)
 	{
@@ -157,21 +150,13 @@ void main_strategy(CtrlStruct *cvs)
 			break;
 
 		case STATE_EMPTY:
-			// printf("x = %f ; y = %f\n", cvs->rob_pos->x, cvs->rob_pos->y);
-			//printf("x_start = %d ; y_start = %d \n", start.x, start.y);
-			//printf("x_obj = %d ; y_obj = %d \n", objective.x, objective.y);
-			
-			//free_path(cvs->path->next);
 			cvs->path = NULL;
 			cvs->path = (Path *)path_planning(start, objective, cvs->map, cvs->path, false);
 			follow_path(cvs);
+			strat->main_state = STATE_MOVING;
 			break;
 
 		case STATE_ONE_DISK:
-			// for (int i = 0; i < N_TARGETS; i++)
-			// {
-			// 	strat->tmp_targets[i].dist = get_target_dist(cvs, strat->tmp_targets[i]);
-			// }
 			// qsort(strat->tmp_targets, N_TARGETS, sizeof(Target), dist_compare);
 			// objective.x = strat->tmp_targets[0].x; objective.y = strat->tmp_targets[0].y;
 			// cvs->path = (Path *)path_planning(start, objective, cvs->map, cvs->path, false);
@@ -182,6 +167,11 @@ void main_strategy(CtrlStruct *cvs)
 			// objective = get_home(cvs);
 			// cvs->path = (Path *)path_planning(start , objective, cvs->map, cvs->path, false);
 			// follow_path(cvs);
+			break;
+
+		case STATE_MOVING:
+			follow_path(cvs);
+			printf("%d %d %d %d\n", objective.x, objective.y, cell_x,cell_y);
 			break;
 
 		default:

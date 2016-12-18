@@ -34,7 +34,8 @@ enum {
 	   STATE_INIT,
 	   STATE_EMPTY,
 	   STATE_ONE_DISK,
-	   STATE_TWO_DISKS
+	   STATE_TWO_DISKS,
+	   STATE_MOVING
      };
 
 Strategy* init_strategy(CtrlStruct *cvs);
