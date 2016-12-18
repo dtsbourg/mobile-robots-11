@@ -3,9 +3,6 @@
 #include "useful_gr11.h"
 #include <math.h>
 
-// Time constant for first order filter
-#define ALPHA 1
-
 NAMESPACE_INIT(ctrlGr11);
 
 /*! \brief compute the opponents position using the tower
@@ -46,7 +43,7 @@ void opponents_tower(CtrlStruct *cvs)
 	}
 
 	// Erase last opponents positions on map
-	opp_pos_map(cvs,ERASE);
+	opp_pos_map(cvs, ERASE);
 
 	// low pass filter time increment ('delta_t' is the last argument of the 'first_order_filter' function)
 	delta_t = inputs->t - opp_pos->last_t;
@@ -75,23 +72,22 @@ void opponents_tower(CtrlStruct *cvs)
 	OpponentsPosition *opp_pos_new;
 	opp_pos_new = (OpponentsPosition*) malloc(sizeof(OpponentsPosition));
 
-	single_opp_tower(rise_1, fall_1, rob_pos->x, rob_pos->y, rob_pos->theta, &opp_pos_new->x[0], &opp_pos_new->y[0]);
+	single_opp_tower(rise_1, fall_1, rob_pos->x, rob_pos->y, rob_pos->theta, opp_pos_new, 0);
 
 	// Compute opponent positions
-	opp_pos->x[0] = first_order_filter(opp_pos->x[0], opp_pos_new->x[0], ALPHA, delta_t);
-	opp_pos->y[0] = first_order_filter(opp_pos->y[0], opp_pos_new->y[0], ALPHA, delta_t);
+	opp_pos->x[0] = first_order_filter(opp_pos->x[0], opp_pos_new->x[0], 1, delta_t);
+	opp_pos->y[0] = first_order_filter(opp_pos->y[0], opp_pos_new->y[0], 1, delta_t);
 
-	if (nb_opp == 2) {
-		single_opp_tower(rise_2, fall_2, rob_pos->x, rob_pos->y, rob_pos->theta, &opp_pos_new->x[1], &opp_pos_new->y[1]);
-
-		opp_pos->x[1] = first_order_filter(opp_pos->x[1], opp_pos_new->x[1], ALPHA, delta_t);
-		opp_pos->y[1] = first_order_filter(opp_pos->y[1], opp_pos_new->y[1], ALPHA, delta_t);
+	if (nb_opp == 2){
+		single_opp_tower(rise_2, fall_2, rob_pos->x, rob_pos->y, rob_pos->theta, opp_pos_new, 1);
+		opp_pos->x[1] = first_order_filter(opp_pos->x[1], opp_pos_new->x[1], 1, delta_t);
+		opp_pos->y[1] = first_order_filter(opp_pos->y[1], opp_pos_new->y[1], 1, delta_t);
 	}
-
 
 	// Add new opponents positions on map
 	opp_pos_map(cvs, ADD);
 
+	free(opp_pos_new);
 	// ----- opponents position computation end ----- //
 }
 
@@ -106,7 +102,7 @@ void opponents_tower(CtrlStruct *cvs)
  * \param[out] new_y_opp new known y opponent position
  * \return 1 if computation successful, 0 otherwise
  */
-int single_opp_tower(double last_rise, double last_fall, double rob_x, double rob_y, double rob_theta, double *new_x_opp, double *new_y_opp)
+int single_opp_tower(double last_rise, double last_fall, double rob_x, double rob_y, double rob_theta, OpponentsPosition * opp_pos_new, int opp_id)
 {
 	double beacon_radius = 0.020; // [m]
 	double beacon_offset = 0.083; // [m]
@@ -124,8 +120,8 @@ int single_opp_tower(double last_rise, double last_fall, double rob_x, double ro
 	double x = dist * cos(beacon_angle) + cos(rob_theta) * beacon_offset;
 	double y = dist * sin(beacon_angle) + sin(rob_theta) * beacon_offset;
 
-	*new_x_opp = x + rob_x;
-	*new_y_opp = y + rob_y;
+	opp_pos_new->x[opp_id] = x + rob_x;
+	opp_pos_new->y[opp_id] = y + rob_y;
 
 	return 1;
 }
@@ -181,23 +177,43 @@ void opp_pos_map(CtrlStruct *cvs, bool add_erase)
 	// get first opponent position as map coordinates
 	opp_pos[0] = world_to_map_x(cvs->opp_pos->x[0]);
 	opp_pos[1] = world_to_map_y(cvs->opp_pos->y[0]);
+	int x = opp_pos[0]; int y = opp_pos[1];
 
 	// add/erase first opponent position to the map
-	if(add_erase)
-		cvs->map[opp_pos[0]][opp_pos[1]] = OBSTACLE_NODE;
-	else
-		cvs->map[opp_pos[0]][opp_pos[1]] = FREE_NODE;
+	if (x < 0 || y < 0 || x > 17 || y > 27)
+	{
+		// printf("%f -> %d ; %f -> %d WTF\n", cvs->opp_pos->x[0], opp_pos[0], cvs->opp_pos->y[0], opp_pos[1]);
+		return;
+	}
+
+	if(add_erase){
+		// printf("Add obstacle %d ; %d \n", x, y);
+		cvs->map[x][y] = OBSTACLE_NODE;
+	}
+	else {
+		// printf("remove obstacle %d ; %d \n", x, y);
+
+		cvs->map[x][y] = FREE_NODE;
+	}
 
 	// for the second opponent
 	if (cvs->opp_pos->nb_opp == 2)
 	{
+		if (opp_pos[2] < 0 || opp_pos[3] < 0 || opp_pos[2] > 17 || opp_pos[3] > 27)
+		{
+			return;
+		}
+
 		opp_pos[2] = world_to_map_x(cvs->opp_pos->x[1]);
 		opp_pos[3] = world_to_map_y(cvs->opp_pos->y[1]);
 
-		if(add_erase)
+		if(add_erase) {
 			cvs->map[opp_pos[2]][opp_pos[3]] = OBSTACLE_NODE;
+		}
 		else
+		{
 			cvs->map[opp_pos[2]][opp_pos[3]] = FREE_NODE;
+		}
 	}
 }
 

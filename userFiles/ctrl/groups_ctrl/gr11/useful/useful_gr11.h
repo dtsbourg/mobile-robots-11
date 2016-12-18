@@ -11,8 +11,6 @@
 #define cot(x)      ( 1 / tan(x) )
 #define EPSILON     6e-8
 
-#define OBSTACLE_NODE 1
-#define FREE_NODE 0
 #define ADD 1
 #define ERASE 0
 
@@ -34,6 +32,7 @@ int world_to_map_x(double world_x);
 int world_to_map_y(double world_y);
 double map_to_world_x(int map_x);
 double map_to_world_y(int map_y);
+int convert_pos_to_map(double world_pos);
 
 NAMESPACE_CLOSE();
 

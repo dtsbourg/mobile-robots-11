@@ -27,7 +27,7 @@ typedef struct OpponentsPosition
 // function prototype
 int check_opp_front(CtrlStruct *cvs);
 void opponents_tower(CtrlStruct *cvs);
-int single_opp_tower(double last_rise, double last_fall, double rob_x, double rob_y, double rob_theta, double *new_x_opp, double *new_y_opp);
+int single_opp_tower(double last_rise, double last_fall, double rob_x, double rob_y, double rob_theta,OpponentsPosition * opp_pos_new, int opp_id);
 void opp_pos_map(CtrlStruct *cvs, bool add_erase);
 
 NAMESPACE_CLOSE();
