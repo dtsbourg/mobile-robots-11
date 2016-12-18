@@ -21,11 +21,11 @@ void follow_path(CtrlStruct *cvs)
 {
 	//trois possibilité: pas de chemin, un dernier noeud, plusieurs noeuds.
 
-	RobotPosition *rob_pos;
+	RobotPosition *kal_pos;
 	Path *path;
 
 	// variables initialization
-	rob_pos = cvs->rob_pos;
+	kal_pos = cvs->kal_pos;
 	path = cvs->path;
 
 	if (cvs->path == NULL)
@@ -36,17 +36,17 @@ void follow_path(CtrlStruct *cvs)
 	{
 
 		// Distance du robot jusqu'au prochain noeud, en m
-		double dist_x = (double)path->cell.x / 10.0 - 0.8 - rob_pos->x;
-		double dist_y = (double)path->cell.y / 10.0 - 1.3 - rob_pos->y;
+		double dist_x = (double)path->cell.x / 10.0 - 0.8 - kal_pos->x;
+		double dist_y = (double)path->cell.y / 10.0 - 1.3 - kal_pos->y;
 
 		// Calcul de la distance
 		double distance = sqrt(dist_x*dist_x + dist_y*dist_y);
 
 		set_plot(distance, "distance");
 
-		// Calcul de l'angle avec rob_pos qui est absolu!
+		// Calcul de l'angle avec kal_pos qui est absolu!
 		double angle_cible = atan2(dist_y, dist_x);
-		double angle_error = angle_cible - rob_pos->theta;
+		double angle_error = angle_cible - kal_pos->theta;
 
 		// Performing modulo
 		while (angle_error > M_PI)
@@ -100,7 +100,7 @@ void follow_path(CtrlStruct *cvs)
 
 			speed_left = percentage_dist * speed_left;
 			speed_right = percentage_dist * speed_right;
-		} 
+		}
 
 		speed_regulation(cvs, speed_right, speed_left);
 
