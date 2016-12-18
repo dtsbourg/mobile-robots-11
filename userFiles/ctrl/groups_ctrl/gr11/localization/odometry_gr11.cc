@@ -5,6 +5,9 @@
 
 NAMESPACE_INIT(ctrlGr11);
 
+#define WHEEL_RADIUS   0.030 // [m]
+#define WHEEL_DISTANCE 0.225 // [m]
+
 /*! \brief update the robot odometry
  *
  * \param[in,out] cvs controller main structure
@@ -33,6 +36,7 @@ void update_odometry(CtrlStruct *cvs)
 	// safety
 	if (dt <= 0.0)
 	{
+		printf("[ERROR] Negative dt. Exiting odometry.\n", );
 		return;
 	}
 
@@ -44,8 +48,7 @@ void update_odometry(CtrlStruct *cvs)
 	*  Pos update  -- delta_s, delta_theta
 	*  Wheel dist  -- b
 	*/
-	// TODO : Find real constant !!
-	const double wheel_rad = 0.030; // [m]
+	const double wheel_rad = WHEEL_RADIUS;
 	double delta_s_r = r_sp * dt * wheel_rad;
 	double delta_s_l = l_sp * dt * wheel_rad;
 
@@ -53,7 +56,7 @@ void update_odometry(CtrlStruct *cvs)
     *  Compute delta state
 	*/
 	// TODO : Find real constant !!
-	const double b = 0.225; // [m]
+	const double b = WHEEL_DISTANCE;
 	double delta_s = (delta_s_r + delta_s_l) / 2.0;
 
    /*
@@ -67,11 +70,9 @@ void update_odometry(CtrlStruct *cvs)
 	// ----- odometry computation end ----- //
 
 	// Update position estimation
-	rob_pos->x 	  = rob_pos->x + delta_x;
-	rob_pos->y 	  = rob_pos->y + delta_y;
+	rob_pos->x 	   = rob_pos->x + delta_x;
+	rob_pos->y 	   = rob_pos->y + delta_y;
 	rob_pos->theta = rob_pos->theta + delta_theta;
-
-	// Plot value
 
 	// last update time
 	rob_pos->last_t = inputs->t;
