@@ -28,7 +28,7 @@ typedef struct Strategy
 	int main_state; 	///< main state of the strategy
 	int tmp_nb_targets;
 	int current_target;
-	Target * targets;
+	Target targets[N_TARGETS];
 } Strategy;
 
 /// 'main_state' states
@@ -42,7 +42,7 @@ enum {
 	   STATE_STRATEGY_FINISH
      };
 
-Strategy* init_strategy(CtrlStruct *cvs);
+void init_strategy(CtrlStruct *cvs);
 void free_strategy(Strategy *strat);
 void main_strategy(CtrlStruct *cvs);
 

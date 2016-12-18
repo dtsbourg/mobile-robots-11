@@ -83,8 +83,6 @@ void opponents_tower(CtrlStruct *cvs)
 	opp_pos->x[0] = first_order_filter(opp_pos->x[0], opp_pos_new->x[0], 1, delta_t);
 	opp_pos->y[0] = first_order_filter(opp_pos->y[0], opp_pos_new->y[0], 1, delta_t);
 
-	double dist = sqrt(opp_pos->x[0] * opp_pos->x[0] + opp_pos->y[0] * opp_pos->y[0]);
-
 	if (nb_opp == 2){
 		single_opp_tower(rise_2, fall_2, rob_pos->x, rob_pos->y, rob_pos->theta, opp_pos_new, 1);
 		opp_pos->x[1] = first_order_filter(opp_pos->x[1], opp_pos_new->x[1], 1, delta_t);
@@ -121,7 +119,6 @@ int single_opp_tower(double last_rise, double last_fall, double rob_x, double ro
 	double beacon_angle = rob_theta + 0.5 * (last_fall + last_rise);
 
 	// Compute relative distance between robot and beacons
-	// TODO : Fix tan range
 	double dist = beacon_radius / tan(arc);
 
 	double x = dist * cos(beacon_angle) + cos(rob_theta) * beacon_offset;
@@ -193,7 +190,7 @@ void opp_pos_map(CtrlStruct *cvs, bool add_erase)
 	int x = opp_pos[0]; int y = opp_pos[1];
 
 	// add/erase first opponent position to the map
-	if (x < 0 || y < 0 || x > 17 || y > 27)
+	if (x < 0 || y < 0 || x > 16 || y > 26)
 	{
 		// printf("%f -> %d ; %f -> %d WTF\n", cvs->opp_pos->x[0], opp_pos[0], cvs->opp_pos->y[0], opp_pos[1]);
 		return;
@@ -211,7 +208,7 @@ void opp_pos_map(CtrlStruct *cvs, bool add_erase)
 	// for the second opponent
 	if (cvs->opp_pos->nb_opp == 2)
 	{
-		if (opp_pos[2] < 0 || opp_pos[3] < 0 || opp_pos[2] > 17 || opp_pos[3] > 27)
+		if (opp_pos[2] < 0 || opp_pos[3] < 0 || opp_pos[2] > 16 || opp_pos[3] > 26)
 		{
 			return;
 		}

@@ -62,16 +62,9 @@ int dist_compare (void const * ta, void const * tb)
 
 /*! \brief intitialize the strategy structure
  *
- * \return strategy structure initialized
  */
-Strategy* init_strategy(CtrlStruct *cvs)
+void init_strategy(CtrlStruct *cvs)
 {
-	Strategy *strat;
-
-	strat = (Strategy*) malloc(sizeof(Strategy));
-	strat->tmp_nb_targets = 0;
-	strat->targets = (Target *) malloc(N_TARGETS*sizeof(Target));
-
 	Target ts[N_TARGETS];
 	ts[0].present = true; ts[0].points = 2; ts[0].x = 10; ts[0].y =  1; ts[0].dist = 0;
 	ts[1].present = true; ts[1].points = 1; ts[1].x = 15; ts[1].y =  7; ts[1].dist = 0;
@@ -82,9 +75,7 @@ Strategy* init_strategy(CtrlStruct *cvs)
 	ts[6].present = true; ts[6].points = 1; ts[6].x = 15; ts[6].y = 19; ts[6].dist = 0;
 	ts[7].present = true; ts[7].points = 2; ts[7].x = 10; ts[7].y = 25; ts[7].dist = 0;
 
-	memcpy(strat->targets, ts, N_TARGETS*sizeof(Target));
-
-	return strat;
+	memcpy(cvs->strat->targets, ts, N_TARGETS*sizeof(Target));
 }
 
 /*! \brief release the strategy structure (memory released)
@@ -124,6 +115,7 @@ void main_strategy(CtrlStruct *cvs)
 	{
 		case STATE_INIT:
 			init_strategy(cvs);
+			printf("INIT\n");
 			strat->main_state = STATE_LOOKING_CLOSEST_TARGET;
 			break;
 
@@ -167,12 +159,12 @@ void main_strategy(CtrlStruct *cvs)
 			break;
 
 		case STATE_MOVING_TO_TARGET:
-			if(check_opp_front(cvs))
-			{
-				cvs->path = NULL;
-				strat->main_state = STATE_LOOKING_CLOSEST_TARGET;
-				break;
-			}
+			// if(check_opp_front(cvs))
+			// {
+			// 	cvs->path = NULL;
+			// 	strat->main_state = STATE_LOOKING_CLOSEST_TARGET;
+			// 	break;
+			// }
 			follow_path(cvs);
 			if (cvs->path == NULL)
 			{

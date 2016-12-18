@@ -133,7 +133,7 @@ int main(int argc, char const *argv[])
 	mbs_dirdyn->options->save2file = 0;
 	mbs_dirdyn->options->respath  = PROJECT_SOURCE_DIR"/../resultsR";
 	mbs_dirdyn->options->animpath = PROJECT_SOURCE_DIR"/../animationR";
-	mbs_dirdyn->options->realtime = 1;
+	mbs_dirdyn->options->realtime = 0;
 
 	// special debug parameters
 	#ifdef DEBUG_VERSION

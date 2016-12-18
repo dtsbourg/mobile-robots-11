@@ -84,8 +84,7 @@ CtrlStruct* init_CtrlStruct(CtrlIn *inputs, CtrlOut *outputs)
 	cvs->calib->flag = 0;
 	cvs->calib->t_flag = 0.0;
 
-	// strategy
-	cvs->strat = init_strategy(cvs);
+	cvs->strat = (Strategy*) malloc(sizeof(Strategy));
 
 	// path-planning
 	cvs->path = NULL;
