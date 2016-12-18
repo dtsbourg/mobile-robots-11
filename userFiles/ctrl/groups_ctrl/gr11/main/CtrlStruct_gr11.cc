@@ -52,6 +52,12 @@ CtrlStruct* init_CtrlStruct(CtrlIn *inputs, CtrlOut *outputs)
 	cvs->triang_pos->theta  = 0.0;
 	cvs->triang_pos->last_t = 0.0;
 
+	// triangulation position
+	cvs->kal_pos = (RobotPosition*) malloc(sizeof(RobotPosition));
+
+	cvs->kal_pos->x = 0.0;
+	cvs->kal_pos->y = 0.0;
+
 	// opponents position
 	cvs->opp_pos = (OpponentsPosition*) malloc(sizeof(OpponentsPosition));
 

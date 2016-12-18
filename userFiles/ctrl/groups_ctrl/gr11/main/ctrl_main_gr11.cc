@@ -57,6 +57,9 @@ void controller_init(CtrlStruct *cvs)
 
 	// speed regulation
 	cvs->sp_reg->last_t = t;
+
+	// tower control
+	cvs->outputs->tower_command = 50.0;
 }
 
 /*! \brief controller loop (called every time-step)
@@ -83,11 +86,11 @@ void controller_loop(CtrlStruct *cvs)
 	// triangulation
 	triangulation(cvs);
 
-	// tower control
-	outputs->tower_command = 50.0;
-
 	// opponents position
 	opponents_tower(cvs);
+
+	// Kalman filter update
+	kalman(cvs);
 
 	switch (cvs->main_state)
 	{
