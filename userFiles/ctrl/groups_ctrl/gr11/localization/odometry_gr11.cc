@@ -36,7 +36,7 @@ void update_odometry(CtrlStruct *cvs)
 	// safety
 	if (dt <= 0.0)
 	{
-		printf("[ERROR] Negative dt. Exiting odometry.\n", );
+		printf("[ERROR] Negative dt. Exiting odometry.\n");
 		return;
 	}
 
