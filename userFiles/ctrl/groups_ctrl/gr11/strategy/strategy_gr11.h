@@ -28,7 +28,6 @@ typedef struct Strategy
 	int tmp_nb_targets;
 	int current_target;
 	Target * targets;
-	Target * tmp_targets;
 } Strategy;
 
 /// 'main_state' states (adapt with your own states)

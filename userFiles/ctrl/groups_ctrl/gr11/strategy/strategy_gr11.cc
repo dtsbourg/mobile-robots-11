@@ -70,7 +70,6 @@ Strategy* init_strategy(CtrlStruct *cvs)
 	strat = (Strategy*) malloc(sizeof(Strategy));
 	strat->tmp_nb_targets = 0;
 	strat->targets = (Target *) malloc(N_TARGETS*sizeof(Target));
-	strat->tmp_targets = (Target *) malloc(N_TARGETS*sizeof(Target));
 
 	Target ts[N_TARGETS];
 	ts[0].present = true; ts[0].points = 2; ts[0].x = 10; ts[0].y = 1; ts[0].dist = 0;
@@ -81,16 +80,6 @@ Strategy* init_strategy(CtrlStruct *cvs)
 	ts[5].present = true; ts[5].points = 1; ts[5].x = 4; ts[5].y = 19; ts[5].dist = 0;
 	ts[6].present = true; ts[6].points = 1; ts[6].x = 15; ts[6].y = 19; ts[6].dist = 0;
 	ts[7].present = true; ts[7].points = 2; ts[7].x = 10; ts[7].y = 25; ts[7].dist = 0;
-
-	
-	memcpy(strat->tmp_targets, ts, N_TARGETS*sizeof(Target));
-
-	for (int i = 0; i < N_TARGETS; i++)
-	{
-		//ts[i].dist = get_target_dist(cvs, ts[i]);
-	}
-
-	qsort(ts, N_TARGETS, sizeof(Target), dist_compare);
 
 	memcpy(strat->targets, ts, N_TARGETS*sizeof(Target));
 	
@@ -209,7 +198,6 @@ void main_strategy(CtrlStruct *cvs)
 			{
 				// we are home now
 				outputs->flag_release = 1; // release target
-				strat->tmp_nb_targets = 0;
 				strat->main_state = STATE_LOOKING_CLOSEST_TARGET;
 			}
 			break;
