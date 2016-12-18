@@ -170,6 +170,7 @@ void main_strategy(CtrlStruct *cvs)
 			if(check_opp_front(cvs))
 			{
 				cvs->path = NULL;
+				follow_path(cvs);
 				strat->main_state = STATE_LOOKING_CLOSEST_TARGET;
 				break;
 			}
