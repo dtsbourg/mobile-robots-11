@@ -4,7 +4,7 @@
 NAMESPACE_INIT(ctrlGr11);
 
 /*! \brief wheel speed regulation
- * 
+ *
  * \param[in,out] cvs controller main structure
  * \parem[in] r_sp_ref right wheel speed reference [rad/s]
  * \parem[in] l_sp_ref left wheel speed reference [rad/s]
@@ -15,6 +15,7 @@ void speed_regulation(CtrlStruct *cvs, double r_sp_ref, double l_sp_ref)
 	double dt;
 	double Kp = 80.0;
 	double Ki = 0.7;
+	double threshold = 0.1;		// Threshold for no movement (static position)
 
 	// variables declaration
 	CtrlIn *inputs;
@@ -44,6 +45,14 @@ void speed_regulation(CtrlStruct *cvs, double r_sp_ref, double l_sp_ref)
 	// wheel commands
 	outputs->wheel_commands[R_ID] = limit_range(Kp * r_err + Ki * sp_reg->int_error_r, -100.0, 100.0);
 	outputs->wheel_commands[L_ID] = limit_range(Kp * l_err + Ki * sp_reg->int_error_l, -100.0, 100.0);
+
+	// Threshold for static position
+	if (r_sp_ref == 0 && r_sp <= threshold)
+		outputs->wheel_commands[R_ID] = 0;
+
+	if (l_sp_ref == 0 && l_sp <= threshold)
+		outputs->wheel_commands[L_ID] = 0;
+
 
 	// ----- Wheels regulation computation end ----- //
 

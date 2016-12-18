@@ -7,9 +7,9 @@
 #include "odometry_gr11.h"
 #include <math.h>
 #include <stdlib.h>
+#include <memory.h>
 
 NAMESPACE_INIT(ctrlGr11);
-
 
 Cell get_home(CtrlStruct * cvs)
 {
@@ -45,8 +45,12 @@ Cell get_home(CtrlStruct * cvs)
 
 float get_target_dist(CtrlStruct *cvs, Target t)
 {
-	Cell initial_pos = { .x =   0, .y =  16 };
-	Cell final_pos   = { .x = t.x, .y = t.y };
+	Cell initial_pos;
+	initial_pos.x = 15;
+	initial_pos.y = 24;
+	Cell final_pos  ;
+	final_pos.x = t.x;
+	final_pos.y = t.y;
 
 	float* distance = (float *)path_planning(initial_pos, final_pos, cvs->map, NULL, true);
 
@@ -70,16 +74,16 @@ Strategy* init_strategy(CtrlStruct *cvs)
 	strat->targets = (Target *) malloc(N_TARGETS*sizeof(Target));
 	strat->tmp_targets = (Target *) malloc(N_TARGETS*sizeof(Target));
 
-	Target ts[N_TARGETS] = {
-		{ .present = true, .points = 2, .x = 11, .y =  0, .dist = 0 },
-		{ .present = true, .points = 1, .x = 16, .y =  7, .dist = 0 },
-		{ .present = true, .points = 1, .x =  7, .y =  7, .dist = 0 },
-		{ .present = true, .points = 3, .x =  0, .y = 13, .dist = 0 },
-		{ .present = true, .points = 2, .x = 10, .y = 13, .dist = 0 },
-		{ .present = true, .points = 1, .x =  4, .y = 19, .dist = 0 },
-		{ .present = true, .points = 1, .x = 16, .y = 19, .dist = 0 },
-		{ .present = true, .points = 2, .x = 11, .y = 26, .dist = 0 }
-	};
+	Target ts[N_TARGETS];
+	ts[0].present = true; ts[0].points = 2; ts[0].x = 10; ts[0].y = 1; ts[0].dist = 0;
+	ts[1].present = true; ts[1].points = 1; ts[1].x = 15; ts[1].y = 7; ts[1].dist = 0;
+	ts[2].present = true; ts[2].points = 1; ts[2].x = 4; ts[2].y = 7; ts[2].dist = 0;
+	ts[3].present = true; ts[3].points = 3; ts[3].x = 0; ts[3].y = 13; ts[3].dist = 0;
+	ts[4].present = true; ts[4].points = 2; ts[4].x = 9; ts[4].y = 13; ts[4].dist = 0;
+	ts[5].present = true; ts[5].points = 1; ts[5].x = 4; ts[5].y = 19; ts[5].dist = 0;
+	ts[6].present = true; ts[6].points = 1; ts[6].x = 15; ts[6].y = 19; ts[6].dist = 0;
+	ts[7].present = true; ts[7].points = 2; ts[7].x = 10; ts[7].y = 25; ts[7].dist = 0;
+
 
 	memcpy(strat->tmp_targets, ts, N_TARGETS*sizeof(Target));
 
@@ -125,10 +129,17 @@ void main_strategy(CtrlStruct *cvs)
 	strat  = cvs->strat;
 	inputs = cvs->inputs;
 
-	int cell_x = (int)((cvs->rob_pos->x + 0.90) * 10.0);
-	int cell_y = (int)((cvs->rob_pos->y + 1.14) * 10.0);
-	Cell start = { .x = cell_x, .y = cell_y };
-	Cell objective = { .x = strat->targets[0].x, .y = strat->targets[0].y };
+	int cell_x = (int)round((cvs->rob_pos->x + 0.8) * 10.0);
+	int cell_y = (int)round((cvs->rob_pos->y + 1.3) * 10.0);
+
+	Cell start;
+	start.x = cell_x;
+	start.y = cell_y;
+	Cell objective;
+	objective.x = strat->targets[0].x;
+	objective.y = strat->targets[0].y;
+
+
 
 	switch (strat->main_state)
 	{
@@ -139,8 +150,11 @@ void main_strategy(CtrlStruct *cvs)
 
 		case STATE_EMPTY:
 			// printf("x = %f ; y = %f\n", cvs->rob_pos->x, cvs->rob_pos->y);
-			printf("x_start = %d ; y_start = %d \n", start.x, start.y);
-			printf("x_obj = %d ; y_obj = %d \n", objective.x, objective.y);
+			//printf("x_start = %d ; y_start = %d \n", start.x, start.y);
+			//printf("x_obj = %d ; y_obj = %d \n", objective.x, objective.y);
+			
+			//free_path(cvs->path->next);
+			cvs->path = NULL;
 			cvs->path = (Path *)path_planning(start, objective, cvs->map, cvs->path, false);
 			follow_path(cvs);
 			break;
