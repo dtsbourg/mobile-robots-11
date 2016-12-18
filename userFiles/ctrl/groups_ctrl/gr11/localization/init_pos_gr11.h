@@ -9,6 +9,8 @@
  
 #include "namespace_ctrl.h"
 #include "CtrlStruct_gr11.h"
+#include "config_file.h"
+#include "useful_gr11.h"
 
 NAMESPACE_INIT(ctrlGr11);
 

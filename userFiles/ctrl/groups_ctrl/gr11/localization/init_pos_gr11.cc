@@ -15,27 +15,27 @@ void set_init_position(int robot_id, RobotPosition *rob_pos)
 	switch (robot_id)
 	{
 		case ROBOT_B: // blue robot
-			rob_pos->x = 0.67;
-			rob_pos->y = 1.15;
-			rob_pos->theta = - M_PI / 2.0;
+			rob_pos->x = BLUE_T1;
+			rob_pos->y = BLUE_T2;
+			rob_pos->theta = BLUE_R3 * DEG_TO_RAD / 2.0;
 			break;
 
 		case ROBOT_R: // red robot
-			rob_pos->x = 0.82;
-			rob_pos->y = 1.4;
-			rob_pos->theta = - M_PI / 2.0;
+			rob_pos->x = RED_T1;
+			rob_pos->y = RED_T2;
+			rob_pos->theta = RED_R3 * DEG_TO_RAD / 2.0;
 			break;
 
 		case ROBOT_Y: // yellow robot
-			rob_pos->x = 0.67;
-			rob_pos->y = -1.15;
-			rob_pos->theta = M_PI / 2.0;
+			rob_pos->x = YELLOW_T1;
+			rob_pos->y = YELLOW_T2;
+			rob_pos->theta = YELLOW_R3 * DEG_TO_RAD / 2.0;
 			break;
 
 		case ROBOT_W: //  white robot
-			rob_pos->x = 0.82;
-			rob_pos->y = -1.4;
-			rob_pos->theta = M_PI / 2.0;
+			rob_pos->x = WHITE_T1;
+			rob_pos->y = WHITE_T2;
+			rob_pos->theta = WHITE_R3 * DEG_TO_RAD / 2.0;
 			break;
 
 		default:
