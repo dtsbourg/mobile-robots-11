@@ -13,6 +13,23 @@
 
 NAMESPACE_INIT(ctrlGr11);
 
+/// 'main_state' states
+enum {
+	   STATE_INIT,
+	   STATE_TWO_DISKS,
+	   STATE_MOVING_TO_TARGET,
+	   STATE_MOVING_HOME,
+	   STATE_LOOKING_CLOSEST_TARGET,
+	   STATE_PICKUP_TARGET,
+	   STATE_STRATEGY_FINISH
+     };
+
+enum ScoringMethod {
+	SCORE_DISTANCE,
+	SCORE_WEIGHTED_DISTANCE,
+	SCORE_POINTS
+};
+
 /// Target Struct
 typedef struct {
 	bool present; // Is the target still available
@@ -28,19 +45,10 @@ typedef struct Strategy
 	int main_state; 	///< main state of the strategy
 	int tmp_nb_targets;
 	int current_target;
+	ScoringMethod method;
 	Target targets[N_TARGETS];
 } Strategy;
 
-/// 'main_state' states
-enum {
-	   STATE_INIT,
-	   STATE_TWO_DISKS,
-	   STATE_MOVING_TO_TARGET,
-	   STATE_MOVING_HOME,
-	   STATE_LOOKING_CLOSEST_TARGET,
-	   STATE_PICKUP_TARGET,
-	   STATE_STRATEGY_FINISH
-     };
 
 void init_strategy(CtrlStruct *cvs);
 void free_strategy(Strategy *strat);
