@@ -6,6 +6,9 @@
 // Time constant for first order filter
 #define ALPHA 1
 
+// Dangerous distance of opponents = 30cm
+#define DANGER_OPP 0.3
+
 NAMESPACE_INIT(ctrlGr11);
 
 /*! \brief compute the opponents position using the tower
@@ -139,6 +142,7 @@ int check_opp_front(CtrlStruct *cvs)
 {
 	// variables declaration
 	int i, nb_opp;
+	double x_to_opp, y_to_opp, opp_dist;
 
 	OpponentsPosition *opp_pos;
 	RobotPosition *kal_pos;
@@ -164,7 +168,12 @@ int check_opp_front(CtrlStruct *cvs)
 	for(i=0; i<nb_opp; i++)
 	{
 		// ----- opponents check computation start ----- //
+		x_to_opp = opp_pos->x[i] - kal_pos->x;
+		y_to_opp = opp_pos->y[i] - kal_pos->y;
+		opp_dist = norm_dist(x_to_opp,y_to_opp);
 
+		if(opp_dist <= DANGER_OPP)
+			return 1;
 		// ----- opponents check computation end ----- //
 	}
 

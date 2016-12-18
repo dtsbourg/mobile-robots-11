@@ -167,6 +167,12 @@ void main_strategy(CtrlStruct *cvs)
 			break;
 
 		case STATE_MOVING_TO_TARGET:
+			if(check_opp_front(cvs))
+			{
+				cvs->path = NULL;
+				strat->main_state = STATE_LOOKING_CLOSEST_TARGET;
+				break;
+			}
 			follow_path(cvs);
 			if (cvs->path == NULL)
 			{
