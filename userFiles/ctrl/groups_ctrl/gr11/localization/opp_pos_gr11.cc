@@ -79,9 +79,8 @@ void opponents_tower(CtrlStruct *cvs)
 	//opp_pos->x[1] = first_order_filter(opp_pos->x[1], opp_pos_new->x[1], 0.1, delta_t);
 	//opp_pos->y[1] = first_order_filter(opp_pos->y[1], opp_pos_new->y[1], 0.1, delta_t);
 
-	set_plot(opp_pos->x[0], "Predicted X [m]");
-	set_plot(opp_pos->y[0], "Predicted Y [m]");
-
+	set_plot(opp_pos->x[0], "pred X");
+	set_plot(opp_pos->y[0], "pred Y");
 	// ----- opponents position computation end ----- //
 }
 

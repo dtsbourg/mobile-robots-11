@@ -7,9 +7,9 @@
 #include "odometry_gr11.h"
 #include <math.h>
 #include <stdlib.h>
+#include <memory.h>
 
 NAMESPACE_INIT(ctrlGr11);
-
 
 Cell get_home(CtrlStruct * cvs)
 {
@@ -18,10 +18,10 @@ Cell get_home(CtrlStruct * cvs)
 	{
 		switch (cvs->team_id) {
 			case TEAM_A:
-				home.x = 16; home.y = 0;
+				home.x = 15; home.y = 25;
 				break;
 			case TEAM_B:
-				home.x = 0; home.y = 0;
+				home.x = 3; home.y = 25;
 				break;
 			default:
 				printf("Invalid team\n");
@@ -30,10 +30,10 @@ Cell get_home(CtrlStruct * cvs)
 	} else {
 		switch (cvs->team_id) {
 			case TEAM_A:
-				home.x = 0; home.y = 26;
+				home.x = 1; home.y = 2;
 				break;
 			case TEAM_B:
-				home.x = 16; home.y = 26;
+				home.x = 15; home.y = 2;
 				break;
 			default:
 				printf("Invalid team\n");
@@ -43,12 +43,13 @@ Cell get_home(CtrlStruct * cvs)
 	return home;
 }
 
-float get_target_dist(CtrlStruct *cvs, Target t)
+float get_target_dist(CtrlStruct *cvs, Target t, Cell robot_pos)
 {
-	Cell initial_pos = { .x =   0, .y =  16 };
-	Cell final_pos   = { .x = t.x, .y = t.y };
+	Cell final_pos;
+	final_pos.x = t.x;
+	final_pos.y = t.y;
 
-	float* distance = (float *)path_planning(initial_pos, final_pos, cvs->map, NULL, true);
+	float* distance = (float *)path_planning(robot_pos, final_pos, cvs->map, NULL, true);
 
 	return *distance;
 }
@@ -67,38 +68,21 @@ Strategy* init_strategy(CtrlStruct *cvs)
 	Strategy *strat;
 
 	strat = (Strategy*) malloc(sizeof(Strategy));
+	strat->tmp_nb_targets = 0;
 	strat->targets = (Target *) malloc(N_TARGETS*sizeof(Target));
-	strat->tmp_targets = (Target *) malloc(N_TARGETS*sizeof(Target));
 
-	Target ts[N_TARGETS] = {
-		{ .present = true, .points = 2, .x = 11, .y =  0, .dist = 0 },
-		{ .present = true, .points = 1, .x = 16, .y =  7, .dist = 0 },
-		{ .present = true, .points = 1, .x =  7, .y =  7, .dist = 0 },
-		{ .present = true, .points = 3, .x =  0, .y = 13, .dist = 0 },
-		{ .present = true, .points = 2, .x = 10, .y = 13, .dist = 0 },
-		{ .present = true, .points = 1, .x =  4, .y = 19, .dist = 0 },
-		{ .present = true, .points = 1, .x = 16, .y = 19, .dist = 0 },
-		{ .present = true, .points = 2, .x = 11, .y = 26, .dist = 0 }
-	};
-
-	memcpy(strat->tmp_targets, ts, N_TARGETS*sizeof(Target));
-
-	for (int i = 0; i < N_TARGETS; i++)
-	{
-		ts[i].dist = get_target_dist(cvs, ts[i]);
-	}
-
-	qsort(ts, N_TARGETS, sizeof(Target), dist_compare);
+	Target ts[N_TARGETS];
+	ts[0].present = true; ts[0].points = 2; ts[0].x = 10; ts[0].y = 1; ts[0].dist = 0;
+	ts[1].present = true; ts[1].points = 1; ts[1].x = 15; ts[1].y = 7; ts[1].dist = 0;
+	ts[2].present = true; ts[2].points = 1; ts[2].x = 4; ts[2].y = 7; ts[2].dist = 0;
+	ts[3].present = true; ts[3].points = 3; ts[3].x = 0; ts[3].y = 13; ts[3].dist = 0;
+	ts[4].present = true; ts[4].points = 2; ts[4].x = 9; ts[4].y = 13; ts[4].dist = 0;
+	ts[5].present = true; ts[5].points = 1; ts[5].x = 4; ts[5].y = 19; ts[5].dist = 0;
+	ts[6].present = true; ts[6].points = 1; ts[6].x = 15; ts[6].y = 19; ts[6].dist = 0;
+	ts[7].present = true; ts[7].points = 2; ts[7].x = 10; ts[7].y = 25; ts[7].dist = 0;
 
 	memcpy(strat->targets, ts, N_TARGETS*sizeof(Target));
-
-	for (int i = 0; i < N_TARGETS; i++)
-	{
-		printf("dist = %f \n", strat->targets[i].dist);
-	}
-
-	strat->main_state = STATE_EMPTY;
-
+	
 	return strat;
 }
 
@@ -120,46 +104,123 @@ void main_strategy(CtrlStruct *cvs)
 	// variables declaration
 	Strategy *strat;
 	CtrlIn *inputs;
+	CtrlOut *outputs;
 
 	// variables initialization
 	strat  = cvs->strat;
 	inputs = cvs->inputs;
+	outputs = cvs->outputs;
 
-	int cell_x = (int)((cvs->rob_pos->x + 0.90) * 10.0);
-	int cell_y = (int)((cvs->rob_pos->y + 1.14) * 10.0);
-	Cell start = { .x = cell_x, .y = cell_y };
-	Cell objective = { .x = strat->targets[0].x, .y = strat->targets[0].y };
+
+	/*Ici j'ai une id�e du tonerre. Plut�t que de prendre le noeud le plus proche,
+	on peut prendre le prochain noeud de la liste. Attention tout de m�me � la fin de la liste,
+	lorsqu'il n'y a plus de noeuds.
+
+	Peut�tre l'id�al serait d'avoir le noeud d'avant?
+	*/
+	int cell_x = (int)round((cvs->rob_pos->x + 0.8) * 10.0);
+	int cell_y = (int)round((cvs->rob_pos->y + 1.3) * 10.0);
+
+
+	Cell start;
+	start.x = cell_x;
+	start.y = cell_y;
+	Cell objective;
 
 	switch (strat->main_state)
 	{
 		case STATE_INIT:
 			init_strategy(cvs);
-			strat->main_state = STATE_EMPTY;
+			strat->main_state = STATE_LOOKING_CLOSEST_TARGET;
 			break;
 
-		case STATE_EMPTY:
-			// printf("x = %f ; y = %f\n", cvs->rob_pos->x, cvs->rob_pos->y);
-			printf("x_start = %d ; y_start = %d \n", start.x, start.y);
-			printf("x_obj = %d ; y_obj = %d \n", objective.x, objective.y);
-			cvs->path = (Path *)path_planning(start, objective, cvs->map, cvs->path, false);
-			follow_path(cvs);
-			break;
-
-		case STATE_ONE_DISK:
-			// for (int i = 0; i < N_TARGETS; i++)
-			// {
-			// 	strat->tmp_targets[i].dist = get_target_dist(cvs, strat->tmp_targets[i]);
-			// }
-			// qsort(strat->tmp_targets, N_TARGETS, sizeof(Target), dist_compare);
-			// objective.x = strat->tmp_targets[0].x; objective.y = strat->tmp_targets[0].y;
-			// cvs->path = (Path *)path_planning(start, objective, cvs->map, cvs->path, false);
-			// follow_path(cvs);
+		case STATE_LOOKING_CLOSEST_TARGET:
+			for (int i = 0; i < N_TARGETS; i++)
+			{
+				strat->targets[i].dist = get_target_dist(cvs, strat->targets[i], start);
+			}
+			qsort(strat->targets, N_TARGETS, sizeof(Target), dist_compare);
+			for (int i = 0; i < N_TARGETS; i++)
+			{
+				if (strat->targets[i].present)
+				{
+					strat->current_target = i;
+					objective.x = strat->targets[i].x;
+					objective.y = strat->targets[i].y;
+					printf("Next target is target #%d : (%d, %d)\n", strat->current_target, objective.x, objective.y);
+					cvs->path = (Path *)path_planning(start, objective, cvs->map, cvs->path, false);
+					strat->main_state = STATE_MOVING_TO_TARGET;
+					break;
+				}
+				if ( i == (N_TARGETS - 1))
+				{
+					// no more targets
+					if (inputs->nb_targets > 0)
+					{
+						strat->main_state = STATE_TWO_DISKS;
+					}
+					else
+					{
+						strat->main_state = STATE_STRATEGY_FINISH;
+					}
+				}
+			}	
 			break;
 
 		case STATE_TWO_DISKS:
-			// objective = get_home(cvs);
-			// cvs->path = (Path *)path_planning(start , objective, cvs->map, cvs->path, false);
-			// follow_path(cvs);
+			objective = get_home(cvs);
+			cvs->path = (Path *)path_planning(start , objective, cvs->map, cvs->path, false);
+			strat->main_state = STATE_MOVING_HOME;
+			break;
+
+		case STATE_MOVING_TO_TARGET:
+			follow_path(cvs);
+			//printf("%d %d %d %d\n", objective.x, objective.y, cell_x,cell_y);
+			if (cvs->path == NULL)
+			{
+				if (inputs->target_detected)
+				{
+					strat->tmp_nb_targets = inputs->nb_targets;
+					strat->main_state = STATE_PICKUP_TARGET;
+				}
+				else
+				{
+					strat->targets[strat->current_target].present = false;
+					strat->main_state = STATE_LOOKING_CLOSEST_TARGET;
+				}
+			}
+			break;
+
+		case STATE_MOVING_HOME:
+			follow_path(cvs);
+			if (cvs->path == NULL)
+			{
+				// we are home now
+				outputs->flag_release = 1; // release target
+				strat->main_state = STATE_LOOKING_CLOSEST_TARGET;
+			}
+			break;
+
+		case STATE_PICKUP_TARGET:
+			outputs->flag_release = 0;
+			speed_regulation(cvs, 0, 0);
+			if (inputs->nb_targets == strat->tmp_nb_targets + 1)
+			{
+				strat->targets[strat->current_target].present = false;
+				if (inputs->nb_targets == 2)
+				{
+					strat->main_state = STATE_TWO_DISKS;
+				}
+				else
+				{
+					strat->main_state = STATE_LOOKING_CLOSEST_TARGET;
+				}
+			}
+			break;
+
+		case STATE_STRATEGY_FINISH:
+			speed_regulation(cvs, 0, 0);
+			printf("no more targets we are done\n");
 			break;
 
 		default:
