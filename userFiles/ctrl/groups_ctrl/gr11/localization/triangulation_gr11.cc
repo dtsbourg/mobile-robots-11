@@ -229,7 +229,7 @@ void triangulation(CtrlStruct *cvs)
 	pos_tri->y = first_order_filter(pos_tri->y, new_y, 0.05, dt);
 	// robot orientation
 	pos_tri->theta = rob_pos->theta;
-	set_plot(pos_tri->x, "X tri [m]");
+	// set_plot(pos_tri->x, "X tri [m]");
 	pos_tri->last_t = inputs->t;
 
 	// ----- triangulation computation end ----- //
