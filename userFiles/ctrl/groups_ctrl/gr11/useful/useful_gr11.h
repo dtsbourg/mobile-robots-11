@@ -17,6 +17,7 @@
 #define ERASE 0
 
 #include "namespace_ctrl.h"
+#include "CtrlStruct_gr11.h"
 
 NAMESPACE_INIT(ctrlGr11);
 
@@ -34,6 +35,7 @@ int world_to_map_x(double world_x);
 int world_to_map_y(double world_y);
 double map_to_world_x(int map_x);
 double map_to_world_y(int map_y);
+void print_map(CtrlStruct*cvs);
 
 NAMESPACE_CLOSE();
 

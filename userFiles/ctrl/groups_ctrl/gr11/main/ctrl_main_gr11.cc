@@ -16,6 +16,7 @@
 #include "strategy_gr11.h"
 #include "kalman_gr11.h"
 #include <time.h>
+#include "useful_gr11.h"
 
 NAMESPACE_INIT(ctrlGr11);
 
@@ -91,6 +92,9 @@ void controller_loop(CtrlStruct *cvs)
 
 	// Kalman filter update
 	kalman(cvs);
+
+	if(inputs->t == 5 || inputs->t == 15 || inputs->t == 25 || inputs->t == 35)
+	 print_map(cvs);
 
 	switch (cvs->main_state)
 	{

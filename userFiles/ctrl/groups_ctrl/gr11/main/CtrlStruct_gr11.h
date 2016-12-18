@@ -58,6 +58,7 @@ typedef struct CtrlStruct
 	int team_id;    	///< ID of the team
 	int nb_opp;     	///< number of opponents
 	bool map[17][27];	///< map
+	bool obstacle_map[17][27];
 } CtrlStruct;
 
 // function prototypes

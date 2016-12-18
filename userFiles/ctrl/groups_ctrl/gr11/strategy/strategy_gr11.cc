@@ -167,7 +167,7 @@ void main_strategy(CtrlStruct *cvs)
 			break;
 
 		case STATE_MOVING_TO_TARGET:
-			if(check_opp_front(cvs))
+			if(0)//check_opp_front(cvs))
 			{
 				cvs->path = NULL;
 				follow_path(cvs);

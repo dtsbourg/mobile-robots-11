@@ -141,6 +141,14 @@ CtrlStruct* init_CtrlStruct(CtrlIn *inputs, CtrlOut *outputs)
 		}
 	}
 
+	for(i=0;i<17;i++)
+	{
+		for(j=0;j<27;j++)
+		{
+			cvs->obstacle_map[i][j] = cvs->map[i][j];
+		}
+	}
+
 	return cvs;
 }
 

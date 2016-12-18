@@ -1,4 +1,5 @@
 #include "useful_gr11.h"
+#include "CtrlStruct_gr11.h"
 #include <math.h>
 #include <stdlib.h>
 
@@ -129,6 +130,21 @@ double map_to_world_x(int map_x)
 double map_to_world_y(int map_y)
 {
 	return ((map_y / 10.0) - 1.3);
+}
+
+void print_map(CtrlStruct *cvs)
+{
+int i,j;
+
+	for(i=0;i<17;i++)
+	{
+		for(j=0;j<27;j++)
+		{
+			printf("%d",cvs->map[i][j]);
+			if(j==26)
+				printf("\n");
+		}
+	}
 }
 
 

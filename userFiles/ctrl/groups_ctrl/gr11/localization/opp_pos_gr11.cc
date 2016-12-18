@@ -192,10 +192,13 @@ void opp_pos_map(CtrlStruct *cvs, bool add_erase)
 	opp_pos[1] = world_to_map_y(cvs->opp_pos->y[0]);
 
 	// add/erase first opponent position to the map
-	if(add_erase)
-		cvs->map[opp_pos[0]][opp_pos[1]] = OBSTACLE_NODE;
-	else
-		cvs->map[opp_pos[0]][opp_pos[1]] = FREE_NODE;
+	if(!cvs->obstacle_map[opp_pos[0]][opp_pos[1]])
+	{
+		if(add_erase)
+			cvs->map[opp_pos[0]][opp_pos[1]] = OBSTACLE_NODE;
+		else
+			cvs->map[opp_pos[0]][opp_pos[1]] = FREE_NODE;
+	}
 
 	// for the second opponent
 	if (cvs->opp_pos->nb_opp == 2)
@@ -203,10 +206,13 @@ void opp_pos_map(CtrlStruct *cvs, bool add_erase)
 		opp_pos[2] = world_to_map_x(cvs->opp_pos->x[1]);
 		opp_pos[3] = world_to_map_y(cvs->opp_pos->y[1]);
 
-		if(add_erase)
-			cvs->map[opp_pos[2]][opp_pos[3]] = OBSTACLE_NODE;
-		else
-			cvs->map[opp_pos[2]][opp_pos[3]] = FREE_NODE;
+		if(!cvs->obstacle_map[opp_pos[0]][opp_pos[1]])
+		{
+			if(add_erase)
+				cvs->map[opp_pos[2]][opp_pos[3]] = OBSTACLE_NODE;
+			else
+				cvs->map[opp_pos[2]][opp_pos[3]] = FREE_NODE;
+		}
 	}
 }
 
