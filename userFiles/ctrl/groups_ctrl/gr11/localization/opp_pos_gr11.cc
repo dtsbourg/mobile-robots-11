@@ -103,8 +103,8 @@ void opponents_tower(CtrlStruct *cvs)
  * \param[in] rob_x robot x position [m]
  * \param[in] rob_y robot y position [m]
  * \param[in] rob_theta robot orientation [rad]
- * \param[out] new_x_opp new known x opponent position
- * \param[out] new_y_opp new known y opponent position
+ * \param[in] opp_pos_new new known position
+ * \param[in] opp_id opponent identifier
  * \return 1 if computation successful, 0 otherwise
  */
 int single_opp_tower(double last_rise, double last_fall, double rob_x, double rob_y, double rob_theta, OpponentsPosition * opp_pos_new, int opp_id)
