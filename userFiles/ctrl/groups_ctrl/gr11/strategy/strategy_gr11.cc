@@ -24,7 +24,7 @@ int weighted_dist_compare (void const * ta, void const * tb)
 
 int pts_compare (void const * ta, void const * tb)
 {
-   return (((Target *)ta)->points - ((Target *)tb)->points);
+   return (((Target *)tb)->points - ((Target *)ta)->points);
 }
 
 void sort_targets(CtrlStruct * cvs)
